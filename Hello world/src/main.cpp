@@ -21,11 +21,10 @@ void loop()
 
   // delay(500);
 
-  digitalWrite(13, HIGH);
+  while (1)
+  {
+    digitalWrite(23, HIGH);
 
-  delay(500);
-
-  digitalWrite(13, LOW);
-
-  delay(500);
+    digitalWrite(23, LOW);
+  }
 }
