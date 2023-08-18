@@ -25,6 +25,11 @@ void Servo_Move(int16_t angle, int16_t max_angle, int32_t pwm_channel) {
     ledcWrite(pwm_channel, value);
 }
 
+void Setup_Step(int32_t pwm_channel, uint8_t pin){
+    ledcAttachPin(pin, pwm_channel);
+    ledcSetup(pwm_channel, PWM_FREQ_HZ_Step, PWM_RES_BITS_Step);
+}
+
 void Step_Move(int32_t pwm_channel, int16_t steps){
     int32_t value = STEP_COUNTS*.5;
 
