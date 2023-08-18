@@ -19,6 +19,8 @@ static int Counter2 = 0;
 
 int TEST = 23123;
 
+int Pallse = 55352;
+
 // bool  
 // short 16 bit
 // char  8 bit
