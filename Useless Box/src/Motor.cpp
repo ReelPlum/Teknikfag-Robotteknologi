@@ -7,15 +7,6 @@ const int32_t DLY_MS = 2;
 //const int16_t MaxAngle = 170*2;
 const int32_t SERVO_COUNTS = pow(2, PWM_RES_BITS_Servo);
 
-void setup() {
-    // ledcAttachPin(PIN_LED, PWM_CH);
-    // ledcSetup(PWM_CH, PWM_FREQ_HZ, PWM_RES_BITS);
-}
-
-void Step_Move(){
-
-}
-
 void Setup_Servo(int32_t pwm_channel, uint8_t pin){
     ledcAttachPin(pin, pwm_channel);
     ledcSetup(pwm_channel, PWM_FREQ_HZ_Servo, PWM_RES_BITS_Servo);
@@ -28,5 +19,26 @@ void Servo_Move(int16_t angle, int16_t max_angle, int32_t pwm_channel) {
     ledcWrite(pwm_channel, value);
 }
 
+void setup() {
+    // ledcAttachPin(PIN_LED, PWM_CH);
+    // ledcSetup(PWM_CH, PWM_FREQ_HZ, PWM_RES_BITS);
+
+    Setup_Servo(0, 25);
+}
+
+void Step_Move(){
+
+}
+
 void loop() {
+    Servo_Move(50, 170*2, 0);
+
+    delay(1000);
+
+    Servo_Move(170, 170*2, 0);
+
+    delay(1000);
+    Servo_Move(0, 170*2, 0);
+
+    delay(1000);
 }
