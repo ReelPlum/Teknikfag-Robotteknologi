@@ -6,13 +6,24 @@ const int32_t PWM_FREQ_HZ = 50;
 const int32_t PWM_RES_BITS = 8;
 const int32_t DLY_MS = 2;
 
+const int16_t MaxAngle = 170*2;
+const int32_t Counts = pow(2, PWM_RES_BITS);
 
 void setup() {
-    ledAttachPin(PIN_LED, PWM_CH);
-    ledcSetup(PWM_CH, PWM_FREQ_HZ, PWM_RES_BITS);
+    // ledcAttachPin(PIN_LED, PWM_CH);
+    // ledcSetup(PWM_CH, PWM_FREQ_HZ, PWM_RES_BITS);
 }
 
-void 
+void Step_Move(){
+    
+}
+
+void Servo_Move(int16_t Angle, int32_t PWM_Channel) {
+    double percent = (Angle / MaxAngle);
+    int32_t value = Counts*0.05 + (Counts * percent * 0.05);
+
+    ledcWrite(PWM_Channel, value);
+}
 
 void loop() {
 }
