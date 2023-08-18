@@ -17,6 +17,7 @@ int Counter = 0;
 //Use static to keep it in this file.
 static int Counter2 = 0;
 
+int TEST = 23123;
 
 // bool  
 // short 16 bit
