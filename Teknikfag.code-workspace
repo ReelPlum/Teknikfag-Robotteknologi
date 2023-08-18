@@ -9,5 +9,9 @@
 			"path": "Useless Box"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"cmath": "cpp"
+		}
+	}
 }
