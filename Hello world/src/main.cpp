@@ -19,6 +19,9 @@ static int Counter2 = 0;
 
 int TEST = 23123;
 
+int cockcherger = 3218463178413;
+
+
 // bool  
 // short 16 bit
 // char  8 bit
