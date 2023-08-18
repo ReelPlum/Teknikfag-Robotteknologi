@@ -19,6 +19,12 @@ static int Counter2 = 0;
 
 int TEST = 23123;
 
+int Pallse = 55352;
+
+int magnus = 005352;
+int plum = 2414;
+
+
 int cockcherger = 3218463178413;
 
 
