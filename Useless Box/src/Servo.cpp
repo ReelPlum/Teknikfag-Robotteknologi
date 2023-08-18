@@ -8,8 +8,8 @@ const int32_t DLY_MS = 2;
 
 
 void setup() {
-ledAttachPin(LED, CH)
-ledcSetup(CH, FREQ, BIT)
+    ledAttachPin(PIN_LED, PWM_CH);
+    ledcSetup(PWM_CH, PWM_FREQ_HZ, PWM_RES_BITS);
 }
 
 void loop() {
