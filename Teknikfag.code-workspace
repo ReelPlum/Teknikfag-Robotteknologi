@@ -3,6 +3,10 @@
 		{
 			"name": "Hello world",
 			"path": "Hello world"
+		},
+		{
+			"name": "Useless Box",
+			"path": "Useless Box"
 		}
 	],
 	"settings": {}
