@@ -6,7 +6,8 @@ int32_t i = 1;
 
 void setup()
 {
-  Setup_Servo(0, 18);
+  Serial.begin(115200);
+  Setup_Servo(SERVO_1, 18);
 }
 
 void loop()
