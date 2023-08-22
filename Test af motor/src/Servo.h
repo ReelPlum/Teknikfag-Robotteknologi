@@ -1,0 +1,14 @@
+#pragma once
+
+#include <Arduino.h>
+
+
+const int32_t MAX_ANGLE = 180;
+const int32_t PWM_FREQ_HZ_Servo = 50;
+const int32_t PWM_RES_BITS_Servo = 8;
+const int32_t SERVO_T_LOW = 552; //MIcroseconds
+const int32_t SERVO_T_HIGH = 2550; //Microseconds
+
+
+void Setup_Servo(int32_t pwm_channel, uint8_t pin);
+void Servo_Move(int16_t angle, int16_t max_angle, int32_t pwm_channel);
