@@ -17,5 +17,4 @@ void loop()
   Servo_Move(180, MAX_ANGLE, SERVO_1);
   delay(2000);
 
-
 }
