@@ -1,23 +1,27 @@
 #include <StepMotor.h>
 
-void Setup_Stepper(uint8_t pulse_pin, uint8_t dir_pin)
+void StepMotor::Setup(uint8_t pulse_pin, uint8_t dir_pin)
 {
-    // ledcAttachPin(pin, pwm_channel);
-    // ledcSetup(pwm_channel, PWM_FREQ_HZ_STEP, PWM_RES_BITS_STEP);
     pinMode(pulse_pin, OUTPUT);
     pinMode(dir_pin, OUTPUT);
 }
 
-void Move_Stepper(uint8_t pulse_pin, uint8_t dir_pin, uint8_t dir, uint32_t steps, uint32_t speed)
+void StepMotor::Move(int32_t steps, uint32_t speed)
 {
     //Speed er steps / second
-    
-    digitalWrite(dir_pin, dir);
+
+    if (steps < 0){
+        digitalWrite(this->dir_pin, 1);
+        steps = -steps;
+    }
+    else{
+        digitalWrite(this->dir_pin, 0);
+    }
 
     for (int i = 0; i < steps; i++){
-        digitalWrite(pulse_pin, HIGH);
+        digitalWrite(this->pulse_pin, HIGH);
         usleep(10);
-        digitalWrite(pulse_pin, LOW);
+        digitalWrite(this->pulse_pin, LOW);
         int32_t delay_ms = (1.0/speed) * 1000;
 
         delay(delay_ms);
