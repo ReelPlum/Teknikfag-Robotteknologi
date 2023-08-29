@@ -16,8 +16,10 @@ void Move_Stepper(uint8_t pulse_pin, uint8_t dir_pin, boolean dir = 1, uint32_t 
 
     for (int i = 0; i < steps; i++){
         digitalWrite(pulse_pin, HIGH);
-        usleep(20);
+        usleep(10);
         digitalWrite(pulse_pin, LOW);
-        delay((1/speed) * 1000);
+        int32_t delay_ms = (1.0/speed) * 1000;
+
+        delay(delay_ms);
     }
 }
