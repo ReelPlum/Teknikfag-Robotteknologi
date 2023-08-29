@@ -20,7 +20,6 @@ void Servo::Move(double angle)
     double percent = (angle / this->max_angle)*100;
     double dc = map_double(percent, 0, 100, this->t_low, this->t_high); // dc 2.5% -- 12.5%
     int32_t value = (int32_t)map_double(dc, 0, 100, 0, pow(2, this->pwm_res_bits)-1); //  
-    Serial.printf("Percent: %.3f    DC: %.3f   value: %d\n", percent, dc, value);
 
     // int32_t value = SERVO_COUNTS*0.05 + (SERVO_COUNTS * percent * 0.05);
 
