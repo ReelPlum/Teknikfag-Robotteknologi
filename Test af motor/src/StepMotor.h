@@ -4,5 +4,14 @@
 #include <math.h>
 #include <map.h>
 
-void Setup_Stepper(uint8_t pulse_pin, uint8_t dir_pin);
-void Move_Stepper(uint8_t pulse_pin, uint8_t dir_pin, uint8_t dir, uint32_t steps, uint32_t speed);
+class StepMotor
+{
+    public:
+    StepMotor(){};
+    void Move(int32_t steps, uint32_t speed);
+    void Setup(uint8_t pulse_pin, uint8_t dir_pin);
+
+    private:
+    uint8_t pulse_pin;
+    uint8_t dir_pin;
+};
