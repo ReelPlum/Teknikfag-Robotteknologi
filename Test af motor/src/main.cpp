@@ -12,16 +12,12 @@ Servo SERVO1;
 void setup()
 {
   Serial.begin(115200);
-  //Setup_Stepper(STEP_1_PULSE_pin, STEP_1_DIR_pin);
 
   SERVO1.Setup(0, SERVO_PIN, SERVO_T_LOW, SERVO_T_HIGH, 20*1000, PWM_FREQ_HZ_Servo, PWM_RES_BITS_Servo, MAX_ANGLE);
 }
 
 void loop()
 {
-
-  //Move_Stepper(STEP_1_PULSE_pin, STEP_1_DIR_pin, 1, 200, 50);
-
   SERVO1.Move(180);
   delay(1000);
   SERVO1.Move(0);
