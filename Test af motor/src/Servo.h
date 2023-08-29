@@ -20,14 +20,16 @@ class Servo {
     Servo(){};
 
     void Setup(uint8_t pwm_channel, uint8_t pin, double t_low, double t_high, double servo_hz, int32_t pwm_freq_hz, int32_t pwm_req_bits, int32_t max_angle);
-    void Move(int32_t angle);
+    void Move(double angle);
 
     private:
     int32_t pwm_channel;
     uint8_t pin;
     double max_angle;
-    int32_t t_low;
-    int32_t t_high;
+    double t_low;
+    double t_high;
+    double servo_hz;
     int32_t pwm_freq_hz;
     int32_t pwm_res_bits;
+    
 };
