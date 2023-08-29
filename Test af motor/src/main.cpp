@@ -13,13 +13,21 @@ void setup()
 {
   Serial.begin(115200);
 
-  SERVO1.Setup(0, SERVO_PIN, SERVO_T_LOW, SERVO_T_HIGH, 20*1000, PWM_FREQ_HZ_Servo, PWM_RES_BITS_Servo, MAX_ANGLE);
+  SERVO1.Setup(0, SERVO_PIN, SERVO_T_LOW, SERVO_T_HIGH, 20 * 1000, PWM_FREQ_HZ_Servo, PWM_RES_BITS_Servo, MAX_ANGLE);
 }
 
 void loop()
 {
-  SERVO1.Move(180);
-  delay(1000);
-  SERVO1.Move(0);
-  delay(1000);
+
+  for (int i = 1; i < 181; i++)
+  {
+    SERVO1.Move(i);
+    delay(20);
+  }
+
+  for (int i = 180; i > 0; i -= 1)
+  {
+    SERVO1.Move(i);
+    delay(20);
+  }
 }
