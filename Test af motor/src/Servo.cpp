@@ -11,8 +11,8 @@ void Setup_Servo(int32_t pwm_channel, uint8_t pin)
 void Servo_Move(double angle, double max_angle, int32_t pwm_channel)
 {
 
-    double percent = (angle / max_angle) * 100;
-    double dc = map_float(percent, 0, 100, (SERVO_T_LOW/1000)/20, (SERVO_T_HIGH/1000)/20); // dc 2.5% -- 12.5%
+    double percent = (angle / max_angle);
+    double dc = map_float(percent, 0, 1, (SERVO_T_LOW/1000)/20, (SERVO_T_HIGH/1000)/20); // dc 2.5% -- 12.5%
     int32_t value = (int32_t)map_float(dc, (SERVO_T_LOW/1000)/20, (SERVO_T_HIGH/1000)/20, 0, pow(2, PWM_RES_BITS_Servo)-1); //  
     Serial.printf("Percent: %.3f    DC: %.3f   value: %d\n", percent, dc, value);
 
