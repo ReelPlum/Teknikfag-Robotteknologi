@@ -3,8 +3,8 @@
 
 const int32_t SERVO_1 = 0;
 
-const uint8_t STEP_1_PULSE_pin = 22;
-const uint8_t STEP_1_DIR_pin = 23;
+const uint8_t STEP_1_PULSE_pin = 23;
+const uint8_t STEP_1_DIR_pin = 22;
 
 void setup()
 {
