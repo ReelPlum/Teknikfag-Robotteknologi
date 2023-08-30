@@ -13,7 +13,10 @@ Servo SERVO1;
 void setup()
 {
   Serial.begin(115200);
-  Setup_Stepper(STEP_1_PULSE_pin, STEP_1_DIR_pin);
+  //Setup_Stepper(STEP_1_PULSE_pin, STEP_1_DIR_pin);
+
+  SERVO1.Setup(0, SERVO_PIN);
+  STEPPERMOTOR1.Setup(STEP_1_PULSE_pin, STEP_1_DIR_pin);
 }
 
 void loop()
