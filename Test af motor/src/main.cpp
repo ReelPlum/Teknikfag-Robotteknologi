@@ -20,6 +20,6 @@ void loop()
 {
   SERVO1.Move(180);
   delay(1000);
-  SERVO1.Move(0);
+  SERVO1.Move(1);
   delay(1000);
 }
