@@ -2,8 +2,6 @@
 
 const int32_t step_move = 100;
 
-
-
 void stage_4(Servo servo, StepMotor step_motor)
 {
     step_motor.Move(step_move / 2, 100);
@@ -19,31 +17,33 @@ void StageFour(Servo servo, StepMotor step_motor)
     int32_t Tal = random(0, 3);
     while (counter == 0)
     {
-        stage_4(servo,step_motor);
-        counter =+ 1;
+        stage_4(servo, step_motor);
+        counter = +1;
     }
 
-
-    if (Tal == 0){
+    if (Tal == 0)
+    {
         StageOne(servo, step_motor);
     }
 
-    if(Tal == 1);
+    if (Tal == 1)
+        ;
     {
         step_motor.Move(step_move, 100);
         delay(1000);
         step_motor.Move(-step_move, 100);
     }
 
-    if(Tal == 2);
+    if (Tal == 2)
+        ;
     {
-        step_motor.Move(step_move,400);
+        step_motor.Move(step_move, 400);
         delay(1000);
-        step_motor.Move(-step_move,400);
+        step_motor.Move(-step_move, 400);
     }
 
-    if(Tal == 3)
+    if (Tal == 3)
     {
-        stage_4(servo,step_motor);
+        stage_4(servo, step_motor);
     }
 }
