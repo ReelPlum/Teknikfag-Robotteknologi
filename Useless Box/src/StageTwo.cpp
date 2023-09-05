@@ -16,7 +16,7 @@ void StageTwo(Servo servo, StepMotor step_motor){
         
         delay(1000);
 
-        step_motor.Move(- STEPS_TO_MOVE, 100);
+        step_motor.Move(- (STEPS_TO_MOVE), 100);
 
     }
 }
