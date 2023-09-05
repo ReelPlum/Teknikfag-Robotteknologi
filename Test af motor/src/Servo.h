@@ -8,8 +8,8 @@
 const double MAX_ANGLE = 180;
 const int32_t PWM_FREQ_HZ_Servo = 50;
 const int32_t PWM_RES_BITS_Servo = 12;
-const int32_t SERVO_T_LOW = 552; //MIcroseconds
-const int32_t SERVO_T_HIGH = 2550; //Microseconds
+const double SERVO_T_LOW = 552; //MIcroseconds
+const double SERVO_T_HIGH = 2550; //Microseconds
 
 
 class Servo {
