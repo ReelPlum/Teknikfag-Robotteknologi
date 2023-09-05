@@ -28,16 +28,66 @@ const uint8_t SWITCH_PIN;
 
 TaskHandle_t GAMETASK_HANDLE;
 
-int32_t NUM_OF_STAGES = 7; 
+const int32_t NUM_OF_STAGES = 7; 
 
 int32_t Current_Stage = 0;
 bool Started = false;
+int32_t Wanted_Rounds = 0;
+int32_t Current_Round = 0;
 
 void start() {
     //Start uselessbox
     Current_Stage = 0;
-    NUM_OF_STAGES = random_int_range(6, 12);
+
+    Wanted_Rounds = random_int_range(4, 7);
+    Current_Round = 0;
+
     Started = true;
+}
+
+void stop(){
+    //Stop useless box
+    Started = false;
+    Current_Stage = 0;
+
+    //Return
+}
+
+void round(){
+    //Run game task here
+    if (not Started){
+        //Tjek hvis switchen er slået til. Start spillet hvis knappen er til.
+        if (digitalRead(SWITCH_PIN) == HIGH){
+            //Switchen er slået til. Start boxen.
+            start();
+        }
+
+        return;
+    }
+    if (digitalRead(SWITCH_PIN) == LOW){
+        return;
+    }
+
+    if (Current_Round == Wanted_Rounds){
+        //Next stage
+        Current_Stage++;
+
+        Wanted_Rounds = random_int_range(4, 7);
+        Current_Round = 0;
+    }
+    if (Current_Stage > NUM_OF_STAGES-1){
+        //End animation
+        
+
+        //Stop box
+        stop();
+        return;
+    }
+
+    //Play stage
+    
+
+    Current_Round++;
 }
 
 void game_task(void *args)
@@ -47,21 +97,9 @@ void game_task(void *args)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for(;;)
     {
-        //Run game task here
-        if (not Started){
-            //Tjek hvis switchen er slået til. Start spillet hvis knappen er til.
-            if (digitalRead(SWITCH_PIN) == HIGH){
-                //Switchen er slået til. Start boxen.
-                start();
-            }
+        round();
 
-            return;
-        }
-
-        int32_t stage_num = random_int_range(0, NUM_OF_STAGES-1);
-
-        Current_Stage++;
-
+        //Task delay
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
 }
