@@ -1,3 +1,4 @@
+#include <global.h>
 #include <StepMotor.h>
 
 void StepMotor::Setup(uint8_t pulse_pin, uint8_t dir_pin)
