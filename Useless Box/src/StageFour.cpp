@@ -1,6 +1,7 @@
 #include <StageFour.h>
 
 const int32_t step_move = 100;
+int32_t counter = 0;
 
 void stage_4(Servo servo, StepMotor step_motor)
 {
@@ -13,7 +14,6 @@ void stage_4(Servo servo, StepMotor step_motor)
 
 void StageFour(Servo servo, StepMotor step_motor)
 {
-    int32_t counter = 0;
     int32_t Tal = random(0, 3);
     while (counter == 0)
     {
