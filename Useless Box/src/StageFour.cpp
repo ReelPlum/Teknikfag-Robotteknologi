@@ -1,31 +1,49 @@
-#include <global.h>
-#include <servo.h>
-#include <StepMotor.h>
+#include <StageFour.h>
 
-const int32_t sluk_knap_step = 100;
-const int32_t home_step = 100;
-int32_t counter = 0;
+const int32_t step_move = 100;
+
+
 
 void stage_4(Servo servo, StepMotor step_motor)
 {
-    step_motor.Move(sluk_knap_step / 2, 100);
+    step_motor.Move(step_move / 2, 100);
     delay(3000);
-    step_motor.Move(sluk_knap_step / 2, 100);
-    delay(500);
-    step_motor.Move(home_step, 200);
+    step_motor.Move(step_move / 2, 100);
+    delay(1000);
+    step_motor.Move(-step_move, 200);
 }
 
 void StageFour(Servo servo, StepMotor step_motor)
 {
+    int32_t counter = 0;
+    int32_t Tal = random(0, 3);
     while (counter == 0)
     {
         stage_4(servo,step_motor);
+        counter =+ 1;
     }
 
-    int32_t Tal = random(0, 3);
 
-    if Tal == 0{
-
+    if (Tal == 0){
+        StageOne(servo, step_motor);
     }
 
+    if(Tal == 1);
+    {
+        step_motor.Move(step_move, 100);
+        delay(1000);
+        step_motor.Move(-step_move, 100);
+    }
+
+    if(Tal == 2);
+    {
+        step_motor.Move(step_move,400);
+        delay(1000);
+        step_motor.Move(-step_move,400);
+    }
+
+    if(Tal == 3)
+    {
+        stage_4(servo,step_motor);
+    }
 }
