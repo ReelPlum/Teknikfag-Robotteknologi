@@ -33,7 +33,7 @@ const uint8_t SWITCH_PIN;
 
 TaskHandle_t GAMETASK_HANDLE;
 
-const int32_t NUM_OF_STAGES = 7; 
+const int32_t NUM_OF_STAGES = 4; 
 
 int32_t Current_Stage = 0;
 bool Started = false;
