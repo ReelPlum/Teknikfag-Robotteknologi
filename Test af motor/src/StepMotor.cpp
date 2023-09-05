@@ -21,7 +21,6 @@ void StepMotor::Move(int32_t steps, uint32_t speed)
         digitalWrite(this->dir_pin, LOW);
     }
 
-    Serial.println(steps);
 
     for (int i = 0; i < steps; i++){
         digitalWrite(this->pulse_pin, HIGH);
