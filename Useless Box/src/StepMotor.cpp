@@ -3,6 +3,9 @@
 
 void StepMotor::Setup(uint8_t pulse_pin, uint8_t dir_pin)
 {
+    this->pulse_pin=pulse_pin;
+    this->dir_pin=dir_pin;
+
     pinMode(pulse_pin, OUTPUT);
     pinMode(dir_pin, OUTPUT);
 }
