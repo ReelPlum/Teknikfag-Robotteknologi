@@ -12,6 +12,7 @@ Ideer til stages:
 4. Gå op og luk langsomt. Gå langsomt ned
 5. Gå op pause, sluk langsomt og gå langsomt ned.
 
+
 */
 
 Servo SERVO_1;
@@ -41,28 +42,28 @@ void start() {
 
 void game_task(void *args)
 {
-double loop_time_s = 0.01;
-  TickType_t xTimeIncrement = configTICK_RATE_HZ * loop_time_s;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  for(;;)
-  {
-    //Run game task here
-    if (not Started){
-        //Tjek hvis switchen er slået til. Start spillet hvis knappen er til.
-        if (digitalRead(SWITCH_PIN) == HIGH){
-            //Switchen er slået til. Start boxen.
-            start();
+    double loop_time_s = 0.01;
+    TickType_t xTimeIncrement = configTICK_RATE_HZ * loop_time_s;
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    for(;;)
+    {
+        //Run game task here
+        if (not Started){
+            //Tjek hvis switchen er slået til. Start spillet hvis knappen er til.
+            if (digitalRead(SWITCH_PIN) == HIGH){
+                //Switchen er slået til. Start boxen.
+                start();
+            }
+
+            return;
         }
 
-        return;
+        int32_t stage_num = random_int_range(0, NUM_OF_STAGES-1);
+
+        Current_Stage++;
+
+        vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
-
-    int32_t stage_num = random_int_range(0, NUM_OF_STAGES-1);
-
-    Current_Stage++;
-
-    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
-  }
 }
 
 void setup() {
