@@ -12,11 +12,52 @@ Ideer til stages:
 4. Gå op og luk langsomt. Gå langsomt ned
 5. Gå op pause, sluk langsomt og gå langsomt ned.
 
-
 */
 
+Servo SERVO_1;
+StepMotor STEP_1;
+
+const uint8_t SERVO_PIN;
+const uint8_t SERVO_PWM;
+
+const uint8_t STEPPER_DIR_PIN;
+const uint8_t STEPPER_PULSE_PIN;
+
+const uint8_t SWITCH_PIN;
+
+int32_t NUM_OF_STAGES = 7; 
+
+int32_t Current_Stage = 0;
+bool Started = false;
+
+void start() {
+    //Start uselessbox
+    Current_Stage = 0;
+    NUM_OF_STAGES = random_int_range(6, 12);
+    Started = true;
+}
+
 void setup() {
+    SERVO_1.Setup(SERVO_PWM, SERVO_PIN);
+    STEP_1.Setup(STEPPER_PULSE_PIN, STEPPER_DIR_PIN);
+
+    pinMode(SWITCH_PIN, INPUT);
 }
 
 void loop() {
+    if (not Started){
+        //Tjek hvis switchen er slået til. Start spillet hvis knappen er til.
+        if (digitalRead(SWITCH_PIN) == HIGH){
+            //Switchen er slået til. Start boxen.
+            start();
+        }
+
+        return;
+    }
+
+    int32_t stage_num = random_int_range(0, NUM_OF_STAGES-1);
+
+
+
+    Current_Stage++;
 }
