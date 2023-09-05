@@ -3,6 +3,11 @@
 #include <StepMotor.h>
 #include <random.h>
 
+#include <StageOne.h>
+#include <StageTwo.h>
+#include <StageThree.h>
+#include <StageFour.h>
+
 /*
 Ideer til stages:
 
@@ -85,8 +90,21 @@ void round(){
     }
 
     //Play stage
-    if (Current_Stage == 1){
-        
+    if (Current_Stage == 0){
+        //Stage 1
+        StageOne(SERVO_1, STEP_1);
+    }
+    else if (Current_Stage == 1){
+        //Stage 2
+        StageTwo(SERVO_1, STEP_1);
+    }
+    else if (Current_Stage == 2){
+        //Stage 3
+        StageThree(SERVO_1, STEP_1);
+    }
+    else if (Current_Stage == 3){
+        //Stage 4
+        StageFour(SERVO_1, STEP_1);
     }
 
     Current_Round++;
