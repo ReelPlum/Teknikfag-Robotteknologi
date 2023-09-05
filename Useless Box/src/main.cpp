@@ -66,6 +66,8 @@ double loop_time_s = 0.01;
 }
 
 void setup() {
+    Serial.begin(115200);
+
     SERVO_1.Setup(SERVO_PWM, SERVO_PIN);
     STEP_1.Setup(STEPPER_PULSE_PIN, STEPPER_DIR_PIN);
 
