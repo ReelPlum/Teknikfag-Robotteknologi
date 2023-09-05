@@ -77,7 +77,7 @@ void round(){
     }
     if (Current_Stage > NUM_OF_STAGES-1){
         //End animation
-        
+
 
         //Stop box
         stop();
@@ -85,7 +85,9 @@ void round(){
     }
 
     //Play stage
-    
+    if (Current_Stage == 1){
+        
+    }
 
     Current_Round++;
 }
