@@ -12,6 +12,8 @@ Servo SERVO1;
 void setup()
 {
   Serial.begin(115200);
+  delay(200);
+
 
   SERVO1.Setup(0, SERVO_PIN, SERVO_T_LOW, SERVO_T_HIGH, 20*1000, PWM_FREQ_HZ_Servo, PWM_RES_BITS_Servo, MAX_ANGLE);
 }

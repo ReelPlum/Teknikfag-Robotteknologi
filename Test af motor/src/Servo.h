@@ -16,7 +16,7 @@ class Servo {
     public:
     Servo(){};
 
-    void Setup(uint8_t pwm_channel, uint8_t pin, double t_low = SERVO_T_LOW, double t_high = SERVO_T_HIGH, double servo_hz = 20*1000, int32_t pwm_freq_hz = PWM_FREQ_HZ_Servo, int32_t pwm_req_bits = PWM_RES_BITS_Servo, int32_t max_angle = MAX_ANGLE);
+    void Setup(uint8_t pwm_channel, uint8_t pin, double t_low = SERVO_T_LOW, double t_high = SERVO_T_HIGH, double servo_hz = 20.0*1000.0, int32_t pwm_freq_hz = PWM_FREQ_HZ_Servo, int32_t pwm_req_bits = PWM_RES_BITS_Servo, int32_t max_angle = MAX_ANGLE);
     void Move(double angle);
 
     private:
