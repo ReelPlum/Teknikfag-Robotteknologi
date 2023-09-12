@@ -108,6 +108,7 @@ void round(){
     }
 
     Current_Round++;
+    delay(500);
 }
 
 void game_task(void *args)
