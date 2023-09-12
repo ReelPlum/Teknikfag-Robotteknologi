@@ -7,6 +7,7 @@
 #include <StageTwo.h>
 #include <StageThree.h>
 #include <StageFour.h>
+#include <ElFinale.h>
 
 /*
 Ideer til stages:
@@ -82,7 +83,7 @@ void round(){
     }
     if (Current_Stage > NUM_OF_STAGES-1){
         //End animation
-
+        ElFinale(SERVO_1, STEP_1);
 
         //Stop box
         stop();
