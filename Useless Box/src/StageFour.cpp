@@ -13,7 +13,7 @@ void stage_4(Servo servo, StepMotor step_motor)
     step_motor.Move(-step_move, 200);
 }
 
-void StageFour(Servo servo, StepMotor step_motor)
+void StageFour(Servo servo, StepMotor step_motor, int32_t current_round)
 {
     int32_t Tal = random(0, 3);
     int32_t Round = random(6,9);

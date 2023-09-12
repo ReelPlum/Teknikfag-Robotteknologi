@@ -2,7 +2,7 @@
 
 const int32_t STEPS_TO_MOVE = 200;
 
-void StageTwo(Servo servo, StepMotor step_motor){
+void StageTwo(Servo servo, StepMotor step_motor, int32_t current_round){
 
     int32_t Number = random(0, 1);
     

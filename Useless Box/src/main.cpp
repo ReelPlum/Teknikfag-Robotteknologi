@@ -93,19 +93,19 @@ void round(){
     //Play stage
     if (Current_Stage == 0){
         //Stage 1
-        StageOne(SERVO_1, STEP_1);
+        StageOne(SERVO_1, STEP_1, Current_Round);
     }
     else if (Current_Stage == 1){
         //Stage 2
-        StageTwo(SERVO_1, STEP_1);
+        StageTwo(SERVO_1, STEP_1, Current_Round);
     }
     else if (Current_Stage == 2){
         //Stage 3
-        StageThree(SERVO_1, STEP_1);
+        StageThree(SERVO_1, STEP_1, Current_Round);
     }
     else if (Current_Stage == 3){
         //Stage 4
-        StageFour(SERVO_1, STEP_1);
+        StageFour(SERVO_1, STEP_1, Current_Round);
     }
 
     Current_Round++;

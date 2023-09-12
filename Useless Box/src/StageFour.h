@@ -5,4 +5,4 @@
 
 
 
-void StageFour(Servo servo, StepMotor step_motor);
+void StageFour(Servo servo, StepMotor step_motor, int32_t current_round);

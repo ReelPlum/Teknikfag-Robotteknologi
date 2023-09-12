@@ -3,4 +3,4 @@
 #include <StepMotor.h>
 #include <StageOne.h>
 
-void StageThree(Servo servo, StepMotor step_motor);
+void StageThree(Servo servo, StepMotor step_motor, int32_t current_round);

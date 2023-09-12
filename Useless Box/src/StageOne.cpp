@@ -2,7 +2,7 @@
 
 const int32_t STEPS_TO_MOVE = 200;
 
-void StageOne(Servo servo, StepMotor step_motor){
+void StageOne(Servo servo, StepMotor step_motor, int32_t current_round){
     //Choose Random Number
     step_motor.Move(STEPS_TO_MOVE, 200);
     delay(1000);

@@ -2,7 +2,7 @@
 
 const int32_t STEPS_TO_MOVE = 100
 
-void StageThree(Servo servo, StepMotor step_motor)
+void StageThree(Servo servo, StepMotor step_motor, int32_t current_round)
 {
     int32_t tal = random(0, 2);
     if(tal == 0){
