@@ -23,7 +23,7 @@ void StageFour(Servo servo, StepMotor step_motor, int32_t current_round)
 
     if (Tal == 0)
     {
-        StageOne(servo, step_motor);
+        StageOne(servo, step_motor, current_round);
     }
 
     if (Tal == 1)
