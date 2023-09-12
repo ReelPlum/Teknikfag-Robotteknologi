@@ -159,14 +159,14 @@ void setup()
     SERVO_1.Setup(SERVO_PWM, SERVO_PIN);
     STEP_1.Setup(STEPPER_PULSE_PIN, STEPPER_DIR_PIN);
 
-    pinMode(SWITCH_PIN, INPUT);
+    pinMode(SWITCH_PIN, INPUT_PULLDOWN);
 
     xTaskCreatePinnedToCore(
         game_task,
         "Game Task",
         10000, /* Stack size in words */
         NULL,  /* Task input parameter */
-        2,     /* Priority of the task from 0 to 25, higher number = higher priority */
+        25,     /* Priority of the task from 0 to 25, higher number = higher priority */
         &GAMETASK_HANDLE,
         1); /* core no */
 }
