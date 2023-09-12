@@ -18,7 +18,7 @@ void ElFinale(Servo servo, StepMotor step_motor)
     for (int i = 135; i > 0; i -= 1)
     {
         servo.Move(i);
-        delay(50);
+        delay(20);
     }
     delay(1000);
     step_motor.Move(-(step_move / 2), 100);
