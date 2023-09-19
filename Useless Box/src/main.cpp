@@ -25,7 +25,7 @@ Servo SERVO_1;
 StepMotor STEP_1;
 
 const uint8_t SERVO_PIN = 21;
-const uint8_t SERVO_PWM;
+const uint8_t SERVO_PWM = 3;
 
 const uint8_t STEPPER_DIR_PIN = 22;
 const uint8_t STEPPER_PULSE_PIN = 23;
