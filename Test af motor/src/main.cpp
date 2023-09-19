@@ -19,16 +19,20 @@ void setup()
 
 void loop()
 {
-  for (int i = 120; i < 76; i-=1)
+  for (int i = 145; i > 75; i -= 1)
     {
         SERVO1.Move(i);
         delay(50);
     }
-  delay(10000);
-  for (int i = 76; i == 120 ; i++)
+  delay(2000);
+  for (int i = 75; i < 145; i++)
     {
         SERVO1.Move(i);
         delay(50);
     }
-  delay(10000);
+
+
+
+  delay(5000);
+
 }
