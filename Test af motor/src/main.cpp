@@ -5,7 +5,7 @@ const int32_t SERVO_1 = 0;
 
 const uint8_t STEP_1_PULSE_pin = 23;
 const uint8_t STEP_1_DIR_pin = 22;
-
+int32_t count = 0;
 StepMotor STEPPERMOTOR1;
 
 void setup()
@@ -16,5 +16,9 @@ void setup()
 
 void loop()
 {
-  STEPPERMOTOR1.Move(200, 50);
+  if(count ==0){
+    STEPPERMOTOR1.Move(50, 50);
+    count++;
+  }
+  
 }
