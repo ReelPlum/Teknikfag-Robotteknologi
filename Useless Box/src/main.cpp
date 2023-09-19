@@ -24,13 +24,13 @@ Ideer til stages:
 Servo SERVO_1;
 StepMotor STEP_1;
 
-const uint8_t SERVO_PIN;
+const uint8_t SERVO_PIN = 21;
 const uint8_t SERVO_PWM;
 
-const uint8_t STEPPER_DIR_PIN;
-const uint8_t STEPPER_PULSE_PIN;
+const uint8_t STEPPER_DIR_PIN = 22;
+const uint8_t STEPPER_PULSE_PIN = 23;
 
-const uint8_t SWITCH_PIN;
+const uint8_t SWITCH_PIN = 10;
 
 TaskHandle_t GAMETASK_HANDLE;
 
