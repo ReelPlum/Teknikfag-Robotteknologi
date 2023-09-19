@@ -17,9 +17,9 @@ void setup()
 void loop()
 {
   if(count ==0){
-    STEPPERMOTOR1.Move(100, 200);
+    STEPPERMOTOR1.Move(400, 200);
     delay(2000);
-    STEPPERMOTOR1.Move(-100, 200);
+    STEPPERMOTOR1.Move(-400, 200);
     count++;
   }
   
