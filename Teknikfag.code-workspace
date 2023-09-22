@@ -11,6 +11,10 @@
 		{
 			"name": "Test af motor",
 			"path": "Test af motor"
+		},
+		{
+			"name": "Test af Robotarm",
+			"path": "Test af Robotarm"
 		}
 	],
 	"settings": {
