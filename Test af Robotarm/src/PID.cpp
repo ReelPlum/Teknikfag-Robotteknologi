@@ -1,27 +1,68 @@
-#include <PID.h>
+#include "pid.h"
 
-
-void PID::Setup(int32_t kp, int32_t ki, int32_t kd, int64_t integral_limit, int32_t delta_time){
-    this->kp = kp;
-    this->ki = ki;
-    this->kd = kd;
-    this->integral_limit = integral_limit;
-    this->delta_time = delta_time;
+Pid::Pid(double dt, double max_ctrl_value)
+{
+    this->dt = dt;
+    this->min_ctrl_value = -max_ctrl_value;
+    this->max_ctrl_value = max_ctrl_value;
+    this->error_sum = 0;
+    this->previus_error = 0;
 }
 
-int64_t PID::Calculate(int64_t req_val, int64_t act_val){
-    int64_t error = act_val - req_val;
+void Pid::set_kp(double kp)
+{
+    this->kp = kp;
+}
 
-    int64_t value = 0;
+void Pid::set_ki(double ki)
+{
+    this->ki = ki;
+}
 
-    value += error * this->kp;
-    
-    if (error < this->integral_limit){
-        value += this->ki * error * this->delta_time;
-    }
+void Pid::set_kd(double kd)
+{
+    this->kd = kd;
+}
 
-    value += this->kd * (error - this->last_err)/this->delta_time;
-    this->last_err = error;
+double Pid::get_dt(void)
+{
+    return this->dt;
+}
 
-    return value;
+double Pid::get_kp(void)
+{
+    return this->kp;
+}
+
+double Pid::get_ki(void)
+{
+    return this->ki;
+}
+
+double Pid::get_kd(void)
+{
+    return this->kd;
+}
+
+double Pid::squash(double value)
+{
+    return (value < min_ctrl_value) ? min_ctrl_value : ((value > max_ctrl_value) ? max_ctrl_value : value);
+}
+
+void Pid::update(double set_value, double current_value, double *ctrl_value, double integration_threshold)
+{
+    double kp_val, ki_val, kd_val, ctrl;
+
+    error = set_value - current_value;
+
+    if (fabs(error) < integration_threshold)
+        error_sum += error;
+
+    kp_val = error;
+    ki_val = error_sum * dt;
+    kd_val = (previus_error - error) / dt;
+
+    previus_error = error;
+    ctrl = kp * kp_val + ki * ki_val + kd * kd_val;
+    *ctrl_value = squash(ctrl);
 }

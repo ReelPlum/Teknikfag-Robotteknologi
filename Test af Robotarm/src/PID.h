@@ -1,17 +1,34 @@
-#include <Arduino.h>
+#pragma once
 
+#include <math.h>
 
-class PID{
-    public:
-    PID(){};
-    void Setup(int32_t kp, int32_t ki, int32_t kd, int64_t integral_limit, int32_t delta_time);
-    int64_t Calculate(int64_t req_val, int64_t act_val);
+class Pid
+{
+    double min_ctrl_value;
+    double max_ctrl_value;
 
-    private:
-    int32_t kp;
-    int32_t ki;
-    int32_t kd;
-    int64_t last_err = 0;
-    int64_t integral_limit;
-    int32_t delta_time;
+    double dt;
+    double kp;
+    double ki;
+    double kd;
+    double error;
+    double error_sum;
+    double previus_error;
+
+public:
+    Pid(double dt, double max_ctrl_value);
+
+    void set_kp(double kp);
+    void set_ki(double ki);
+    void set_kd(double kd);
+
+    double get_dt(void);
+
+    double get_kp(void);
+    double get_ki(void);
+    double get_kd(void);
+    double get_error(void) { return error; };
+
+    double squash(double value);
+    void update(double set_value, double current_value, double *ctrl_value, double integration_threshold);
 };
