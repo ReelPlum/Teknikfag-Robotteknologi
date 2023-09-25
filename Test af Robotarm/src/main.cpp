@@ -12,11 +12,11 @@ H_Bridge hbridge;
 
 const double integration_threshold = 200;
 
-volatile double req_pos;
-volatile double req_vel;
+volatile double req_pos = 100000;
+volatile double req_vel = 3000;
 volatile int64_t current_pos;
 volatile double current_vel;
-volatile double max_vel = 9600 / 10;
+volatile double max_vel = 5000;
 
 double ctrl_pos;
 double ctrl_vel;
@@ -43,7 +43,7 @@ void pid_task(void *arg)
       req_vel = constrain(ctrl_pos, -max_vel, max_vel);
     }
 
-    pid_vel.update(req_vel * 10, current_vel, &ctrl_vel, 100000);
+    pid_vel.update(req_vel, current_vel, &ctrl_vel, 100000);
 
     hbridge.set_pwm(ctrl_vel);
 
@@ -128,12 +128,12 @@ void setup() // runs exclusive on core 1
   hbridge.begin(PIN_HBRIDGE_PWM, PIN_HBRIDGE_INA, PIN_HBRIDGE_INB,
                 PWM_FREQ_HZ, PWM_RES_BITS, PWM_CH, PID_MAX_CTRL_VALUE);
 
-  pid_pos.set_kp(20.0); //12
-  pid_pos.set_ki(5.0);
+  pid_pos.set_kp(6.0); //12
+  pid_pos.set_ki(0.5);
   pid_pos.set_kd(0.000);
 
-  pid_vel.set_kp(0.05);
-  pid_vel.set_ki(4);
+  pid_vel.set_kp(0.0);
+  pid_vel.set_ki(48.0);
   pid_vel.set_kd(0.000);
 
   log_v("starting pid task");
@@ -146,15 +146,15 @@ void setup() // runs exclusive on core 1
       &PidTaskHandle, /* Task handle. */
       1);             /* Core where the task should run */
 
-  log_v("starting motion task");
-  xTaskCreatePinnedToCore(
-      motion_task,
-      "motion_task",
-      3000, /* Stack size in words */
-      NULL, /* Task input parameter */
-      2,    /* Priority of the task from 0 to 25, higher number = higher priority */
-      &MotionTaskHandle,
-      0); /* Core where the task should run */
+  // log_v("starting motion task");
+  // xTaskCreatePinnedToCore(
+  //     motion_task,
+  //     "motion_task",
+  //     3000, /* Stack size in words */
+  //     NULL, /* Task input parameter */
+  //     2,    /* Priority of the task from 0 to 25, higher number = higher priority */
+  //     &MotionTaskHandle,
+  //     0); /* Core where the task should run */
 }
 
 void loop() // runs exclusive on core 1

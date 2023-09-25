@@ -16,5 +16,5 @@ const int32_t PWM_FREQ_HZ = 19500; // 1Hz to 40MHz - observe restrictions
 const int32_t PWM_RES_BITS = 12;   // 1 to 20 bits - observe restrictions
 
 // PID SETUP
-const double DT_S = 0.001; // loop time in seconds
+const double DT_S = 0.01; // loop time in seconds
 const double PID_MAX_CTRL_VALUE = 4000;
