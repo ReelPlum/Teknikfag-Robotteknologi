@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <math.h>
 
 // PINS SETUP
 const int32_t PIN_PID_LOOP = 17;    // debug monitoring pid loop

@@ -1,13 +1,25 @@
 #include <global.h>
 
+class Vector2
+{
+protected:
+    double x;
+    double y;
 
-class Vector2{
-    protected:
-    int32_t x
-    int32_t
+private:
+public:
+    Vector2(double x = 0, double y = 0)
+    {
+        this->x = x;
+        this->y = y;
+    };
+    void fromPolar(double radians, double length);
 
-    private:
-    
+    double angle(Vector2 *vector);
+    double dot(Vector2 *vector);
+    double magnitude();
 
-    public:
+    Vector2 operator*(Vector2 &v1);
+    Vector2 operator+(Vector2 &v1);
+    Vector2 operator*(int32_t &num);
 };
