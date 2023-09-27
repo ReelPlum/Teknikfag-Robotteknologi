@@ -22,4 +22,5 @@ public:
     Vector2 operator*(Vector2 &v1);
     Vector2 operator+(Vector2 &v1);
     Vector2 operator*(int32_t &num);
+    Vector2 operator/(int32_t &num);
 };

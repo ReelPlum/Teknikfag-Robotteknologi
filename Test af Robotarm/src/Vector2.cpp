@@ -32,3 +32,8 @@ Vector2 Vector2::operator*(int32_t &num)
     Vector2 multiplied(this->x * num, this->y * num);
     return multiplied;
 };
+Vector2 Vector2::operator/(int32_t &num)
+{
+    Vector2 divided(this->x / num, this->y / num);
+    return divided;
+}
