@@ -16,6 +16,10 @@
 			"name": "Test af Robotarm",
 			"path": "Test af Robotarm"
 		}
+		{
+			"name": "WebServerAdv",
+			"path": "WebServerAdv"
+		}
 	],
 	"settings": {
 		"files.associations": {
