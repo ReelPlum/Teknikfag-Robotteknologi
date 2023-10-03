@@ -2,12 +2,11 @@
 
 class Vector2
 {
-protected:
+private:
+public:
     double x;
     double y;
 
-private:
-public:
     Vector2(double x = 0, double y = 0)
     {
         this->x = x;
