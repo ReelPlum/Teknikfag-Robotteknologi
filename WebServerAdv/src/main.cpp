@@ -33,7 +33,7 @@ const char *cmd_led_state = "led_state";
 const char *cmd_sli = "sli";
 const char *cmd_pid = "pid_";
 
-const int32_t wifi_channel = 3; // alle grupper skal have hver sin kanal
+const int32_t wifi_channel = 5; // alle grupper skal have hver sin kanal
 const int32_t dns_port = 53;
 const int32_t http_port = 80;
 const int32_t ws_port = 1337;
@@ -51,6 +51,8 @@ int32_t SliderVal = 0;
 double KpVal = 3.1415;
 double KiVal = 2.71;
 double KdVal = 42.0;
+double KdVelVal = 10.0;
+
 /***********************************************************
  * Functions
  */
@@ -170,6 +172,9 @@ void handle_kx(char *command, uint8_t client_num)
     break;
   case 'd':
     parm_value = &KdVal;
+    break;
+  case 'l':
+    parm_value = &KdVelVal;
     break;
   default:
     log_e("[%u]: Bad command %s", client_num, command);

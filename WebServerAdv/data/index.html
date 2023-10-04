@@ -124,7 +124,7 @@
             inp_slider.max = 100;
             inp_slider.value = 0;
 
-            const parameters = ["kp", "ki", "kd"];
+            const parameters = ["kp", "ki", "kd", "kl"];
             for (const p in parameters) {
                 let v = parameters[p] // important to use let
 
@@ -176,6 +176,7 @@
             doSend("pid_kp:?");
             doSend("pid_ki:?");
             doSend("pid_kd:?");
+            doSend("pid_kl:?");
         }
 
 
@@ -282,6 +283,10 @@
                     console.log(`kd value received: ${value}`);
                     txa_kx["kd"].value = value;
                     break;
+                case "pid_kl":
+                    console.log(`kl value received: ${value}`);
+                    txa_kx["kl"].value = value;
+                    break;
                 default:
                     break;
             }
@@ -337,6 +342,10 @@
         <tr>
             <td><button id="btn_set_kd">Set kd</button></td>
             <td><textarea id="txa_kd"></textarea></td>
+        </tr>
+        <tr>
+            <td><button id="btn_set_kl">Set ki velocity</button></td>
+            <td><textarea id="txa_kl"></textarea></td>
         </tr>
     </table>
 
