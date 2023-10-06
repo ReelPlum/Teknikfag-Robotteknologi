@@ -1,4 +1,4 @@
-#include <kinematic.h>
+#include <forwardkinematic.h>
 
 Vector2 getPosition(double angle1, double angle2, int32_t l1, int32_t l2){
     Vector2 v1;
