@@ -20,7 +20,7 @@ void loop() {
 
   JointAngle angles = calculate_joints2(l1, l2, c);
   double A = angles.A * (1416/(2*PI));
-  log_i("Hello %f %d", A, A);
+  //log_i("Hello %f %d", A, A);
 
   set_pos(A);
 }

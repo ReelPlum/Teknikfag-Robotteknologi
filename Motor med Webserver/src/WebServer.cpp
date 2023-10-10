@@ -561,6 +561,11 @@ void init_web(callbackChange onChange, callbackUpdate onUpdate)
   changeCallback = onChange;
   updateCallback = onUpdate;
 
+  changeCallback(&KpVal, 'p');
+  changeCallback(&KiVal, 'i');
+  changeCallback(&KdVal, 'd');
+  changeCallback(&KdVelVal, 'l');
+
   // Init LED and turn off
   pinMode(led_pin, OUTPUT);
   digitalWrite(led_pin, LOW);
