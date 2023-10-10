@@ -329,19 +329,23 @@
                     break;
                 case "curpos":
                     console.log(`curpos value recived: ${value}`);
-                    txa_curpos.value = value;
+                    //txa_curpos.value = value;
+                    txa_curpos.innerHTML = `${value}`;
                     break;
-                case "curval":
+                case "curvel":
                     console.log(`curval value recived: ${value}`);
-                    txa_curvel.value = value;
+                    //txa_curvel.value = value;
+                    txa_curvel.innerHTML = `${value}`;
                     break;
                 case "ctrlpos":
                     console.log(`ctrlpos value recived: ${value}`);
-                    txa_ctrlpos.value = value;
+                    //txa_ctrlpos.value = value;
+                    txa_ctrlpos.innerHTML = `${value}`;
                     break;
-                case "ctrlval":
+                case "ctrlvel":
                     console.log(`ctrlvel value recived: ${value}`);
-                    txa_ctrlvel.value = value;
+                    //txa_ctrlvel.value = value;
+                        txa_ctrlvel.innerHTML = `${value}`;
                     break;
                 default:
                     break;
