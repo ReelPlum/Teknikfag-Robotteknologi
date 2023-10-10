@@ -16,6 +16,14 @@
 			"name": "Test af Robotarm",
 			"path": "Test af Robotarm"
 		}
+		{
+			"name": "WebServerAdv",
+			"path": "WebServerAdv"
+		}
+		{
+			"name": "Motor med Webserver",
+			"path": "Motor med Webserver"
+		}
 	],
 	"settings": {
 		"files.associations": {
