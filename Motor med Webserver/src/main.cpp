@@ -7,7 +7,7 @@ void setup() {
   Serial.begin(115200);
 
   init_dc();
-  init_web(*update);
+  init_web(*update, *getData);
 }
 
 void loop() {
