@@ -136,9 +136,13 @@
             }
 
             txa_reqpos = document.getElementById("txa_reqpos");
+            txa_reqpos.innerHTML ="0";
             btn_set_reqpos = document.getElementById("btn_set_reqpos");
             btn_set_reqpos.disabled = false;
             btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos(); }
+            
+            txa_curpos = document.getElementById("txa_curpos");
+            txa_curpos.innerHTML ="0";
 
             // Draw circle in cvs_onoff
             ctx_onoff = cvs_onoff.getContext("2d");
@@ -191,6 +195,8 @@
             doSend("pid_kd:?");
             doSend("pid_kl:?");
             doSend("rpo:?");
+            doSend("curpos:?");
+
         }
 
 
@@ -305,6 +311,9 @@
                     console.log(`req pos value recived: ${value}`);
                     txa_reqpos.value = value;
                     break;
+                case "cps":
+                    console.log(`curpos value recived: ${value}`);
+                    txa_curpos.value = value;
                 default:
                     break;
             }
@@ -368,6 +377,12 @@
         <tr>
             <td><button id="btn_set_reqpos">Set req pos</button></td>
             <td><textarea id="txa_reqpos"></textarea></td>
+        </tr>
+        <tr>
+            <td>Curpos:</td>
+            <td style="border-width:1px; border-style:solid; border-color:gray; padding: 0;">
+                <p id="txa_curpos" style="padding: 0px; margin: 0;"></p>
+            </td>
         </tr>
     </table>
 
