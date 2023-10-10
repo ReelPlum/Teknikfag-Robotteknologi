@@ -144,6 +144,17 @@
             txa_curpos = document.getElementById("txa_curpos");
             txa_curpos.innerHTML ="0";
 
+            txa_curvel = document.getElementById("txa_curvel");
+            txa_curvel.innerHTML ="0";
+
+            txa_ctrlpos = document.getElementById("txa_ctrlpos");
+            txa_ctrlpos.innerHTML ="0";
+
+            txa_ctrlvel = document.getElementById("txa_ctrlvel");
+            txa_ctrlvel.innerHTML ="0";
+
+
+
             // Draw circle in cvs_onoff
             ctx_onoff = cvs_onoff.getContext("2d");
             ctx_onoff.arc(25, 25, 15, 0, Math.PI * 2, false);
@@ -196,6 +207,9 @@
             doSend("pid_kl:?");
             doSend("rpo:?");
             doSend("curpos:?");
+            doSend("curvel:?");
+            doSend("ctrlpos:?");
+            doSend("ctrlvel:?");
 
         }
 
@@ -311,9 +325,22 @@
                     console.log(`req pos value recived: ${value}`);
                     txa_reqpos.value = value;
                     break;
-                case "cps":
+                case "curpos":
                     console.log(`curpos value recived: ${value}`);
                     txa_curpos.value = value;
+                    break;
+                case "curval":
+                    console.log(`curval value recived: ${value}`);
+                    txa_curvel.value = value;
+                    break;
+                case "ctrlpos":
+                    console.log(`ctrlpos value recived: ${value}`);
+                    txa_ctrlpos.value = value;
+                    break;
+                case "ctrlval":
+                    console.log(`ctrlvel value recived: ${value}`);
+                    txa_ctrlvel.value = value;
+                    break;
                 default:
                     break;
             }
@@ -380,8 +407,26 @@
         </tr>
         <tr>
             <td>Curpos:</td>
-            <td style="border-width:1px; border-style:solid; border-color:gray; padding: 0;">
-                <p id="txa_curpos" style="padding: 0px; margin: 0;"></p>
+            <td>
+                <p id="txa_curpos" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>Curvel:</td>
+            <td>
+                <p id="txa_curvel" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>Ctrlpos:</td>
+            <td>
+                <p id="txa_ctrlpos" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>Ctrlvel:</td>
+            <td>
+                <p id="txa_ctrlvel" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
             </td>
         </tr>
     </table>
