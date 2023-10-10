@@ -155,7 +155,6 @@ void update(double *paramValue, char subtype)
 }
 
 double getData(char subtype){
-  
   switch(subtype)
   {
   case 'a':
@@ -166,6 +165,8 @@ double getData(char subtype){
     return ctrl_pos;
   case 'd':
     return ctrl_vel;
+  case 'e':
+    return mode_pos;  
   }
   
   //If it asks for something weird for some stupid reason
