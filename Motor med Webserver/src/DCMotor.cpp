@@ -151,6 +151,9 @@ void update(double *paramValue, char subtype)
   case 'l':
     pid_vel.set_ki(*paramValue);
     break;
+  case 's':
+    //pid_pos.set_req_pos(*paramValue);
+    set_pos(*paramValue);
   }
 }
 

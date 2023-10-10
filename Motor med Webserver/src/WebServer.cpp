@@ -31,6 +31,7 @@ const char *cmd_toggle = "toggle";
 const char *cmd_led_state = "led_state";
 const char *cmd_sli = "sli";
 const char *cmd_pid = "pid_";
+const char *cmd_rpo = "pos";
 
 const int32_t wifi_channel = 5; // alle grupper skal have hver sin kanal
 const int32_t dns_port = 53;
@@ -54,6 +55,7 @@ double KpVal = 3.1415;
 double KiVal = 2.71;
 double KdVal = 42.0;
 double KdVelVal = 10.0;
+double req_pos = 0;
 
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
@@ -146,6 +148,40 @@ void handle_slider(char *command, uint8_t client_num)
   }
 }
 
+void handle_rpo(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+
+  if (*(value + 1) == '?')
+  {
+    sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
+    web_socket_send(MsgBuf, client_num, false);
+  }
+  else
+  {
+    errno = 0;
+    char *e;
+    int32_t result = strtol(value + 1, &e, 10);
+    if (*e == '\0' && 0 == errno) // no error
+    {
+      req_pos = result;
+      log_d("[%u]: req_pos received %d", client_num, req_pos);
+    }
+    else
+    {
+      log_e("[%u]: illegal req_pos received: %s", client_num, value + 1);
+    }
+    sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
+    web_socket_send(MsgBuf, client_num, true);
+  }
+}
+
 void handle_kx(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
@@ -173,6 +209,9 @@ void handle_kx(char *command, uint8_t client_num)
     break;
   case 'l':
     parm_value = &KdVelVal;
+    break;
+  case 's':
+    parm_value = &req_pos;
     break;
   default:
     log_e("[%u]: Bad command %s", client_num, command);
@@ -204,7 +243,35 @@ void handle_kx(char *command, uint8_t client_num)
       log_e("[%u]: illegal format of k%c value received: %s", client_num, subtype, value + 1);
     }
   }
+
+  if (*(value + 1) == '?')
+  {
+    sprintf(MsgBuf, "%sk%c:%f", cmd_rpo, subtype, *parm_value);
+    web_socket_send(MsgBuf, client_num, false);
+  }
+  else
+  {
+    errno = 0;
+    char *e;
+    double result = strtod(value + 1, &e);
+    if (*e == '\0' && 0 == errno) // no error
+    {
+      *parm_value = result;
+      changeCallback(parm_value, subtype);
+
+      log_d("[%u]: k%c value received %f", client_num, subtype, *parm_value);
+      sprintf(MsgBuf, "%sk%c:%f", cmd_rpo, subtype, *parm_value);
+      web_socket_send(MsgBuf, client_num, true);
+    }
+    else
+    {
+      log_e("[%u]: illegal format of k%c value received: %s", client_num, subtype, value + 1);
+    }
+  }
 }
+
+
+
 
 void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
 {
@@ -220,6 +287,8 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
     handle_slider(command, client_num); // slider
   else if (strncmp(command, cmd_pid, strlen(cmd_pid)) == 0)
     handle_kx(command, client_num); // pid params
+  else if (strncmp(command, cmd_rpo, strlen(cmd_rpo)) == 0)
+    handle_rpo(command, client_num); // pid params
   else
     log_e("[%u] Message not recognized", client_num);
 
