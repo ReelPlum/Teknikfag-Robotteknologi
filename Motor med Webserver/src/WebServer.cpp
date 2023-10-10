@@ -135,6 +135,9 @@ void handle_kx(char *command, uint8_t client_num)
   case 'l':
     parm_value = &KdVelVal;
     break;
+  case 's'
+    parm_value = &req_pos;
+    break;
   default:
     log_e("[%u]: Bad command %s", client_num, command);
     return;
@@ -181,6 +184,8 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
     handle_slider(command, client_num); // slider
   else if (strncmp(command, cmd_pid, strlen(cmd_pid)) == 0)
     handle_kx(command, client_num); // pid params
+  else if (strncmp(command, cmd_rpo, strlen(cmd_rpo)) == 0)
+    handle_rpo(command, client_num); // pid params
   else
     log_e("[%u] Message not recognized", client_num);
 

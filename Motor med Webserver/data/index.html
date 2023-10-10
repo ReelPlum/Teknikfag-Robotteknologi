@@ -124,7 +124,7 @@
             inp_slider.max = 100;
             inp_slider.value = 0;
 
-            const parameters = ["kp", "ki", "kd", "kl"];
+            const parameters = ["kp", "ki", "kd", "kl", "req_pos"];
             for (const p in parameters) {
                 let v = parameters[p] // important to use let
 
@@ -134,6 +134,11 @@
                 btn_set_kx[v].disabled = false;
                 btn_set_kx[v].onclick = function (evt) { console.log(evt); onclick_btn_set_kx(v); }
             }
+
+            txa_reqpos = document.getElementById("txa_reqpos");
+            btn_set_reqpos = document.getElementById("btn_set_reqpos");
+            btn_set_reqpos.disabled = false;
+            btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos; }
 
             // Draw circle in cvs_onoff
             ctx_onoff = cvs_onoff.getContext("2d");
@@ -170,6 +175,14 @@
             doSend(cmd);
         }
 
+        function onclick_btn_set_reqpos() {
+            console.log("onclick: set reqpos" )
+            var value = txa_reqpos.value;
+            var cmd = `rpo:${value}`;
+            doSend(cmd);
+        }
+
+
         function request_all_data() {
             doSend(Cmd_LedState + ":?");
             doSend(Cmd_Slider + ":?");
@@ -177,6 +190,7 @@
             doSend("pid_ki:?");
             doSend("pid_kd:?");
             doSend("pid_kl:?");
+            doSend("rpo:?");
         }
 
 
@@ -287,6 +301,10 @@
                     console.log(`kl value received: ${value}`);
                     txa_kx["kl"].value = value;
                     break;
+                case "rpo":
+                    console.log(`req_pos value recived: ${value}`);
+                    txa_req_pos.value = value;
+                    break;
                 default:
                     break;
             }
@@ -346,6 +364,10 @@
         <tr>
             <td><button id="btn_set_kl">Set ki velocity</button></td>
             <td><textarea id="txa_kl"></textarea></td>
+        </tr>
+        <tr align="center">
+            <td><button id="btn_set_req_pos">Set req pos</button></td>
+            <td><textarea id="txa_req_pos"></textarea></td>
         </tr>
     </table>
 
