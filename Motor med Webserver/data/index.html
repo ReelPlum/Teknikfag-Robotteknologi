@@ -285,6 +285,8 @@
                 value = evt.data.slice(idx + 1);
             }
 
+            console.log(`Got command ${command}`);
+
             // Update circle graphic with LED state
             switch (command) {
                 case "0":
