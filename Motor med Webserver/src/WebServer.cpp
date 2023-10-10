@@ -1,11 +1,11 @@
-/*  
+/*
  * With inspiration from:
- * 
+ *
  * https://shawnhymel.com/1882/how-to-create-a-web-server-with-websockets-using-an-esp32-in-arduino/
  *
- * Author: J. Sanggaard 
+ * Author: J. Sanggaard
  * Date: 10. september 2020
- *  
+ *
  */
 #include <WebServer.h>
 
@@ -15,13 +15,55 @@
 callbackChange changeCallback;
 callbackUpdate updateCallback;
 
+/* comment out for router connection */
+#define SOFT_AP
+
+/* Constants */
+#ifdef SOFT_AP
+    const char *ssid = "Robot";
+    const char *password = "esp32esp32";
+#else
+    const char *ssid = "MakitaNG";
+    const char *password = "...";
+#endif
+
+const char *cmd_toggle = "toggle";
+const char *cmd_led_state = "led_state";
+const char *cmd_sli = "sli";
+const char *cmd_pid = "pid_";
+
+const int32_t wifi_channel = 5; // alle grupper skal have hver sin kanal
+const int32_t dns_port = 53;
+const int32_t http_port = 80;
+const int32_t ws_port = 1337;
+const int32_t led_pin = 17;
+
+// Globals
+AsyncWebServer Server(http_port);
+WebSocketsServer WebSocket = WebSocketsServer(ws_port);
+TaskHandle_t WebSocketTaskHandle;
+TaskHandle_t SyncTaskHandle;
+//H_Bridge HBridge;
+
+char MsgBuf[32];
+
+//PID
+int32_t LedState = 0;
+int32_t SliderVal = 0;
+double KpVal = 3.1415;
+double KiVal = 2.71;
+double KdVal = 42.0;
+double KdVelVal = 10.0;
+
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
-  if (broadcast) {
+  if (broadcast)
+  {
     log_d("Broadcasting: %s", buffer);
     WebSocket.broadcastTXT(buffer, strlen(buffer)); // all clients
   }
-  else {
+  else
+  {
     log_d("Sending to [%u]: %s", client_num, buffer);
     WebSocket.sendTXT(client_num, buffer); // only one client
   }
@@ -58,7 +100,7 @@ void handle_led_state(char *command, uint8_t client_num)
     int32_t result = strtol(value + 1, &e, 10);
     if (*e == '\0' && 0 == errno) // no error
     {
-     LedState = result;
+      LedState = result;
       log_d("[%u]: LedState received %d", client_num, LedState);
     }
     else
@@ -69,7 +111,6 @@ void handle_led_state(char *command, uint8_t client_num)
     web_socket_send(MsgBuf, client_num, true);
   }
 }
-
 
 void handle_slider(char *command, uint8_t client_num)
 {
@@ -103,8 +144,6 @@ void handle_slider(char *command, uint8_t client_num)
     sprintf(MsgBuf, "%s:%d", cmd_sli, SliderVal);
     web_socket_send(MsgBuf, client_num, true);
   }
-
-  
 }
 
 void handle_kx(char *command, uint8_t client_num)
@@ -337,7 +376,48 @@ void setup_network()
 
 void webSocketLoop(void *arg)
 {
-  WebSocket.loop();
+  TickType_t xTimeIncrement = configTICK_RATE_HZ / 10;
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  while (true)
+  {
+    WebSocket.loop();
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+  }
+}
+
+void syncTask(void *arg)
+{
+  log_i("Loading");
+
+  TickType_t xTimeIncrement = 1000/10;
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  while (true)
+  {
+    double currentpos = updateCallback('a');
+
+    double currentvel = updateCallback('b');
+
+    double ctrl_pos = updateCallback('c');
+
+    double ctrl_vel = updateCallback('d');
+
+    log_d("Current position: %.2f, Current velocity: %.2f, Ctrl position: %.2f, Ctrl velocity: %.2f", currentpos, currentvel, ctrl_pos, ctrl_vel);
+
+    // Sync data in websocket
+    sprintf(MsgBuf, "%s:%f", "curpos", currentpos);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%f", "ctrl", currentvel);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%f", "c", ctrl_pos);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%f", "d", ctrl_vel);
+    web_socket_send(MsgBuf, 1, true);
+
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+  }
 }
 
 void setup_tasks()
@@ -348,13 +428,25 @@ void setup_tasks()
       "WebSocket_loop",
       10000, /* Stack size in words */
       NULL,  /* Task input parameter */
-      25,     /* Priority of the task from 0 to 25, higher number = higher priority */
+      25,    /* Priority of the task from 0 to 25, higher number = higher priority */
       &WebSocketTaskHandle,
       0); /* Core where the task should run */
+
+  log_i("starting updatesync task");
+  xTaskCreatePinnedToCore(
+      syncTask,
+      "UpdateSync_loop",
+      10000, /* Stack size in words */
+      NULL,  /* Task input parameter */
+      1,     /* Priority of the task from 0 to 25, higher number = higher priority */
+      &SyncTaskHandle,
+      1); /* Core where the task should run */
 }
 
 void init_web(callbackChange onChange, callbackUpdate onUpdate)
 {
+  log_i("loading");
+
   //*LedState = &ledState;
   changeCallback = onChange;
   updateCallback = onUpdate;

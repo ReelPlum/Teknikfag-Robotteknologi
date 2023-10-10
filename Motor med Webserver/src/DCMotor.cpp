@@ -1,5 +1,50 @@
 #include <DCMotor.h>
 
+// PINS SETUP
+const int32_t PIN_PID_LOOP = 17;
+const int32_t PIN_ENC_A = 26;
+const int32_t PIN_ENC_B = 27;
+
+const int32_t PIN_LIMIT_SW = 25;
+
+const int32_t PIN_HBRIDGE_INA = 18; // hbridge INA pin
+const int32_t PIN_HBRIDGE_INB = 19; // hbridge INB pin
+const int32_t PIN_HBRIDGE_PWM = 23; // hbridge PWM pin
+
+
+// PWM SETUP
+const int32_t PWM_CH = 0;                             // 0 - 7(15?)  = 8(16?) channels
+const int32_t PWM_FREQ_HZ = 19500;                    // 1Hz to 40MHz
+const int32_t PWM_RES_BITS = 12;                      // 1 to 16(20) bits
+const int32_t PWM_MIN = 0;                            // minimum pwm value
+const int32_t PWM_MAX = pow(2, PWM_RES_BITS) - 1;     // maximum pwm value
+
+// PID SETUP
+const double DT_S = 0.001;
+const double PID_MAX_CTRL_VALUE = 4000;
+const double MIN_CTRL_VALUE = -100;
+const double MAX_CTRL_VALUE = 100;
+
+volatile double req_pos = 100000;
+volatile double req_vel = 3000;
+volatile int64_t current_pos;
+volatile double current_vel;
+volatile double max_vel = 5000;
+
+const double integration_threshold = 200;
+
+double ctrl_pos;
+double ctrl_vel;
+
+bool mode_pos = true;
+
+TaskHandle_t PidTaskHandle;
+TaskHandle_t MotionTaskHandle;
+ESP32Encoder encoder;
+Pid pid_vel(DT_S, PID_MAX_CTRL_VALUE);
+Pid pid_pos(DT_S, PID_MAX_CTRL_VALUE);
+H_Bridge hbridge;
+
 void pid_task(void *arg)
 {
   int64_t prev_pos = current_pos;
@@ -107,6 +152,24 @@ void update(double *paramValue, char subtype)
     pid_vel.set_ki(*paramValue);
     break;
   }
+}
+
+double getData(char subtype){
+  
+  switch(subtype)
+  {
+  case 'a':
+    return current_pos;
+  case 'b':
+    return current_vel;
+  case 'c':
+    return ctrl_pos;
+  case 'd':
+    return ctrl_vel;
+  }
+  
+  //If it asks for something weird for some stupid reason
+  return 0.0;
 }
 
 void init_dc() // runs exclusive on core 1
