@@ -169,11 +169,9 @@ double getData(char subtype){
   case 'd':
     return ctrl_vel;
   case 'e':
-<<<<<<< HEAD
     return req_pos;
-=======
-    return mode_pos;  
->>>>>>> 6e3a45b40075c6afe5f367d26b2b87877f8bc931
+  case 'f':
+    return mode_pos; 
   }
   
   //If it asks for something weird for some stupid reason
