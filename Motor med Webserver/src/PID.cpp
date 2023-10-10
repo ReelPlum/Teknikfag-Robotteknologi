@@ -1,7 +1,6 @@
 #include "pid.h"
 
-Pid::Pid(double dt, double max_ctrl_value)
-{
+void Pid::setup(double dt, double max_ctrl_value){
     this->dt = dt;
     this->min_ctrl_value = -max_ctrl_value;
     this->max_ctrl_value = max_ctrl_value;

@@ -16,7 +16,9 @@ class Pid
     double previus_error;
 
 public:
-    Pid(double dt, double max_ctrl_value);
+    Pid();
+
+    void setup(double dt, double max_ctrl_value);
 
     void set_kp(double kp);
     void set_ki(double ki);

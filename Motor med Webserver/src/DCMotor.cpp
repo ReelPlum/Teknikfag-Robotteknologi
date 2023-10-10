@@ -38,83 +38,80 @@ double ctrl_vel;
 
 bool mode_pos = true;
 
-TaskHandle_t PidTaskHandle;
-TaskHandle_t MotionTaskHandle;
-ESP32Encoder encoder;
-Pid pid_vel(DT_S, PID_MAX_CTRL_VALUE);
-Pid pid_pos(DT_S, PID_MAX_CTRL_VALUE);
-H_Bridge hbridge;
+// Pid pid_vel(DT_S, PID_MAX_CTRL_VALUE);
+// Pid pid_pos(DT_S, PID_MAX_CTRL_VALUE);
 
-void pid_task(void *arg)
+
+void DCMotor::pidTask(void *arg)
 {
-  int64_t prev_pos = current_pos;
+  int64_t prev_pos = this->current_pos;
 
-  TickType_t xTimeIncrement = configTICK_RATE_HZ * pid_pos.get_dt();
+  TickType_t xTimeIncrement = configTICK_RATE_HZ * this->pidPos.get_dt();
   TickType_t xLastWakeTime = xTaskGetTickCount();
   for (;;)
   { // loop tager mindre end 18us * 2
-    digitalWrite(PIN_PID_LOOP, HIGH);
+    digitalWrite(this->PIN_PID_LOOP, HIGH);
 
-    current_pos = encoder.getCount();
-    current_vel = (current_pos - prev_pos) / DT_S;
+    this->current_pos = this->encoder.getCount();
+    this->current_vel = (this->current_pos - prev_pos) / this->DT_S;
 
-    if (mode_pos)
+    if (this->mode_pos)
     {
-      pid_pos.update(req_pos, current_pos, &ctrl_pos, integration_threshold);
+      this->pidPos.update(this->req_pos, this->current_pos, &(this->ctrl_pos), this->integration_threshold);
 
-      req_vel = constrain(ctrl_pos, -max_vel, max_vel);
+      this->req_vel = constrain(this->ctrl_pos, -(this->max_vel), this->max_vel);
     }
 
-    pid_vel.update(req_vel, current_vel, &ctrl_vel, 100000);
+    this->pidVel.update(this->req_vel, this->current_vel, &(this->ctrl_vel), 100000);
 
-    hbridge.set_pwm(ctrl_vel);
+    this->hbridge.set_pwm(this->ctrl_vel);
 
     prev_pos = current_pos;
-    digitalWrite(PIN_PID_LOOP, LOW);
+    digitalWrite(this->PIN_PID_LOOP, LOW);
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 }
 
-void wait_move()
+void DCMotor::waitMove()
 {
-  while (abs(req_pos - current_pos) > 10)
+  while (abs(this->req_pos - this->current_pos) > 10)
   {
     vTaskDelay(1);
   }
 }
 
-void home()
+void DCMotor::home()
 {
   log_v("home initiated...");
-  req_vel = 40000;
-  mode_pos = false;
+  this->req_vel = 40000;
+  this->mode_pos = false;
 
-  while (digitalRead(PIN_LIMIT_SW))
+  while (digitalRead(this->PIN_LIMIT_SW))
   {
     vTaskDelay(1);
   }
-  req_vel = -1000;
-  while (!digitalRead(PIN_LIMIT_SW))
+  this->req_vel = -1000;
+  while (!digitalRead(this->PIN_LIMIT_SW))
   {
     vTaskDelay(1);
   }
-  req_vel = 0;
+  this->req_vel = 0;
 
-  mode_pos = true;
-  req_pos = 0;
-  encoder.setCount(-14100);
-  wait_move();
+  this->mode_pos = true;
+  this->req_pos = 0;
+  this->encoder.setCount(-14100);
+  this->waitMove();
   log_v("home complete.");
 }
 
-void set_pos(int32_t pos)
+void DCMotor::setPos(int32_t pos)
 {
-  req_pos = pos;
+  this->req_pos = pos;
 }
 
-void motion_task(void *arg)
+void DCMotor::motionTask(void *arg)
 {
-  home();
+  this->home();
 
   vTaskDelay(5000);
   int32_t n = 0;
@@ -127,78 +124,88 @@ void motion_task(void *arg)
     log_v("motion_task...");
 
     //set_pos(steps_pr_deg*(90+n*90)); // 90 deg
-    set_pos(n * 500 * 4 * 4.8); // 1 round
-    wait_move();
+    this->setPos(n * 500 * 4 * 4.8); // 1 round
+    this->waitMove();
     vTaskDelay(5000);
     n++;
     //vTaskDelayUntil( &xLastWakeTime, xTimeIncrement);
   }
 }
 
-void update(double *paramValue, char subtype)
+void DCMotor::updateValue(double *paramValue, char subtype)
 {
   switch (subtype)
   {
   case 'p':
-    pid_pos.set_kp(*paramValue);
+    this->pidPos.set_kp(*paramValue);
     break;
   case 'i':
-    pid_pos.set_ki(*paramValue);
+    this->pidPos.set_ki(*paramValue);
     break;
   case 'd':
-    pid_pos.set_kd(*paramValue);
+    this->pidPos.set_kd(*paramValue);
     break;
   case 'l':
-    pid_vel.set_ki(*paramValue);
+    this->pidVel.set_ki(*paramValue);
     break;
   case 's':
     //pid_pos.set_req_pos(*paramValue);
-    set_pos(*paramValue);
+    this->setPos(*paramValue);
   }
 }
 
-double getData(char subtype){
+double DCMotor::getData(char subtype){
   switch(subtype)
   {
   case 'a':
-    return current_pos;
+    return this->current_pos;
   case 'b':
-    return current_vel;
+    return this->current_vel;
   case 'c':
-    return ctrl_pos;
+    return this->ctrl_pos;
   case 'd':
-    return ctrl_vel;
+    return this->ctrl_vel;
   case 'e':
-    return mode_pos;  
+    return this->mode_pos;  
   }
   
   //If it asks for something weird for some stupid reason
   return 0.0;
 }
 
-void init_dc() // runs exclusive on core 1
+void DCMotor::setup(int32_t pin_pid_loop, int32_t pin_enc_a, int32_t pin_enc_b, int32_t pin_limit_sw, int32_t pin_hbridge_ina, int32_t pin_hbridge_inb, int32_t pin_hbridge_pwm, int32_t pwm_ch, int32_t pwm_freq_hz, int32_t pwm_res_bits, int32_t pwm_min, int32_t pwm_max, double dt_s, double pid_max_ctrl_value, double min_ctrl_value, double max_ctrl_value, ESP32Encoder *encoder) // runs exclusive on core 1
 {
+  this->PIN_PID_LOOP = pin_pid_loop;
+  this->PIN_ENC_A = pin_enc_a;
+  this->PIN_ENC_B = pin_enc_b;
+  this->PIN_LIMIT_SW = pin_limit_sw;
+  this->PIN_HBRIDGE_INA = pin_hbridge_ina;
+  this->PIN_HBRIDGE_INB = pin_hbridge_inb;
+  this->PIN_HBRIDGE_PWM = pin_hbridge_pwm;
+  this->PWM_CH = pwm_ch;
+  this->PWM_FREQ_HZ = pwm_freq_hz;
+  this->PWM_RES_BITS = pwm_res_bits;
+  this->PWM_MIN = pwm_min;
+  this->PWM_MAX = pwm_max;
+  this->DT_S = dt_s;
+  this->PID_MAX_CTRL_VALUE;
+  this->MAX_CTRL_VALUE = max_ctrl_value;
+  this->MIN_CTRL_VALUE = min_ctrl_value;
+
+  this->pidPos.setup(this->DT_S, this->PID_MAX_CTRL_VALUE);
+  this->pidVel.setup(this->DT_S, this->PID_MAX_CTRL_VALUE);
+
   //disableCore0WDT();
   //disableCore1WDT();
-  pinMode(PIN_PID_LOOP, OUTPUT);
-  pinMode(PIN_LIMIT_SW, INPUT);
+  pinMode(this->PIN_PID_LOOP, OUTPUT);
+  pinMode(this->PIN_LIMIT_SW, INPUT);
 
   ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
-  encoder.attachFullQuad(PIN_ENC_A, PIN_ENC_B);    // Attache pins for use as encoder pins
-  encoder.clearCount();
+  encoder->attachFullQuad(PIN_ENC_A, PIN_ENC_B);    // Attache pins for use as encoder pins
+  encoder->clearCount();
 
-  hbridge.begin(PIN_HBRIDGE_PWM, PIN_HBRIDGE_INA, PIN_HBRIDGE_INB,
-                PWM_FREQ_HZ, PWM_RES_BITS, PWM_CH, PID_MAX_CTRL_VALUE);
-
-  log_v("starting pid task");
-  xTaskCreatePinnedToCore(
-      pid_task,       /* Function to implement the task */
-      "pid_task",     /* Name of the task */
-      3000,           /* Stack size in words */
-      NULL,           /* Task input parameter */
-      3,              /* Priority of the task from 0 to 25, higher number = higher priority */
-      &PidTaskHandle, /* Task handle. */
-      1);             /* Core where the task should run */
+  this->hbridge.begin(this->PIN_HBRIDGE_PWM, this->PIN_HBRIDGE_INA, this->PIN_HBRIDGE_INB,
+                this->PWM_FREQ_HZ, this->PWM_RES_BITS, this->PWM_CH, this->PID_MAX_CTRL_VALUE);
 
   // log_v("starting motion task");
   // xTaskCreatePinnedToCore(
