@@ -20,12 +20,12 @@ const int32_t PWM_MIN = 0;                            // minimum pwm value
 const int32_t PWM_MAX = pow(2, PWM_RES_BITS) - 1;     // maximum pwm value
 
 // PID SETUP
-const double DT_S = 0.001;
+const double DT_S = 0.01;
 const double PID_MAX_CTRL_VALUE = 4000;
 const double MIN_CTRL_VALUE = -100;
 const double MAX_CTRL_VALUE = 100;
 
-volatile double req_pos = 2000;
+volatile double req_pos = 0;
 volatile double req_vel = 0;
 volatile int64_t current_pos;
 volatile double current_vel;
@@ -158,7 +158,7 @@ void update(double *paramValue, char subtype)
   case 's':
     log_i("Setting position to %f", *paramValue);
     //pid_pos.set_req_pos(*paramValue);
-    //set_pos(*paramValue);
+    set_pos(*paramValue);
     break;
   }
 }
@@ -175,8 +175,6 @@ double getData(char subtype){
   case 'd':
     return ctrl_vel;
   case 'e':
-    log_d("%f", req_pos);
-
     return req_pos;
   }
   

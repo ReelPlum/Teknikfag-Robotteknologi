@@ -22,5 +22,5 @@ void loop() {
   double A = angles.A * (1416/(2*PI));
   //log_i("Hello %f %d", A, A);
 
-  set_pos(A);
+  //set_pos(A);
 }

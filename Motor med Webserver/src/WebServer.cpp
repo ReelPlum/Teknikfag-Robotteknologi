@@ -54,8 +54,8 @@ int32_t LedState = 0;
 int32_t SliderVal = 0;
 double KpVal = 3.1415;
 double KiVal = 2.71;
-double KdVal = 42.0;
-double KdVelVal = 10.0;
+double KdVal = 0;
+double KdVelVal = 5.0;
 double xPos = 28;
 double yPos = 9;
 
@@ -499,7 +499,7 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 1000;
+  TickType_t xTimeIncrement = 100;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
@@ -510,6 +510,8 @@ void syncTask(void *arg)
     double ctrl_pos = updateCallback('c');
 
     double ctrl_vel = updateCallback('d');
+
+    double req_pos = updateCallback('e');
 
     //log_d("Current position: %.2f, Current velocity: %.2f, Ctrl position: %.2f, Ctrl velocity: %.2f", currentpos, currentvel, ctrl_pos, ctrl_vel);
 
@@ -525,6 +527,9 @@ void syncTask(void *arg)
 
     sprintf(MsgBuf, "%s:%f", "ctrlvel", ctrl_vel);
     web_socket_send(MsgBuf, 1, true);
+
+    //sprintf(MsgBuf, "%s:%f", cmd_rpo, req_pos);
+    //web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
