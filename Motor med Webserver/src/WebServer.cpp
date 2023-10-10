@@ -181,6 +181,7 @@ void handle_rpo(char *command, uint8_t client_num)
     sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
     web_socket_send(MsgBuf, client_num, true);
   }
+
 }
 
 void handle_kx(char *command, uint8_t client_num)
@@ -242,30 +243,6 @@ void handle_kx(char *command, uint8_t client_num)
     }
   }
 
-  if (*(value + 1) == '?')
-  {
-    sprintf(MsgBuf, "%sk%c:%f", cmd_rpo, subtype, *parm_value);
-    web_socket_send(MsgBuf, client_num, false);
-  }
-  else
-  {
-    errno = 0;
-    char *e;
-    double result = strtod(value + 1, &e);
-    if (*e == '\0' && 0 == errno) // no error
-    {
-      *parm_value = result;
-      changeCallback(parm_value, subtype);
-
-      log_d("[%u]: k%c value received %f", client_num, subtype, *parm_value);
-      sprintf(MsgBuf, "%sk%c:%f", cmd_rpo, subtype, *parm_value);
-      web_socket_send(MsgBuf, client_num, true);
-    }
-    else
-    {
-      log_e("[%u]: illegal format of k%c value received: %s", client_num, subtype, value + 1);
-    }
-  }
 }
 
 
@@ -456,7 +433,7 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 500;
+  TickType_t xTimeIncrement = 1000;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
