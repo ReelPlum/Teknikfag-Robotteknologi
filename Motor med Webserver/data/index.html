@@ -124,7 +124,7 @@
             inp_slider.max = 100;
             inp_slider.value = 0;
 
-            const parameters = ["kp", "ki", "kd", "kl", "req_pos"];
+            const parameters = ["kp", "ki", "kd", "kl"];
             for (const p in parameters) {
                 let v = parameters[p] // important to use let
 
@@ -366,8 +366,8 @@
             <td><textarea id="txa_kl"></textarea></td>
         </tr>
         <tr align="center">
-            <td><button id="btn_set_req_pos">Set req pos</button></td>
-            <td><textarea id="txa_req_pos"></textarea></td>
+            <td><button id="btn_set_reqpos">Set req pos</button></td>
+            <td><textarea id="txa_reqpos"></textarea></td>
         </tr>
     </table>
 
