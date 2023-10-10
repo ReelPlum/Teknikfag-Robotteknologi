@@ -158,6 +158,8 @@ void handle_rpo(char *command, uint8_t client_num)
     return;
   }
 
+  req_pos = updateCallback('e');
+
   if (*(value + 1) == '?')
   {
     sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
