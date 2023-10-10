@@ -138,7 +138,7 @@
             txa_reqpos = document.getElementById("txa_reqpos");
             btn_set_reqpos = document.getElementById("btn_set_reqpos");
             btn_set_reqpos.disabled = false;
-            btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos; }
+            btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos(); }
 
             // Draw circle in cvs_onoff
             ctx_onoff = cvs_onoff.getContext("2d");
@@ -251,7 +251,7 @@
         function onMessage(evt) {
 
             // Print out our received message
-            console.log("Received: " + evt.data);
+            //console.log("Received: " + evt.data);
 
             let idx = evt.data.search(':')
 
@@ -365,7 +365,7 @@
             <td><button id="btn_set_kl">Set ki velocity</button></td>
             <td><textarea id="txa_kl"></textarea></td>
         </tr>
-        <tr align="center">
+        <tr>
             <td><button id="btn_set_reqpos">Set req pos</button></td>
             <td><textarea id="txa_reqpos"></textarea></td>
         </tr>

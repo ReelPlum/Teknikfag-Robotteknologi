@@ -137,6 +137,8 @@ void motion_task(void *arg)
 
 void update(double *paramValue, char subtype)
 {
+  log_d("Got %c at val %f", subtype, *paramValue);
+
   switch (subtype)
   {
   case 'p':
@@ -152,6 +154,7 @@ void update(double *paramValue, char subtype)
     pid_vel.set_ki(*paramValue);
     break;
   case 's':
+    log_i("Setting position to %f", *paramValue);
     //pid_pos.set_req_pos(*paramValue);
     set_pos(*paramValue);
   }
@@ -169,6 +172,8 @@ double getData(char subtype){
   case 'd':
     return ctrl_vel;
   case 'e':
+    log_d("%f", req_pos);
+
     return req_pos;
   case 'f':
     return mode_pos; 

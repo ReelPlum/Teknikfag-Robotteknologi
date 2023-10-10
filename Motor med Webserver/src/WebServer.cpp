@@ -60,7 +60,7 @@ void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
   if (broadcast)
   {
-    log_d("Broadcasting: %s", buffer);
+    //log_d("Broadcasting: %s", buffer);
     WebSocket.broadcastTXT(buffer, strlen(buffer)); // all clients
   }
   else
@@ -158,27 +158,34 @@ void handle_rpo(char *command, uint8_t client_num)
   }
 
   double req_pos = updateCallback('e');
+  log_d("Got requested position %f", req_pos);
 
   if (*(value + 1) == '?')
   {
-    sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
+    sprintf(MsgBuf, "%s:%f", cmd_rpo, req_pos);
     web_socket_send(MsgBuf, client_num, false);
   }
   else
   {
     errno = 0;
     char *e;
-    int32_t result = strtol(value + 1, &e, 10);
+    double result = strtod(value + 1, &e);
+    double *r = &result;
     if (*e == '\0' && 0 == errno) // no error
     {
-      req_pos = result;
-      log_d("[%u]: req_pos received %d", client_num, req_pos);
+      //req_pos = result;
+      changeCallback(r, 's');
+      log_d("[%u]: req_pos received %f", client_num, req_pos);
     }
     else
     {
       log_e("[%u]: illegal req_pos received: %s", client_num, value + 1);
     }
-    sprintf(MsgBuf, "%s:%d", cmd_rpo, req_pos);
+
+    req_pos = updateCallback('e');
+    log_d("Got new requested position %f", req_pos);
+
+    sprintf(MsgBuf, "%s:%f", cmd_rpo, req_pos);
     web_socket_send(MsgBuf, client_num, true);
   }
 
@@ -445,7 +452,7 @@ void syncTask(void *arg)
 
     double ctrl_vel = updateCallback('d');
 
-    log_d("Current position: %.2f, Current velocity: %.2f, Ctrl position: %.2f, Ctrl velocity: %.2f", currentpos, currentvel, ctrl_pos, ctrl_vel);
+    //log_d("Current position: %.2f, Current velocity: %.2f, Ctrl position: %.2f, Ctrl velocity: %.2f", currentpos, currentvel, ctrl_pos, ctrl_vel);
 
     // Sync data in websocket
     sprintf(MsgBuf, "%s:%f", "curpos", currentpos);
