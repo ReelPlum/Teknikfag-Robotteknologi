@@ -12,3 +12,4 @@ typedef void (*callbackChange)(double *paramValue, char subtype);
 typedef double (*callbackUpdate)(char subtype);
 
 void init_web(callbackChange onChange, callbackUpdate onUpdate);
+double get_pos(char type);

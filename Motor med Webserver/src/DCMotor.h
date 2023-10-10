@@ -8,6 +8,7 @@ void update(double *paramValue, char subtype);
 double getData(char subtype);
 
 void init_dc();
+void set_pos(double pos);
 
 // class DCMotor{
 //     public:
