@@ -37,10 +37,10 @@ double KdVelVal = 10.0;
 const double integration_threshold = 200;
 
 volatile double req_pos = 100000;
-volatile double req_vel = 3000;
+volatile double req_vel = 200;
 volatile int64_t current_pos;
 volatile double current_vel;
-volatile double max_vel = 5000;
+volatile double max_vel = 200;
 
 double ctrl_pos;
 double ctrl_vel;
