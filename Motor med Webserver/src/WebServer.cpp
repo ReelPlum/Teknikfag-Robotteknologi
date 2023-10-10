@@ -16,15 +16,15 @@ callbackChange changeCallback;
 callbackUpdate updateCallback;
 
 /* comment out for router connection */
-#define SOFT_AP
+//#define SOFT_AP
 
 /* Constants */
 #ifdef SOFT_AP
     const char *ssid = "Robot";
     const char *password = "esp32esp32";
 #else
-    const char *ssid = "MakitaNG";
-    const char *password = "...";
+    const char *ssid = "IOT_NET";
+    const char *password = "esp32esp";
 #endif
 
 const char *cmd_toggle = "toggle";
@@ -55,7 +55,6 @@ double KpVal = 3.1415;
 double KiVal = 2.71;
 double KdVal = 42.0;
 double KdVelVal = 10.0;
-double req_pos = 0;
 
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
@@ -158,7 +157,7 @@ void handle_rpo(char *command, uint8_t client_num)
     return;
   }
 
-  req_pos = updateCallback('e');
+  double req_pos = updateCallback('e');
 
   if (*(value + 1) == '?')
   {
@@ -212,9 +211,6 @@ void handle_kx(char *command, uint8_t client_num)
     break;
   case 'l':
     parm_value = &KdVelVal;
-    break;
-  case 's':
-    parm_value = &req_pos;
     break;
   default:
     log_e("[%u]: Bad command %s", client_num, command);
