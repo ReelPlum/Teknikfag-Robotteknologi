@@ -25,11 +25,11 @@ const double PID_MAX_CTRL_VALUE = 4000;
 const double MIN_CTRL_VALUE = -100;
 const double MAX_CTRL_VALUE = 100;
 
-volatile double req_pos = 100000;
-volatile double req_vel = 3000;
+volatile double req_pos = 0;
+volatile double req_vel = 200;
 volatile int64_t current_pos;
 volatile double current_vel;
-volatile double max_vel = 5000;
+volatile double max_vel = 200;
 
 const double integration_threshold = 200;
 
@@ -67,6 +67,7 @@ void pid_task(void *arg)
 
     pid_vel.update(req_vel, current_vel, &ctrl_vel, 100000);
 
+    //log_i("Verdies %f and %f",ctrl_vel, req_pos);
     hbridge.set_pwm(ctrl_vel);
 
     prev_pos = current_pos;
@@ -107,9 +108,10 @@ void home()
   log_v("home complete.");
 }
 
-void set_pos(int32_t pos)
+void set_pos(double pos)
 {
-  req_pos = pos;
+  req_pos = (int32_t)pos;
+  log_i("Setting pos %d", req_pos);
 }
 
 void motion_task(void *arg)
@@ -156,7 +158,8 @@ void update(double *paramValue, char subtype)
   case 's':
     log_i("Setting position to %f", *paramValue);
     //pid_pos.set_req_pos(*paramValue);
-    set_pos(*paramValue);
+    //set_pos(*paramValue);
+    break;
   }
 }
 

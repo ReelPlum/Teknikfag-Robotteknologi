@@ -32,6 +32,7 @@ const char *cmd_led_state = "led_state";
 const char *cmd_sli = "sli";
 const char *cmd_pid = "pid_";
 const char *cmd_rpo = "rpo";
+const char *cmd_kinematik = "kinematik";
 
 const int32_t wifi_channel = 5; // alle grupper skal have hver sin kanal
 const int32_t dns_port = 53;
@@ -55,6 +56,8 @@ double KpVal = 3.1415;
 double KiVal = 2.71;
 double KdVal = 42.0;
 double KdVelVal = 10.0;
+double xPos = 28;
+double yPos = 9;
 
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
@@ -191,6 +194,60 @@ void handle_rpo(char *command, uint8_t client_num)
 
 }
 
+void handle_kinematicpos(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+
+  char subtype = *(value - 1);
+
+  double *parm_value;
+
+  switch (subtype)
+  {
+  case 'x':
+    parm_value = &xPos;
+    break;
+  case 'y':
+    parm_value = &yPos;
+  default:
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+    break;
+  }
+
+  if (*(value + 1) == '?')
+  {
+    sprintf(MsgBuf, "%s_%c:%f", cmd_kinematik, subtype, *parm_value);
+    web_socket_send(MsgBuf, client_num, false);
+  }
+  else
+  {
+    errno = 0;
+    char *e;
+    double result = strtod(value + 1, &e);
+    if (*e == '\0' && 0 == errno) // no error
+    {
+      *parm_value = result;
+      changeCallback(parm_value, subtype);
+
+      sprintf(MsgBuf, "%s_%c:%f", cmd_kinematik, subtype, *parm_value);
+      web_socket_send(MsgBuf, client_num, true);
+    }
+    else
+    {
+      log_e("[%u]: illegal format of k%c value received: %s", client_num, subtype, value + 1);
+    }
+  }
+
+}
+
+
 void handle_kx(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
@@ -271,6 +328,8 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
     handle_kx(command, client_num); // pid params
   else if (strncmp(command, cmd_rpo, strlen(cmd_rpo)) == 0)
     handle_rpo(command, client_num); // pid params
+  else if (strncmp(command, cmd_kinematik, strlen(cmd_kinematik)) == 0)
+    handle_kinematicpos(command, client_num);
   else
     log_e("[%u] Message not recognized", client_num);
 
@@ -509,4 +568,13 @@ void init_web(callbackChange onChange, callbackUpdate onUpdate)
   setup_spiffs();
   setup_network();
   setup_tasks();
+}
+
+double get_pos(char type){
+  switch (type){
+    case 'x':
+      return xPos;
+    case 'y':
+      return yPos;
+  }
 }
