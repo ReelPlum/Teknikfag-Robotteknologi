@@ -175,8 +175,6 @@ double getData(char subtype){
     log_d("%f", req_pos);
 
     return req_pos;
-  case 'f':
-    return mode_pos; 
   }
   
   //If it asks for something weird for some stupid reason
