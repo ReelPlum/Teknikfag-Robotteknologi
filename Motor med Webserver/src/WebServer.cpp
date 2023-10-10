@@ -460,7 +460,7 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 1000/10;
+  TickType_t xTimeIncrement = 500;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
@@ -478,13 +478,13 @@ void syncTask(void *arg)
     sprintf(MsgBuf, "%s:%f", "curpos", currentpos);
     web_socket_send(MsgBuf, 1, true);
 
-    sprintf(MsgBuf, "%s:%f", "ctrl", currentvel);
+    sprintf(MsgBuf, "%s:%f", "curvel", currentvel);
     web_socket_send(MsgBuf, 1, true);
 
-    sprintf(MsgBuf, "%s:%f", "c", ctrl_pos);
+    sprintf(MsgBuf, "%s:%f", "ctrlpos", ctrl_pos);
     web_socket_send(MsgBuf, 1, true);
 
-    sprintf(MsgBuf, "%s:%f", "d", ctrl_vel);
+    sprintf(MsgBuf, "%s:%f", "ctrlvel", ctrl_vel);
     web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
