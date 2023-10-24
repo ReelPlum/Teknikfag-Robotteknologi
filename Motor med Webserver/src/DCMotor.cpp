@@ -20,7 +20,7 @@ const int32_t PWM_MIN = 0;                            // minimum pwm value
 const int32_t PWM_MAX = pow(2, PWM_RES_BITS) - 1;     // maximum pwm value
 
 // PID SETUP
-const double DT_S = 0.01;
+const double DT_S = 0.1;
 const double PID_MAX_CTRL_VALUE = 4000;
 const double MIN_CTRL_VALUE = -100;
 const double MAX_CTRL_VALUE = 100;
