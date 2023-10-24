@@ -29,7 +29,7 @@ volatile double req_pos = 0;
 volatile double req_vel = 0;
 volatile int64_t current_pos;
 volatile double current_vel;
-volatile double max_vel = 200;
+volatile double max_vel = 100;
 
 const double integration_threshold = 200;
 

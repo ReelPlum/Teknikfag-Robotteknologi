@@ -52,8 +52,8 @@ char MsgBuf[32];
 //PID
 int32_t LedState = 0;
 int32_t SliderVal = 0;  //web_socket_send
-double KpVal = 6.0;
-double KiVal = 0.0;
+double KpVal = 1.0;
+double KiVal = 0.4;
 double KdVal = 0.0;
 double KdVelVal = 8.0;
 double xPos = 28;
