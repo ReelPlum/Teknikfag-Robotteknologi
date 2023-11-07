@@ -137,9 +137,9 @@
 
             txa_reqpos = document.getElementById("txa_reqpos");
             txa_reqpos.innerHTML ="0";
-            btn_set_reqpos = document.getElementById("btn_set_reqpos");
-            btn_set_reqpos.disabled = false;
-            btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos(); }
+            // btn_set_reqpos = document.getElementById("btn_set_reqpos");
+            // btn_set_reqpos.disabled = false;
+            // btn_set_reqpos.onclick = function (evt) { console.log(evt); onclick_btn_set_reqpos(); }
             
             txa_curpos = document.getElementById("txa_curpos");
             txa_curpos.innerHTML ="0";
@@ -153,6 +153,17 @@
             txa_ctrlvel = document.getElementById("txa_ctrlvel");
             txa_ctrlvel.innerHTML ="0";
 
+            txa_posx = document.getElementById("txa_posx");
+            txa_posx.innerHTLM = "0";
+            btn_set_posx = document.getElementById("btn_set_posx");
+            btn_set_posx.disabled = false;
+            btn_set_posx.onclick = function (evt) { console.log(evt); onclick_btn_set_pos(); }
+
+            txa_posy = document.getElementById("txa_posy");
+            txa_posy.innerHTLM = "0";
+            btn_set_posy = document.getElementById("btn_set_posy");
+            btn_set_posy.disabled = false;
+            btn_set_posy.onclick = function (evt) { console.log(evt); onclick_btn_set_pos(); }
 
 
             // Draw circle in cvs_onoff
@@ -168,6 +179,15 @@
             wsConnect(url);
         }
 
+
+        function onclick_btn_set_pos() {
+            var y = txa_posy.value;
+            
+            var x = txa_posx.value;
+
+            var cmd = `kinematik_x:${x}; kinematik_y:${y}`;
+            doSend(cmd);
+        }
 
         // Called whenever the HTML button is pressed
         function onclick_btn_onoff() {
@@ -190,13 +210,6 @@
             doSend(cmd);
         }
 
-        function onclick_btn_set_reqpos() {
-            console.log("onclick: set reqpos" )
-            var value = txa_reqpos.value;
-            var cmd = `rpo:${value}`;
-            doSend(cmd);
-        }
-
 
         function request_all_data() {
             doSend(Cmd_LedState + ":?");
@@ -211,6 +224,8 @@
             doSend("ctrlpos:?");
             doSend("ctrlvel:?");
 
+            doSend('kinematik_x:?');
+            doSend('kinematik_y:?');
         }
 
 
@@ -325,7 +340,8 @@
                     break;
                 case "rpo":
                     console.log(`req pos value recived: ${value}`);
-                    txa_reqpos.value = value;
+                    //txa_reqpos.value = value;
+                    txa_reqpos.innerHTML = `${value}`;
                     break;
                 case "curpos":
                     console.log(`curpos value recived: ${value}`);
@@ -347,6 +363,10 @@
                     //txa_ctrlvel.value = value;
                         txa_ctrlvel.innerHTML = `${value}`;
                     break;
+                case "kinematikx":
+                    txa_posx.innerHTML = `${value}`;
+                case "kinematiky":
+                    txa_posy.innerHTML = `${value}`;
                 default:
                     break;
             }
@@ -408,9 +428,21 @@
             <td><textarea id="txa_kl"></textarea></td>
         </tr>
         <tr>
+            <td><button id="btn_set_posx">Set position X</button></td>
+            <td><textarea id="txa_posx"></textarea></td>
+        </tr>
+        <tr>
+            <td><button id="btn_set_posy">Set position Y</button></td>
+            <td><textarea id="txa_posy"></textarea></td>
+        </tr>
+        <!-- <tr>
             <td><button id="btn_set_reqpos">Set req pos</button></td>
             <td><textarea id="txa_reqpos"></textarea></td>
-        </tr>
+        </tr> -->
+        <!-- <tr>
+            <td><button id="btn_set_reqservoangle">Set req pos</button></td>
+            <td><textarea id="txa_servoangle"></textarea></td>
+        </tr> -->
         <tr>
             <td>Current position:</td>
             <td>
@@ -433,6 +465,18 @@
             <td>Control velocity:</td>
             <td>
                 <p id="txa_ctrlvel" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>Requested Position:</td>
+            <td>
+                <p id="txa_reqpos" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
+            </td>
+        </tr>
+        <tr>
+            <td>Servo Angle:</td>
+            <td>
+                <p id="txa_servoangle" style="padding: 0px; margin: 0; border-width:1px; border-style:solid; border-color:gray; padding: 0; max-height: 23px; max-width: 200px;"></p>
             </td>
         </tr>
     </table>

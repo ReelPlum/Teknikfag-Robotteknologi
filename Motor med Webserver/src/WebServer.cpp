@@ -56,7 +56,7 @@ double KpVal = 1.0;
 double KiVal = 0.4;
 double KdVal = 0.0;
 double KdVelVal = 8.0;
-double xPos = 28;
+double xPos = 19;
 double yPos = 9;
 
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
@@ -528,8 +528,8 @@ void syncTask(void *arg)
     sprintf(MsgBuf, "%s:%f", "ctrlvel", ctrl_vel);
     web_socket_send(MsgBuf, 1, true);
 
-    //sprintf(MsgBuf, "%s:%f", cmd_rpo, req_pos);
-    //web_socket_send(MsgBuf, 1, true);
+    sprintf(MsgBuf, "%s:%f", cmd_rpo, req_pos);
+    web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
@@ -587,4 +587,7 @@ double get_pos(char type){
     case 'y':
       return yPos;
   }
+
+
+  return 0;
 }

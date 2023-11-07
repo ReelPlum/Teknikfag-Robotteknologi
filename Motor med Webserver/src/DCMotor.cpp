@@ -216,18 +216,3 @@ void init_dc() // runs exclusive on core 1
   //     &MotionTaskHandle,
   //     0); /* Core where the task should run */
 }
-
-// void loop() // runs exclusive on core 1
-// {
-//   Serial.printf(
-//       "req_pos: %.2f  curr_pos: %.2f  ctrl_pos: %.2f  set_vel: %.2f  curr_vel: %.2f ctrl_vel: %.2f\n\r",
-//       req_pos, (double)current_pos, ctrl_pos, req_vel, current_vel, ctrl_vel);
-
-//   /*
-//   int32_t pid_stack_min =  uxTaskGetStackHighWaterMark(PidTaskHandle);
-//   int32_t motion_stack_min = uxTaskGetStackHighWaterMark(MotionTaskHandle);  
-//   log_i("min stack avaliable [bytes], pid: %d,  motion: %d", pid_stack_min, motion_stack_min);
-//   */
-
-//   vTaskDelay(0.2 * configTICK_RATE_HZ);
-// }
