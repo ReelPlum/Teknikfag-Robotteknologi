@@ -56,8 +56,9 @@ double KpVal = 1.0;
 double KiVal = 0.4;
 double KdVal = 0.0;
 double KdVelVal = 8.0;
-double xPos = 28;
+double xPos = 19;
 double yPos = 9;
+double ServoAngle = 0;
 
 void web_socket_send(const char *buffer, uint8_t client_num, bool broadcast)
 {
@@ -160,6 +161,48 @@ void handle_rpo(char *command, uint8_t client_num)
     return;
   }
 
+  double angle = ServoAngle;
+  log_d("Got requested position %f", angle);
+
+  if (*(value + 1) == '?')
+  {
+    sprintf(MsgBuf, "%s:%f", cmd_rpo, angle);
+    web_socket_send(MsgBuf, client_num, false);
+  }
+  else
+  {
+    errno = 0;
+    char *e;
+    double result = strtod(value + 1, &e);
+    double *r = &result;
+    if (*e == '\0' && 0 == errno) // no error
+    {
+      //req_pos = result;
+      changeCallback(r, 't');
+      log_d("[%u]: req_pos received %f", client_num, angle);
+    }
+    else
+    {
+      log_e("[%u]: illegal req_pos received: %s", client_num, value + 1);
+    }
+
+
+    sprintf(MsgBuf, "%s:%f", cmd_rpo, angle);
+    web_socket_send(MsgBuf, client_num, true);
+  }
+
+}
+
+void handle_servo(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+
   double req_pos = updateCallback('e');
   log_d("Got requested position %f", req_pos);
 
@@ -177,7 +220,7 @@ void handle_rpo(char *command, uint8_t client_num)
     if (*e == '\0' && 0 == errno) // no error
     {
       //req_pos = result;
-      changeCallback(r, 's');
+      changeCallback(r, 't');
       log_d("[%u]: req_pos received %f", client_num, req_pos);
     }
     else

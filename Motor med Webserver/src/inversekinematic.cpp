@@ -9,7 +9,7 @@ JointAngle calculate_joints2(double l1, double l2, VectorZWEI c){
     double ca = atan2((c).y,(c).x);
 
     JointAngle angles;
-    angles.A = B + ca;
+    angles.A = B;
     angles.B = C;
 
     return angles;
