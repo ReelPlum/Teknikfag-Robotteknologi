@@ -153,7 +153,11 @@
             txa_ctrlvel = document.getElementById("txa_ctrlvel");
             txa_ctrlvel.innerHTML ="0";
 
-
+            txa_servoAngle = document.getElementById("txa_servoAngle");
+            txa_servoAngle.innerHTML ="0";
+            btn_set_servoAngle = document.getElementById("btn_set_servoAngle");
+            btn_set_servoAngle.disabled = false;
+            btn_set_servoAngle.onclick = function (evt) { console.log(evt); onclick_btn_set_servo(); }
 
             // Draw circle in cvs_onoff
             ctx_onoff = cvs_onoff.getContext("2d");
@@ -196,7 +200,13 @@
             var cmd = `rpo:${value}`;
             doSend(cmd);
         }
-
+        
+        function onclick_btn_set_servo() {
+            console.log("onclick: set servo" )
+            var value = txa_servoAngle.value;
+            var cmd = `servo:${value}`;
+            doSend(cmd);
+        }
 
         function request_all_data() {
             doSend(Cmd_LedState + ":?");
@@ -210,7 +220,7 @@
             doSend("curvel:?");
             doSend("ctrlpos:?");
             doSend("ctrlvel:?");
-
+            doSend("servo:?");
         }
 
 
@@ -347,6 +357,11 @@
                     //txa_ctrlvel.value = value;
                         txa_ctrlvel.innerHTML = `${value}`;
                     break;
+                case "servo":
+                    console.log(`servo angle value recived: ${value}`);
+                        txa_servoAngle.value = value;
+                        //txa_ctrlvel.innerHTML = `${value}`;
+                    break;
                 default:
                     break;
             }
@@ -410,6 +425,10 @@
         <tr>
             <td><button id="btn_set_reqpos">Set req pos</button></td>
             <td><textarea id="txa_reqpos"></textarea></td>
+        </tr>
+        <tr>
+            <td><button id="btn_set_servoAngle">Set servo angle</button></td>
+            <td><textarea id="txa_servoAngle"></textarea></td>
         </tr>
         <tr>
             <td>Current position:</td>
