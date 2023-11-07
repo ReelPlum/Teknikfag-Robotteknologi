@@ -30,6 +30,7 @@ void updateMain(double *paramValue, char subtype)
   switch (subtype){
     case 't':
       //Set servo
+      log_i("Servo %f", *paramValue);
       s.Move(*paramValue);
 
       break;

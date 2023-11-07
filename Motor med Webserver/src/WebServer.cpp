@@ -152,7 +152,7 @@ void handle_slider(char *command, uint8_t client_num)
   }
 }
 
-void handle_rpo(char *command, uint8_t client_num)
+void handle_servo(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
 
@@ -162,12 +162,11 @@ void handle_rpo(char *command, uint8_t client_num)
     return;
   }
 
-  double angle = ServoAngle;
-  log_d("Got requested position %f", angle);
+  log_d("Got servo angle %f", ServoAngle);
 
   if (*(value + 1) == '?')
   {
-    sprintf(MsgBuf, "%s:%f", cmd_rpo, angle);
+    sprintf(MsgBuf, "%s:%f", cmd_servoangle, ServoAngle);
     web_socket_send(MsgBuf, client_num, false);
   }
   else
@@ -180,21 +179,22 @@ void handle_rpo(char *command, uint8_t client_num)
     {
       //req_pos = result;
       changeCallback(r, 't');
-      log_d("[%u]: req_pos received %f", client_num, angle);
+      ServoAngle = result;
+      log_d("[%u]: servoangle received %f", client_num, ServoAngle);
     }
     else
     {
-      log_e("[%u]: illegal req_pos received: %s", client_num, value + 1);
+      log_e("[%u]: illegal servoangle received: %s", client_num, value + 1);
     }
 
 
-    sprintf(MsgBuf, "%s:%f", cmd_rpo, angle);
+    sprintf(MsgBuf, "%s:%f", cmd_servoangle, ServoAngle);
     web_socket_send(MsgBuf, client_num, true);
   }
 
 }
 
-void handle_servo(char *command, uint8_t client_num)
+void handle_rpo(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
 
@@ -221,7 +221,7 @@ void handle_servo(char *command, uint8_t client_num)
     if (*e == '\0' && 0 == errno) // no error
     {
       //req_pos = result;
-      changeCallback(r, 't');
+      changeCallback(r, 's');
       log_d("[%u]: req_pos received %f", client_num, req_pos);
     }
     else
@@ -374,7 +374,7 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
     handle_rpo(command, client_num); // pid params
   else if (strncmp(command, cmd_kinematik, strlen(cmd_kinematik)) == 0)
     handle_kinematicpos(command, client_num);
-  else if (strncmp(command, cmd_kinematik, strlen(cmd_servoangle)) == 0)
+  else if (strncmp(command, cmd_servoangle, strlen(cmd_servoangle)) == 0)
     handle_servo(command, client_num);
   else
     log_e("[%u] Message not recognized", client_num);
