@@ -33,6 +33,7 @@ const char *cmd_sli = "sli";
 const char *cmd_pid = "pid_";
 const char *cmd_rpo = "rpo";
 const char *cmd_kinematik = "kinematik";
+const char *cmd_servoangle = "servo";
 
 const int32_t wifi_channel = 5; // alle grupper skal have hver sin kanal
 const int32_t dns_port = 53;
@@ -373,6 +374,8 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
     handle_rpo(command, client_num); // pid params
   else if (strncmp(command, cmd_kinematik, strlen(cmd_kinematik)) == 0)
     handle_kinematicpos(command, client_num);
+  else if (strncmp(command, cmd_kinematik, strlen(cmd_servoangle)) == 0)
+    handle_servo(command, client_num);
   else
     log_e("[%u] Message not recognized", client_num);
 
