@@ -561,6 +561,9 @@ void syncTask(void *arg)
 
     //log_d("Current position: %.2f, Current velocity: %.2f, Ctrl position: %.2f, Ctrl velocity: %.2f", currentpos, currentvel, ctrl_pos, ctrl_vel);
 
+    double &result = currentpos;
+    changeCallback(&result, 'u');
+
     // Sync data in websocket
     sprintf(MsgBuf, "%s:%f", "curpos", currentpos);
     web_socket_send(MsgBuf, 1, true);

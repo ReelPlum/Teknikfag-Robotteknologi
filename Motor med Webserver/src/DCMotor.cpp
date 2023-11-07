@@ -5,7 +5,7 @@ const int32_t PIN_PID_LOOP = 17;
 const int32_t PIN_ENC_A = 26;
 const int32_t PIN_ENC_B = 27;
 
-const int32_t PIN_LIMIT_SW = 25;
+const int32_t PIN_LIMIT_SW = 35;
 
 const int32_t PIN_HBRIDGE_INA = 18; // hbridge INA pin
 const int32_t PIN_HBRIDGE_INB = 19; // hbridge INB pin
@@ -139,7 +139,7 @@ void motion_task(void *arg)
 
 void update(double *paramValue, char subtype)
 {
-  log_d("Got %c at val %f", subtype, *paramValue);
+  //log_d("Got %c at val %f", subtype, *paramValue);
 
   switch (subtype)
   {

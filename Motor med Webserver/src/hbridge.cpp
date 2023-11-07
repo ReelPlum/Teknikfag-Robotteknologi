@@ -1,10 +1,5 @@
 #include "hbridge.h"
-
-double map_double(double x, double in_min, double in_max, double out_min, double out_max)
-{
-    double divisor = (in_max - in_min);
-    return (divisor == 0) ? 0 : (x - in_min) * (out_max - out_min) / divisor + out_min;
-}
+#include <map.h>
 
 void H_Bridge::begin(int32_t pin_pwm, int32_t pin_ina, int32_t pin_inb,
                      int32_t freq_hz, int32_t resolution_bit,

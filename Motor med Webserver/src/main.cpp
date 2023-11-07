@@ -9,18 +9,25 @@ double l2 = 13;
 TaskHandle_t KinematikTaskHandle;
 
 
-void kinematik(void *args){
-  //Invers kinematik
-  VectorZWEI c(get_pos('x'), get_pos('y'));
-
-  JointAngle angles = calculate_joints2(l1, l2, c);
-  double A = angles.A * (1416/(2*PI));
-  //log_i("Hello %f %d", A, A);
-
-  set_pos(A);
-}
-
 Servo s;
+
+void kinematik(void *args){
+  TickType_t xTimeIncrement = 10/1000;
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+
+  while (true){
+    //Invers kinematik
+    VectorZWEI c(get_pos('x'), get_pos('y'));
+
+    JointAngle angles = calculate_joints2(l1, l2, c);
+    double A = angles.A * (1416/(2*PI));
+    //log_i("Hello %f %d", A, A);
+
+    set_pos(A);
+    s.Move(angles.B);
+    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+  }
+}
 
 void updateMain(double *paramValue, char subtype)
 {
@@ -28,10 +35,16 @@ void updateMain(double *paramValue, char subtype)
 
   //Set servo
   switch (subtype){
-    case 't':
+    case 'u':
       //Set servo
-      log_i("Servo %f", *paramValue);
-      s.Move(*paramValue);
+      
+      double angle = *paramValue / (1216.0) *360.0;
+      if (*paramValue * -1 < 0){
+        angle = 0;
+      }
+
+      //log_i("Servo %f", angle);
+      s.Move(angle*-1);
 
       break;
   };
@@ -41,7 +54,9 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  s.Setup(1, 25);
+  s.Setup(8, 25);
+
+  s.Move(0);
 
   init_dc();
   init_web(*updateMain, *getData);
@@ -50,7 +65,7 @@ void setup() {
   // xTaskCreatePinnedToCore(
   //     kinematik,
   //     "Kinematik loop",
-  //     10000, /* Stack size in words */
+  //     6000, /* Stack size in words */
   //     NULL,  /* Task input parameter */
   //     1,     /* Priority of the task from 0 to 25, higher number = higher priority */
   //     &KinematikTaskHandle,
@@ -58,4 +73,5 @@ void setup() {
 }
 
 void loop() {
+
 }
