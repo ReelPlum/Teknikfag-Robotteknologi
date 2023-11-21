@@ -24,6 +24,10 @@
 			"name": "Motor med Webserver",
 			"path": "Motor med Webserver"
 		}
+		{
+			"name": "Robot med hjul",
+			"path": "Robot med hjul"
+		}
 	],
 	"settings": {
 		"files.associations": {
