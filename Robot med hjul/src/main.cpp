@@ -2,7 +2,7 @@
 #include <DCMotor.h>
 
 
-DCMotor motor(false, 17, 26, 27, 1, 18, 19, 23, 1, 19500, 12, 0.1, 4000, -100, 100, 100, 200);
+DCMotor motor(false, 17, 26, 27, 1, 18, 19, 23, 1, 19500, 12, 0.1, 4000, -100, 100, 100, 200, 1990);
 
 void setup(){
   Serial.begin(115200);

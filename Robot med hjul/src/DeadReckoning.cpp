@@ -10,7 +10,7 @@ double CalculateVelocity(double angleVelocity, double wheelRadius)
     return angleVelocity * wheelRadius;
 }
 
-double GetPosition(double *currentX, double *currentY, double *currentAngle, double aR, double aL, double wR, double wL, double b, double t)
+void GetPosition(double *currentX, double *currentY, double *currentAngle, double aR, double aL, double wR, double wL, double b, double t)
 {
     double A = (aR + aL) / 2;
     double B = (wR + wL) / 2;
@@ -21,4 +21,6 @@ double GetPosition(double *currentX, double *currentY, double *currentAngle, dou
     *currentY = *currentY + (A*t+ B)*sin(C* (t*t) + D*t + *currentAngle);
 
     *currentAngle = C*(t*t)+D*t + *currentAngle;
+
+    
 }

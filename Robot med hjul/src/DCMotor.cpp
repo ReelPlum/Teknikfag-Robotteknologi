@@ -3,7 +3,7 @@
 DCMotor::DCMotor(bool position_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
                  int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
                  int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt, double pid_max_ctrl_value,
-                 double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold)
+                 double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation)
 {
     this->pid_loop_pin = pid_loop_pin;
     this->enc_a_pin = enc_a_pin;
@@ -24,6 +24,7 @@ DCMotor::DCMotor(bool position_mode, int32_t pid_loop_pin, int32_t enc_a_pin, in
     this->integration_threshold = integration_threshold;
     this->position_mode = position_mode;
     this->max_vel = max_vel;
+    this->impulses_per_rotation = impulses_per_rotation;
 
 
     this->pidPos.init(this->dt, this->pid_max_ctrl_value);
@@ -100,6 +101,10 @@ void DCMotor::pidTask(void *arg)
     }
 }
 
+double DCMotor::get_speed(){
+    return this->current_vel / this->impulses_per_rotation;
+}
+
 void DCMotor::waitMove()
 {
     // Implementering af waitMove
@@ -122,6 +127,3 @@ void DCMotor::set_pos(double pos)
     // Set position of DC motor
     this->req_pos = pos;
 }
-
-// Andre statiske medlemsfunktioner
-// ...
