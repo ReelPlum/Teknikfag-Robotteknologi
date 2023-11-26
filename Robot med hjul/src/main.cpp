@@ -13,6 +13,7 @@ For at få motoren til at starte kaldes der motor.init();
 void setup(){
   Serial.begin(115200);
 
+  //Why no print?!
   log_i("AMEN NU MÅ DU KRAFTÆDMNE!!");
   motor.init();
 }
