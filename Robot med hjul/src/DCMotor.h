@@ -16,7 +16,9 @@ public:
 
     void set_pos(double pos);
 
-    double get_speed();
+    double get_velocity();
+
+    void set_velocity(double velocity);
 
     // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
     // ...

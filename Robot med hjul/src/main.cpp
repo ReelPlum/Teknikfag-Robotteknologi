@@ -10,7 +10,8 @@ Der er ikke implementeret positions styring endnu men hvis position_mode er sat 
 For at få motoren til at starte kaldes der motor.init();
 */
 
-void setup(){
+void setup()
+{
   Serial.begin(115200);
 
   //Why no print?!

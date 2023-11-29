@@ -101,8 +101,15 @@ void DCMotor::pidTask(void *arg)
     }
 }
 
-double DCMotor::get_speed(){
+
+double DCMotor::get_velocity(){
+    //Returns rotational velocity
     return this->current_vel / this->impulses_per_rotation;
+}
+
+void DCMotor::set_velocity(double velocity){
+    //Set angle velocity
+    this->req_vel = velocity;
 }
 
 void DCMotor::waitMove()
