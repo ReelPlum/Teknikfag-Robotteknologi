@@ -4,6 +4,7 @@
 
 #define WHEELRADIUS 5
 #define DT .1
+#define b 24.5
 
 DCMotor motorR(false, 17, 32, 33, 1, 4, 5, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 200, 1990);
 DCMotor motorL(false, 17, 26, 27, 1, 19, 18, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 200, 1990);
