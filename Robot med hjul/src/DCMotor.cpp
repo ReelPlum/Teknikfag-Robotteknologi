@@ -101,13 +101,11 @@ void DCMotor::pidTask(void *arg)
             p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
         }
 
-        (p->current_vel / p->ctrl_vel)/p->dt;
-
         // log_i("Verdies %f and %f", current_vel, req_pos);
         p->hbridge.set_pwm(p->ctrl_vel);
 
         //log_i("Current pos")
-        //log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
+        log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
         //log_i("Ctrl vel: %f", p->ctrl_vel);
 
         prev_pos = p->current_pos;
