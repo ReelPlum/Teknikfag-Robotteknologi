@@ -1,11 +1,13 @@
 #include "pid.h"
 
-void Pid::init(double dt, double max_ctrl_value){
+void Pid::init(double dt, double max_ctrl_value)
+{
     this->dt = dt;
     this->min_ctrl_value = -max_ctrl_value;
     this->max_ctrl_value = max_ctrl_value;
     this->error_sum = 0;
     this->previus_error = 0;
+    this->last_integration = 0;
 }
 
 void Pid::set_kp(double kp)
@@ -54,14 +56,31 @@ void Pid::update(double set_value, double current_value, double *ctrl_value, dou
 
     error = set_value - current_value;
 
+    // if (fabs(error) < integration_threshold)
+    // {
+    //     this->k1 = this->k2;
+    //     this->k2 = this->k3;
+    //     this->k3 = error;
+
+    //     this->last_integration += 1;
+    // }
+
+    // //Simpsons metode
+    // if (this->last_integration >= 2)
+    // {
+    //     ki_val += (this->dt / 3 * (this->k1 + 4*this->k2 + this->k3));
+
+    //     this->last_integration = 0;
+    // }
+
     if (fabs(error) < integration_threshold)
         error_sum += error;
 
-    kp_val = error;
     ki_val = error_sum * dt;
+
+    kp_val = error;
     kd_val = (previus_error - error) / dt;
 
-    previus_error = error;
     ctrl = kp * kp_val + ki * ki_val + kd * kd_val;
     *ctrl_value = squash(ctrl);
 }

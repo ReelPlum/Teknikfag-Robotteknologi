@@ -15,6 +15,12 @@ class Pid
     double error_sum;
     double previus_error;
 
+    double k1;
+    double k2;
+    double k3;
+
+    int32_t last_integration;
+
 public:
     Pid(){};
 

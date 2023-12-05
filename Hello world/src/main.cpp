@@ -2,7 +2,7 @@
 
 
 //Define is a search and replace. Creates a constant
-#define IO 23
+#define IO 17
 
 //Constant variables are not a search and replace, but they cannot be changed. Types can be defined in constant variables.
 const int Mom = 0;

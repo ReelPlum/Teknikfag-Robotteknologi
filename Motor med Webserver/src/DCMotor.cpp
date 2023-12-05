@@ -186,6 +186,9 @@ void init_dc() // runs exclusive on core 1
 {
   //disableCore0WDT();
   //disableCore1WDT();
+  hbridge.begin(PIN_HBRIDGE_PWM, PIN_HBRIDGE_INA, PIN_HBRIDGE_INB,
+                PWM_FREQ_HZ, PWM_RES_BITS, PWM_CH, PID_MAX_CTRL_VALUE);
+
   pinMode(PIN_PID_LOOP, OUTPUT);
   pinMode(PIN_LIMIT_SW, INPUT);
 

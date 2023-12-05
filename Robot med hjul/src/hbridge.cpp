@@ -24,6 +24,7 @@ void H_Bridge::begin(int32_t pin_pwm, int32_t pin_ina, int32_t pin_inb,
 
 void H_Bridge::set_pwm(int32_t ctrl_value)
 {
+
     if (ctrl_value < 0)
     {
         ctrl_value = -ctrl_value;

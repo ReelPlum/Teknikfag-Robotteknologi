@@ -1,23 +1,43 @@
 #include <Arduino.h>
 #include <DCMotor.h>
+#include <DeadReckoning.h>
 
+#define WHEELRADIUS 5
+#define DT .1
 
-DCMotor motor(false, 17, 26, 27, 1, 18, 19, 23, 1, 19500, 12, 0.1, 4000, -100, 100, 100, 200, 1990);
+DCMotor motorR(false, 17, 32, 33, 1, 4, 5, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 200, 1990);
+DCMotor motorL(false, 17, 26, 27, 1, 19, 18, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 200, 1990);
 
-/*
-For at bruge motor classen starter man den med DCMotor motor som set ovenover. Kig ind i files DCMotor.h for at se hvordan den virker.
-Der er ikke implementeret positions styring endnu men hvis position_mode er sat til false vil den bare køre (tror jeg)
-For at få motoren til at starte kaldes der motor.init();
-*/
+double currentX = 0;
+double currentY = 0;
+double currentAngle = 0;
+
+void DeadReckoningTask(void *args)
+{
+  TickType_t xTimeIncrement = configTICK_RATE_HZ * p->pidPos.get_dt();
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  for (;;)
+  { // loop tager mindre end 18us * 2
+    double aR = CalculateAcceleration(motorR.get_acceleration(), WHEELRADIUS);
+    double aL = CalculateAcceleration(motorL.get_acceleration(), WHEELRADIUS);
+
+    double wR = CalculateVelocity(motorR.get_velocity(), WHEELRADIUS);
+    double wL = CalculateVelocity(motorL.get_velocity(), WHEELRADIUS);
+
+    GetPosition(&currentX, &currentY, &currentAngle, aR, aL, wR, wL, );
+  }
+}
 
 void setup()
 {
   Serial.begin(115200);
 
-  //Why no print?!
-  log_i("AMEN NU MÅ DU KRAFTÆDMNE!!");
-  motor.init();
+  delay(100);
+
+  motorR.init(2, 0, 0);
+  motorL.init(2, 0, 0);
 }
 
-void loop(){
+void loop()
+{
 }
