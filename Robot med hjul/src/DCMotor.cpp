@@ -82,6 +82,7 @@ void DCMotor::pidTask(void *arg)
     // Implementering af PID-task
     // ...
     int64_t prev_pos = p->current_pos;
+    double last_vel = p->current_vel;
 
     TickType_t xTimeIncrement = configTICK_RATE_HZ * p->pidPos.get_dt();
     TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -94,6 +95,8 @@ void DCMotor::pidTask(void *arg)
         p->current_pos = p->encoder.getCount();
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
 
+        p->acceleration = (last_vel - p->current_vel) / p->dt;
+
         if (p->position_mode)
         {
             p->pidPos.update(p->req_pos, p->current_pos, &(p->ctrl_pos), p->integration_threshold);
@@ -101,7 +104,7 @@ void DCMotor::pidTask(void *arg)
             p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
         }
 
-        (p->current_vel / p->ctrl_vel)/p->dt;
+        p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
 
         // log_i("Verdies %f and %f", current_vel, req_pos);
         p->hbridge.set_pwm(p->ctrl_vel);
@@ -110,22 +113,23 @@ void DCMotor::pidTask(void *arg)
         //log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
         //log_i("Ctrl vel: %f", p->ctrl_vel);
 
+        last_vel = p->current_vel;
         prev_pos = p->current_pos;
         digitalWrite(p->pid_loop_pin, LOW);
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
 }
 
+double DCMotor::get_acceleration()
+{
+    // Returns rotational velocity
+    return (this->acceleration / this->impulses_per_rotation) * 2*PI;
+}
+
 double DCMotor::get_velocity()
 {
     // Returns rotational velocity
     return (this->current_vel / this->impulses_per_rotation) * 2*PI;
-}
-
-double DCMotor::get_acceleration()
-{
-    // Returns rotational velocity
-    return (this->current_vel - this->ctrl_vel)/this->dt;
 }
 
 void DCMotor::set_velocity(double velocity)
