@@ -12,6 +12,8 @@ double currentX = 0;
 double currentY = 0;
 double currentAngle = 0;
 
+TaskHandle_t DeadReckoningTaskHandle;
+
 void DeadReckoningTask(void *args)
 {
   TickType_t xTimeIncrement = configTICK_RATE_HZ * p->pidPos.get_dt();
@@ -33,6 +35,15 @@ void setup()
   Serial.begin(115200);
 
   delay(100);
+
+  xTaskCreatePinnedToCore(
+      DeadReckoningTask,       /* Function to implement the task */
+      "Dead Reckoning",     /* Name of the task */
+      3000,           /* Stack size in words */
+      NULL,           /* Task input parameter */
+      3,              /* Priority of the task from 0 to 25, higher number = higher priority */
+      &DeadReckoningTaskHandle, /* Task handle. */
+      1);             /* Core where the task should run */
 
   motorR.init(2, 0, 0);
   motorL.init(2, 0, 0);
