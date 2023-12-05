@@ -101,6 +101,8 @@ void DCMotor::pidTask(void *arg)
             p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
         }
 
+        p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
+
         // log_i("Verdies %f and %f", current_vel, req_pos);
         p->hbridge.set_pwm(p->ctrl_vel);
 
