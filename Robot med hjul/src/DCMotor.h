@@ -18,8 +18,6 @@ public:
 
     double get_velocity();
 
-    double get_acceleration();
-
     void set_velocity(double velocity);
 
     // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
@@ -51,7 +49,6 @@ private:
     double integration_threshold;
     double impulses_per_rotation;
 
-    volatile double acceleration;
     volatile double req_pos;
     volatile double req_vel;
     volatile int64_t current_pos;

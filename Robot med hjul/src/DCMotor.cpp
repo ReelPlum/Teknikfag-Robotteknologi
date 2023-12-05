@@ -120,12 +120,6 @@ double DCMotor::get_velocity()
     return (this->current_vel / this->impulses_per_rotation) * 2*PI;
 }
 
-double DCMotor::get_acceleration()
-{
-    // Returns rotational velocity
-    return (this->current_vel - this->ctrl_vel)/this->dt;
-}
-
 void DCMotor::set_velocity(double velocity)
 {
     // Set angle velocity
