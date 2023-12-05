@@ -22,4 +22,5 @@ void loop()
   delay(5000);
   motorR.set_velocity(1000);
   motorL.set_velocity(1000);
+  delay(5000);
 }
