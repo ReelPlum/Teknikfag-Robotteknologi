@@ -27,9 +27,9 @@ void DeadReckoningTask(void *args)
     double wL = CalculateVelocity(motorL.get_velocity(), WHEELRADIUS);
     GetPosition(&currentX, &currentY, &currentAngle, aR, aL, wR, wL, b, DT);
 
-    log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
+    //log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
 
-    //log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
+    log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
