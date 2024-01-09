@@ -1,17 +1,8 @@
-#include <Arduino.h>
-#include <DCMotor.h>
-#include <DeadReckoning.h>
-
-#define WHEELRADIUS 5
-#define DT .1
-#define b 24.5
+#include <Global.h>
 
 DCMotor motorR(false, 17, 32, 33, 1, 4, 5, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
 DCMotor motorL(false, 17, 26, 27, 1, 19, 18, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
 
-double currentX = 0;
-double currentY = 0;
-double currentAngle = 0;
 
 TaskHandle_t DeadReckoningTaskHandle;
 
