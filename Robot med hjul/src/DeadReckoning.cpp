@@ -1,4 +1,5 @@
 #include <DeadReckoning.h>
+#include <Global.h>
 
 double CalculateAcceleration(double angleAcceleration, double wheelRadius)
 {
