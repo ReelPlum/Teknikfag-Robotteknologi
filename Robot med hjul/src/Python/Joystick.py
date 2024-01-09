@@ -22,7 +22,7 @@ class Controls():
             
             if keyboard.is_pressed(Controllist[3]) or keyboard.is_pressed("right_arrow"):
                 x = x + 1
-            
+
             print(x,y)
 
     def commandHandler(self, bNo):
