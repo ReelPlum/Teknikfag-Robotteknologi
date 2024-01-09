@@ -1,8 +1,19 @@
 #include <Global.h>
 
-DCMotor motorR(false, 17, 32, 33, 1, 4, 5, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
-DCMotor motorL(false, 17, 26, 27, 1, 19, 18, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
+#include <DCMotor.h>
+#include <DeadReckoning.h>
+#include <WebServer.h>
 
+const int32_t WHEELRADIUS = 5;
+const double DT = .1;
+const double b = 24.5;
+
+double currentX = 0;
+double currentY = 0;
+double currentAngle = 0;
+
+DCMotor motorR(false, 17, 32, 33, 1, 5, 4, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
+DCMotor motorL(false, 17, 26, 27, 1, 18, 19, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
 
 TaskHandle_t DeadReckoningTaskHandle;
 
@@ -20,10 +31,65 @@ void DeadReckoningTask(void *args)
 
     //log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
 
-    log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
+    //log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
+}
+
+double getData(char subtype){
+  
+  //If it asks for something weird for some stupid reason
+  return 0.0;
+}
+
+int32_t speedRY = 0;
+int32_t speedLY = 0;
+
+int32_t speedRX = 0;
+int32_t speedLX = 0;
+
+void updateMain(double *paramValue, char subtype)
+{
+  log_i("%d", *paramValue);
+
+  switch(subtype){
+    case 'x':
+      //rotate
+      log_i("X");
+
+      if (*paramValue > 0){
+        speedRX = -2000;
+        speedLX = 2000;
+      }else if (*paramValue < 0){
+        speedRX = 2000;
+        speedLX = -2000;
+      }else {
+        speedRX = 0;
+        speedLX = 0;
+      }
+
+      log_i("SpeedX %i, %i", speedRX, speedLX);
+
+    case 'y':
+      //forward
+      log_i("Y");
+
+      if (*paramValue > 0){
+        speedRY = 2000;
+        speedLY = 2000;
+      }else if (*paramValue < 0){
+        speedRY = -2000;
+        speedLY = -2000;
+      }else {
+        speedRY = 0;
+        speedLY = 0;
+      }
+
+      log_i("SpeedY %i, %i", speedRY, speedLY);
+  };
+  
+  log_i("%i, %i", speedRY, speedLY);
 }
 
 void setup()
@@ -34,7 +100,9 @@ void setup()
 
   motorR.init(2, 0, 0);
   motorL.init(2, 0, 0);
-  
+
+  init_web(updateMain, getData);
+
   xTaskCreatePinnedToCore(
       DeadReckoningTask,       /* Function to implement the task */
       "Dead Reckoning",     /* Name of the task */
@@ -47,10 +115,9 @@ void setup()
 
 void loop()
 {
-  motorR.set_velocity(4000);
-  motorL.set_velocity(4000);
-  delay(5000);
-  motorR.set_velocity(1000);
-  motorL.set_velocity(1000);
-  delay(5000);
+  // log_i("%i",speedRX + speedRY);
+  // log_i("%i", speedLX + speedLY);
+
+  motorR.set_velocity(speedRX + speedRY);
+  motorL.set_velocity(speedLX + speedLY);
 }
