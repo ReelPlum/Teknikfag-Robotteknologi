@@ -1,5 +1,5 @@
 import keyboard
-
+import time
 
 class Controls():
     def __init__(self, root):
@@ -7,33 +7,23 @@ class Controls():
         self.chooseMovement()
 
     def chooseMovement(self):
-        while True:    
-            if keyboard.is_pressed('w') and keyboard.is_pressed('d'):
-                movement = (1,1)
-                print(movement)
-                break
-
-            if keyboard.is_pressed('w'):
-                movement = (0,1)
-                print(movement)
-                break
-                
-            if keyboard.is_pressed("s"):
-                movement = (1,0)
-                print(movement)
-                break
-
-            if keyboard.is_pressed("d"):
-                movement = (0,-1)
-                print(movement)
-                break
-
-            if keyboard.is_pressed("a"):
-                movement = (-1,0)
-                print(movement)
-                break
-
-
+        while True:  
+            x = 0
+            y = 0
+            Controllist = ["w","a","s","d"]
+            if keyboard.is_pressed(Controllist[0]) or keyboard.is_pressed("up_arrow"):
+                y = y + 1
+        
+            if keyboard.is_pressed(Controllist[1]) or keyboard.is_pressed("left_arrow"):                   
+                x = x - 1
+            
+            if keyboard.is_pressed(Controllist[2]) or keyboard.is_pressed("down_arrow"):
+                y = y - 1
+            
+            if keyboard.is_pressed(Controllist[3]) or keyboard.is_pressed("right_arrow"):
+                x = x + 1
+            
+            print(x,y)
 
     def commandHandler(self, bNo):
         if bNo == "Frem":

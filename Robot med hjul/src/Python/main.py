@@ -9,6 +9,7 @@ class Interface(Frame):
         self.createWidgets(master)
     
     def createWidgets(self, root):
+        Button(root, text = "W", command=lambda: print("defafe")).grid(sticky=N+S+W+E, row=0, column=1)
         moving = Controls(root)
 
 root = Tk()
