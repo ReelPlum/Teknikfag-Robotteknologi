@@ -35,8 +35,8 @@ const int32_t http_port = 80;
 const int32_t ws_port = 1337;
 const int32_t led_pin = 17;
 
-const char *cmd_forward = "x";
-const char *cmd_rotate = "y";
+const char *cmd_forward = "y";
+const char *cmd_rotate = "x";
 
 // Globals
 AsyncWebServer Server(http_port);

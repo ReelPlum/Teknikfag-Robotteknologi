@@ -54,7 +54,7 @@ private:
     volatile double acceleration;
     volatile double req_pos;
     volatile double req_vel;
-    volatile int64_t current_pos;
+    volatile double current_pos;
     volatile double current_vel;
     double ctrl_pos;
     double ctrl_vel;
