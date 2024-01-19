@@ -15,18 +15,21 @@
 		{
 			"name": "Test af Robotarm",
 			"path": "Test af Robotarm"
-		}
+		},
 		{
 			"name": "WebServerAdv",
 			"path": "WebServerAdv"
-		}
+		},
 		{
 			"name": "Motor med Webserver",
 			"path": "Motor med Webserver"
-		}
+		},
 		{
 			"name": "Robot med hjul",
 			"path": "Robot med hjul"
+		},
+		{
+			"path": "dc_motor_ctrl_arduino"
 		}
 	],
 	"settings": {

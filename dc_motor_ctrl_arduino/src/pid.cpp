@@ -1,13 +1,12 @@
 #include "pid.h"
 
-void Pid::init(double dt, double max_ctrl_value)
+Pid::Pid(double dt, double max_ctrl_value)
 {
     this->dt = dt;
     this->min_ctrl_value = -max_ctrl_value;
     this->max_ctrl_value = max_ctrl_value;
     this->error_sum = 0;
     this->previus_error = 0;
-    this->last_integration = 0;
 }
 
 void Pid::set_kp(double kp)
@@ -52,13 +51,6 @@ double Pid::squash(double value)
 
 void Pid::update(double set_value, double current_value, double *ctrl_value, double integration_threshold)
 {
-
-    // double DT = 0;
-    // if this->lastTime > 0{
-    //     DT = millis() - this->lastTime;
-    // }
-    // this->lastTime = millis();
-
     double kp_val, ki_val, kd_val, ctrl;
 
     error = set_value - current_value;

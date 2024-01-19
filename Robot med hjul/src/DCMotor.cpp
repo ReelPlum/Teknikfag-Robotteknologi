@@ -81,7 +81,7 @@ void DCMotor::pidTask(void *arg)
 
     // Implementering af PID-task
     // ...
-    int64_t prev_pos = p->current_pos;
+    double prev_pos = p->current_pos;
     double last_vel = p->current_vel;
 
     TickType_t xTimeIncrement = configTICK_RATE_HZ * p->pidPos.get_dt();
@@ -94,6 +94,8 @@ void DCMotor::pidTask(void *arg)
 
         p->current_pos = p->encoder.getCount();
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
+
+        //log_i("%f", p->current_pos);
 
         p->acceleration = (last_vel - p->current_vel) / p->dt;
 
@@ -117,6 +119,8 @@ void DCMotor::pidTask(void *arg)
         prev_pos = p->current_pos;
         digitalWrite(p->pid_loop_pin, LOW);
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+
+        //log_i("%f, %f", p->current_vel, p->req_vel);
     }
 }
 
@@ -136,6 +140,7 @@ void DCMotor::set_velocity(double velocity)
 {
     // Set angle velocity
     this->req_vel = velocity;
+    log_i("%f", this->req_vel);
 }
 
 void DCMotor::waitMove()

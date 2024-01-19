@@ -15,18 +15,9 @@ class Pid
     double error_sum;
     double previus_error;
 
-    double k1;
-    double k2;
-    double k3;
-
-    double lastTime;
-
-    int32_t last_integration;
-
 public:
-    Pid(){};
+    Pid(double dt, double max_ctrl_value);
 
-    void init(double dt, double max_ctrl_value);
     void set_kp(double kp);
     void set_ki(double ki);
     void set_kd(double kd);

@@ -5,7 +5,7 @@
 #include <WebServer.h>
 
 const int32_t WHEELRADIUS = 5;
-const double DT = .1;
+const double DT = .01;
 const double b = 24.5;
 
 double currentX = 0;
@@ -43,20 +43,23 @@ double getData(char subtype){
   return 0.0;
 }
 
-int32_t speedRY = 0;
-int32_t speedLY = 0;
+double speedRY = 0;
+double speedLY = 0;
 
-int32_t speedRX = 0;
-int32_t speedLX = 0;
+double speedRX = 0;
+double speedLX = 0;
+
+double lastSpeedR = 0;
+double lastSpeedL = 0;
 
 void updateMain(double *paramValue, char subtype)
 {
-  log_i("%d", *paramValue);
+  log_i("%f", *paramValue);
 
   switch(subtype){
     case 'x':
       //rotate
-      log_i("X");
+      //log_i("X %d", *paramValue);
 
       if (*paramValue > 0){
         speedRX = -2000;
@@ -69,27 +72,32 @@ void updateMain(double *paramValue, char subtype)
         speedLX = 0;
       }
 
-      log_i("SpeedX %i, %i", speedRX, speedLX);
+      //log_i("SpeedX %i, %i", speedRX, speedLX);
 
     case 'y':
       //forward
-      log_i("Y");
+      //log_i("Y");
+
+      //log_i("Y %d", *paramValue);
 
       if (*paramValue > 0){
-        speedRY = 2000;
-        speedLY = 2000;
-      }else if (*paramValue < 0){
+        //log_i("<");
         speedRY = -2000;
         speedLY = -2000;
+      }else if (*paramValue < 0){
+        //log_i(">");
+        speedRY = 2000;
+        speedLY =   2000;
       }else {
+        //log_i("0");
         speedRY = 0;
         speedLY = 0;
       }
 
-      log_i("SpeedY %i, %i", speedRY, speedLY);
+      //log_i("SpeedY %i, %i", speedRY, speedLY);
   };
   
-  log_i("%i, %i", speedRY, speedLY);
+  log_i("%f, %f", speedRY, speedLY);
 }
 
 void setup()
@@ -98,8 +106,8 @@ void setup()
 
   delay(100);
 
-  motorR.init(2, 0, 0);
-  motorL.init(2, 0, 0);
+  motorR.init(1, 0, 0.05);
+  motorL.init(1, 0, 0.05);
 
   init_web(updateMain, getData);
 
@@ -118,6 +126,29 @@ void loop()
   // log_i("%i",speedRX + speedRY);
   // log_i("%i", speedLX + speedLY);
 
-  motorR.set_velocity(speedRX + speedRY);
-  motorL.set_velocity(speedLX + speedLY);
+  // if (lastSpeedR != speedRX + speedRY){
+  //   log_i("R %f",speedRX + speedRY );
+  //   lastSpeedR = speedRX + speedRY;
+
+  //   motorR.set_velocity(speedRX + speedRY);
+  // }
+  // if (lastSpeedL != speedLX + speedLY){
+  //   log_i("L %f",speedLX + speedLY );
+  //   lastSpeedL = speedLX + speedLY;
+
+  //   motorL.set_velocity(speedLX + speedLY);
+  // }
+
+  motorR.set_velocity(2000);
+  motorL.set_velocity(2000);
+
+  delay(5000);
+  motorR.set_velocity(0);
+  motorL.set_velocity(0);
+
+  delay(5000);
+  motorR.set_velocity(-2000);
+  motorL.set_velocity(-2000);
+
+  delay(5000);
 }
