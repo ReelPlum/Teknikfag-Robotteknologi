@@ -12,8 +12,8 @@ double currentX = 0;
 double currentY = 0;
 double currentAngle = 0;
 
-DCMotor motorR(false, 17, 32, 33, 1, 5, 4, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
-DCMotor motorL(false, 17, 26, 27, 1, 18, 19, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
+DCMotor motorR(false, 17, 33, 32, 1, 5, 4, 2, 1, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
+DCMotor motorL(false, 17, 27, 26, 1, 18, 19, 23, 2, 19500, 12, DT, 4000, -100, 100, 100, 100000, 1990);
 
 TaskHandle_t DeadReckoningTaskHandle;
 
