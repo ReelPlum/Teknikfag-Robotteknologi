@@ -16,8 +16,13 @@ class Controls(Frame):
         self.x = 0
         self.y = 0
 
+        self.MousePressed = False
+
         self.grid(sticky=N+S+E+W) # put frame in toplevel window
         master.bind('<Motion>', self.mouselocation)
+        master.bind("<ButtonPress-1>", self.mouseDown)
+        master.bind("<ButtonRelease-1>", self.mouseUp)
+
         self.main()
 
         self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337")
@@ -31,6 +36,12 @@ class Controls(Frame):
         canvas = Canvas(width=SIZE[0], height = SIZE[1])
         #canvas.pack(expand=YES, fill=BOTH)
         updateTask(root, canvas)
+
+    def mouseDown(self, event):
+        self.MousePressed = True
+
+    def mouseUp(self, event):
+        self.MousePressed = False
 
     def mouselocation(self, event):
         SIZE = self.Master.winfo_width() ,self.Master.winfo_height()
@@ -55,17 +66,24 @@ class Controls(Frame):
         self.X = 0
 
         while True:
+            x = self.x
+            y = self.y
+
+            if not (self.MousePressed):
+                x = 0
+                y = 0
+
             time.sleep(0.2)
-            message = (f"x:{self.x}, y:{self.y}]")
+            message = (f"x:{x}, y:{y}]")
             print(message)
 
-            if self.X != self.x:
-                self.X = self.x
-                self.ws.send(f'rotate:{round(self.x*1000)}')
+            if self.X != x:
+                self.X = x
+                self.ws.send(f'rotate:{round(x*1000)}')
 
-            if self.Y != self.y:
-                self.Y = self.y
-                self.ws.send(f'forward:{round(self.y*1000)}')
+            if self.Y != y:
+                self.Y = y
+                self.ws.send(f'forward:{round(y*1000)}')
 
 
 
