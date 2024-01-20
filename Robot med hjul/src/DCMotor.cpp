@@ -140,7 +140,6 @@ void DCMotor::set_velocity(double velocity)
 {
     // Set angle velocity
     this->req_vel = velocity;
-    log_i("%f", this->req_vel);
 }
 
 void DCMotor::waitMove()
