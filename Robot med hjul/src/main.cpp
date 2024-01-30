@@ -38,6 +38,21 @@ void DeadReckoningTask(void *args)
 }
 
 double getData(char subtype){
+  if (subtype == 'x')
+  {
+    return currentX;
+
+  }
+  else if (subtype == 'y')
+  {
+    return currentY;
+
+  }
+  else if (subtype == 'a')
+  {
+    return currentAngle;
+
+  }
   
   //If it asks for something weird for some stupid reason
   return 0.0;

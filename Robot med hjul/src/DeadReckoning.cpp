@@ -22,5 +22,4 @@ void GetPosition(double *currentX, double *currentY, double *currentAngle, doubl
 
     *currentAngle = C*(t*t)+D*t + *currentAngle;
 
-    
 }
