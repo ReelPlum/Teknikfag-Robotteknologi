@@ -210,7 +210,7 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 100;
+  TickType_t xTimeIncrement = 1000;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {

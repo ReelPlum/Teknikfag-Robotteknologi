@@ -17,7 +17,11 @@ class Grapher(Canvas):
         self.B = 0
         self.C = 0
 
-        self.Zoom = 1
+        self.X = 0
+        self.Y = 0
+        self.Angle = 0
+
+        self.Zoom = 0.01
         self.Offset = [0, 0]
 
         self.LastMousePosition = None
@@ -26,6 +30,10 @@ class Grapher(Canvas):
 
         self.Variables = []
         self.Threads = []
+    
+        x,y = self.calculate(self.X, self.Y)
+        self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
+
 
         def motion(event):
             if not self.LastMousePosition:
@@ -78,6 +86,33 @@ class Grapher(Canvas):
         self.bind('<Configure>', changed)
 
         self.render()
+
+    def updatePoint(self, x, y, angle):
+        self.X = x
+        self.Y = y
+        self.Angle = angle
+        
+        x,y = self.calculate(self.X, self.Y)
+        #self.move(self.Oval, x, y)
+        self.delete(self.Oval)
+        self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
+
+    def calculate(self, x, y):
+        size = (self.winfo_width(),
+                self.winfo_height())
+        
+        middleX = self.Offset[0]
+        middleY = self.Offset[1]
+        
+        zoom = self.Zoom
+        
+        x0 = size[0]/2 - middleX*zoom
+        y0 = size[1]/2 - middleY*zoom
+        
+        xPos = x0 + x*zoom
+        yPos = y0 - y*zoom
+        
+        return xPos, yPos
 
     def setZoom(self, zoom):
         self.Zoom = zoom
@@ -195,8 +230,4 @@ class Grapher(Canvas):
         # Render y-axis
         self.create_line(x0, 0,
                          x0, size[1], fill='black', width=0)
-
-        for obj in self.Objects:
-            asyncio.run(obj.render())
-
         #root.after(10, self.render, root)
