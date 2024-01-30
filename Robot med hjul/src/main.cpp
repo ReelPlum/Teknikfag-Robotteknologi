@@ -31,7 +31,7 @@ void DeadReckoningTask(void *args)
 
     //log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
 
-    log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
+    //log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
