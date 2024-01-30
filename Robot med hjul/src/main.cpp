@@ -43,62 +43,69 @@ double getData(char subtype){
   return 0.0;
 }
 
-double speedRY = 0;
-double speedLY = 0;
+double SpeedX = 0;
+double SpeedY = 0;
 
-double speedRX = 0;
-double speedLX = 0;
-
-double lastSpeedR = 0;
-double lastSpeedL = 0;
+double CurrX = 0;
+double CurrY = 0;
 
 void updateMain(double *paramValue, char subtype)
 {
   log_i("%f", *paramValue);
+  log_i("%c", subtype);
 
   switch(subtype){
     case 'x':
       //rotate
-      //log_i("X %d", *paramValue);
+      log_i("X %f", *paramValue);
 
-      if (*paramValue > 0){
-        speedRX = -2000;
-        speedLX = 2000;
-      }else if (*paramValue < 0){
-        speedRX = 2000;
-        speedLX = -2000;
-      }else {
-        speedRX = 0;
-        speedLX = 0;
-      }
+      // if (*paramValue > 0){
+      //   speedRX = 2000;
+      //   speedLX = -2000;
+      // }else if (*paramValue < 0){
+      //   speedRX = -2000;
+      //   speedLX = 2000;
+      // }else {
+      //   speedRX = 0;
+      //   speedLX = 0;
+      // }
+
+      CurrX = (*paramValue)/1000;
 
       //log_i("SpeedX %i, %i", speedRX, speedLX);
-
+      break;
     case 'y':
       //forward
       //log_i("Y");
 
-      //log_i("Y %d", *paramValue);
 
-      if (*paramValue > 0){
-        //log_i("<");
-        speedRY = -2000;
-        speedLY = -2000;
-      }else if (*paramValue < 0){
-        //log_i(">");
-        speedRY = 2000;
-        speedLY =   2000;
-      }else {
-        //log_i("0");
-        speedRY = 0;
-        speedLY = 0;
-      }
+
+      // if (*paramValue > 0){
+      //   //log_i("<");
+      //   speedRY = -2000;
+      //   speedLY = -2000;
+      // }else if (*paramValue < 0){
+      //   //log_i(">");
+      //   speedRY = 2000;
+      //   speedLY =   2000;
+      // }else {
+      //   //log_i("0");
+      //   speedRY = 0;
+      //   speedLY = 0;
+      // }
+
+      CurrY = (*paramValue)/1000;
 
       //log_i("SpeedY %i, %i", speedRY, speedLY);
+      break;
   };
-  
-  log_i("%f, %f", speedRY, speedLY);
-}
+
+  //Calculate directions
+  log_i("X: %f, Y: %f", CurrX, CurrY);
+
+  SpeedX = CurrX * (-4000);
+  SpeedY = CurrY * (-4000);
+} 
 
 void setup()
 {
@@ -123,32 +130,6 @@ void setup()
 
 void loop()
 {
-  // log_i("%i",speedRX + speedRY);
-  // log_i("%i", speedLX + speedLY);
-
-  // if (lastSpeedR != speedRX + speedRY){
-  //   log_i("R %f",speedRX + speedRY );
-  //   lastSpeedR = speedRX + speedRY;
-
-  //   motorR.set_velocity(speedRX + speedRY);
-  // }
-  // if (lastSpeedL != speedLX + speedLY){
-  //   log_i("L %f",speedLX + speedLY );
-  //   lastSpeedL = speedLX + speedLY;
-
-  //   motorL.set_velocity(speedLX + speedLY);
-  // }
-
-  motorR.set_velocity(2000);
-  motorL.set_velocity(2000);
-
-  delay(5000);
-  motorR.set_velocity(0);
-  motorL.set_velocity(0);
-
-  delay(5000);
-  motorR.set_velocity(-2000);
-  motorL.set_velocity(-2000);
-
-  delay(5000);
+  motorR.set_velocity(SpeedY - SpeedX);
+  motorL.set_velocity(SpeedY + SpeedX);
 }
