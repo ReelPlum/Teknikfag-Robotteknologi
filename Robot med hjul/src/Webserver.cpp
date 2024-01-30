@@ -218,6 +218,8 @@ void syncTask(void *arg)
     double y = updateCallback('y');
     double a = updateCallback('a');
     
+  
+
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 }

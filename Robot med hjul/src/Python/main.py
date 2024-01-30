@@ -10,11 +10,18 @@ class Interface(Frame):
         Frame.__init__(self, master, background= "#ffffff")
         self.master = master
         self.ip_popup()
-        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337")
+        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
         thread.start_new_thread(lambda *args: self.ws.run_forever(), ())
 
         self.chooseMovement()
 
+    def onMessage(self, msg):
+        print(msg)
+        
+        m = msg.split(":")
+        if len(m) == 2:
+            if m[0] == "xpos":
+                pass
 
     def ip_popup(self):
         Pop_L = Label(root, text="Insert Ip for Server:" )
