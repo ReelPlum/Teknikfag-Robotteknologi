@@ -37,6 +37,14 @@ class Interface(Frame):
             y = 0
             Controllist = ["w","a","s","d"]
             
+            multiplier = 1
+
+            if keyboard.is_pressed("shift"):
+                multiplier = 0.5
+
+            if keyboard.is_pressed("ctrl"):
+                multiplier = 0.25
+
             if keyboard.is_pressed(Controllist[0]) or keyboard.is_pressed("up_arrow"):
                 y = y + 1
         
@@ -64,11 +72,11 @@ class Interface(Frame):
 
             if self.X != x:
                 self.X = x
-                self.ws.send(f'rotate:{round(x*1000)}')
+                self.ws.send(f'rotate:{round(x*1000 * multiplier)}')
 
             if self.Y != y:
                 self.Y = y
-                self.ws.send(f'forward:{round(y*1000)}')
+                self.ws.send(f'forward:{round(y*1000 * multiplier)}')
 
 
 
