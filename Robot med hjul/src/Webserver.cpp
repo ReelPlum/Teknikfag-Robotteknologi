@@ -210,17 +210,27 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 100;
+  TickType_t xTimeIncrement = 1000;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
     double x = updateCallback('x');
     double y = updateCallback('y');
     double a = updateCallback('a');
-    
-  
+
+    // Sync data in websocket
+    sprintf(MsgBuf, "%s:%f", "xpos", x);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%f", "ypos", y);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%f", "angle", a);
+    web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+
+
   }
 }
 
