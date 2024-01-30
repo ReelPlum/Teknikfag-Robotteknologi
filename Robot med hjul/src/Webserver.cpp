@@ -214,7 +214,7 @@ void syncTask(void *arg)
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
-
+    
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 }

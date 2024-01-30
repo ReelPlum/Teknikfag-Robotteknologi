@@ -69,14 +69,17 @@ class Interface(Frame):
 
             message = (f"x:{x}, y:{y}]")
             print(message)
+            x = x * multiplier
+            y = y * multiplier
+
 
             if self.X != x:
                 self.X = x
-                self.ws.send(f'rotate:{round(x*1000 * multiplier)}')
+                self.ws.send(f'rotate:{round(x*1000)}')
 
             if self.Y != y:
                 self.Y = y
-                self.ws.send(f'forward:{round(y*1000 * multiplier)}')
+                self.ws.send(f'forward:{round(y*1000)}')
 
 
 
