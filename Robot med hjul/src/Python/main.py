@@ -1,45 +1,34 @@
 from tkinter import *
 import websocket
 import keyboard
-import _thread as thread
+from threading import Thread
 import time
 from math import *
 
-class Interface(Frame):
-    def __init__(self, master):
-        Frame.__init__(self, master, background= "#ffffff")
-        self.master = master
-        self.ip_popup()
-        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
-        thread.start_new_thread(lambda *args: self.ws.run_forever(), ())
-
-        self.chooseMovement()
-
-    def onMessage(self, msg):
+class Interface():
+    
+    def onMessage(self, app, msg):
         print(msg)
         
         m = msg.split(":")
-        if len(m) == 2:
-            if m[0] == "xpos":
-                pass
-
-    def ip_popup(self):
-        Pop_L = Label(root, text="Insert Ip for Server:" )
-        Pop_L.grid(row = 0, column = 0)
-
-        Pop_E = Entry(root)
-        Pop_E.grid(row = 0, column = 1)
+    
+    def __init__(self):
+        #Frame.__init__(self, master, background= "#ffffff")
+        #self.master = master
+        #self.ip_popup()
+        print("Startup")
+        #websocket.enableTrace(True)
+        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
         
-        Pop_B = Button(text="Proceed", command=lambda: print("hej"))
-        Pop_B.grid(row = 0, column = 2)
-        
+        Thread(target = self.ws.run_forever).start()
+        self.chooseMovement()
 
     def chooseMovement(self):
         self.Y = 0
         self.X = 0
 
         while True:
-            time.sleep(0.2)
+            time.sleep(0.1)
             x = 0
             y = 0
             Controllist = ["w","a","s","d"]
@@ -69,7 +58,7 @@ class Interface(Frame):
                     
 
             l = sqrt(x**2 + y**2)
-            print(l)
+            #print(l)
             if x != 0:
                 x = x/l
 
@@ -78,7 +67,7 @@ class Interface(Frame):
 
 
             message = (f"x:{x}, y:{y}]")
-            print(message)
+            #print(message)
             x = x * multiplier
             y = y * multiplier
 
@@ -93,7 +82,7 @@ class Interface(Frame):
 
 
 
-root = Tk()
-root.title = ("Styring af Bevægende Wilson")
-app = Interface(root)
-app.mainloop()
+#root = Tk()
+#root.title = ("Styring af Bevægende Wilson")
+app = Interface()
+#app.mainloop()

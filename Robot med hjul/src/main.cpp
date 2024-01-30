@@ -19,7 +19,7 @@ TaskHandle_t DeadReckoningTaskHandle;
 
 void DeadReckoningTask(void *args)
 {
-  TickType_t xTimeIncrement = 500;
+  TickType_t xTimeIncrement = configTICK_RATE_HZ * DT;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   for (;;)
   { // loop tager mindre end 18us * 2
