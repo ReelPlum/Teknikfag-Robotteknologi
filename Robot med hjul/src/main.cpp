@@ -31,13 +31,28 @@ void DeadReckoningTask(void *args)
 
     //log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
 
-    //log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
+    log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
   }
 }
 
 double getData(char subtype){
+  if (subtype == 'x')
+  {
+    return currentX;
+
+  }
+  else if (subtype == 'y')
+  {
+    return currentY;
+
+  }
+  else if (subtype == 'a')
+  {
+    return currentAngle;
+
+  }
   
   //If it asks for something weird for some stupid reason
   return 0.0;
