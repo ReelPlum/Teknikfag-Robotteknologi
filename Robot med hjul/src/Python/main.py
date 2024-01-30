@@ -52,6 +52,9 @@ class Interface(Frame):
             if keyboard.is_pressed("ctrl"):
                 multiplier = 0.25
 
+            if keyboard.is_pressed("space"):
+                multiplier = 0    
+
             if keyboard.is_pressed(Controllist[0]) or keyboard.is_pressed("up_arrow"):
                 y = y + 1
         
