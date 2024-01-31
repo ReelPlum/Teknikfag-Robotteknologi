@@ -34,17 +34,11 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         m = msg.split(":")
         if len(m) == 2:
             if m[0] == "xpos":
-                if self.X == round(float(m[1])):
-                    return
-                self.X = round(float(m[1]))
+                self.X = float(m[1])
             if m[0] == "ypos":
-                if self.X == round(float(m[1])):
-                    return
-                self.Y = round(float(m[1]))
+                self.Y = float(m[1])
             if m[0] == "angle":
-                if self.X == round(float(m[1])):
-                    return
-                self.Angle = round(float(m[1]))
+                self.Angle = float(m[1])
         
         
         print(msg)

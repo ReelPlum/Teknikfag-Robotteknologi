@@ -17,8 +17,8 @@ void GetPosition(double *currentX, double *currentY, double *currentAngle, doubl
     double C = (aR - aL) / (2*b);
     double D = (wR - wL) / b;
 
-    *currentX = *currentX + (A * t + B)*cos(C* (t*t) + D*t + *currentAngle);
-    *currentY = *currentY + (A*t+ B)*sin(C* (t*t) + D*t + *currentAngle);
+    *currentX = *currentX + ((A * t + B)*cos(C* (t*t) + D*t + *currentAngle))/95;
+    *currentY = *currentY + ((A*t+ B)*sin(C* (t*t) + D*t + *currentAngle))/95;
 
     *currentAngle = C*(t*t)+D*t + *currentAngle;
 

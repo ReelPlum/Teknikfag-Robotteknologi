@@ -21,7 +21,7 @@ class Grapher(Canvas):
         self.Y = 0
         self.Angle = 0
 
-        self.Zoom = 0.01
+        self.Zoom = 1
         self.Offset = [0, 0]
 
         self.LastMousePosition = None

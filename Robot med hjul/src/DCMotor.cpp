@@ -97,7 +97,7 @@ void DCMotor::pidTask(void *arg)
 
         //log_i("%f", p->current_pos);
 
-        p->acceleration = (last_vel - p->current_vel) / p->dt;
+        p->acceleration = (p->current_vel - last_vel) / p->dt;
 
         if (p->position_mode)
         {
