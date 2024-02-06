@@ -20,9 +20,14 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         Frame.__init__(self, master, background='#ffffff')
         self.grid(sticky=N+S+E+W)  # put frame in toplevel window
         self.createWidgets(master)
-        
+    
+
         self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
         
+        self.ws.X = 0
+        self.ws.Y =0
+        self.ws.Angle = 0
+
         self.X = 0
         self.Y = 0
         self.Angle = 0
@@ -34,16 +39,16 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         m = msg.split(":")
         if len(m) == 2:
             if m[0] == "xpos":
-                self.X = float(m[1])
+                app.X = float(m[1])
             if m[0] == "ypos":
-                self.Y = float(m[1])
+                app.Y = float(m[1])
             if m[0] == "angle":
-                self.Angle = float(m[1])
+                app.Angle = float(m[1])
+        else:
+            return
         
-        
-        print(msg)
         #Update point on graph
-        self.Canvas.updatePoint(self.X, self.Y, self.Angle)
+        self.Canvas.updatePoint(app.X, app.Y, app.Angle)
 
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
