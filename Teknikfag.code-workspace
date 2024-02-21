@@ -30,6 +30,10 @@
 		},
 		{
 			"path": "dc_motor_ctrl_arduino"
+		},
+		{
+			"name": "Eksamens Projekt",
+			"path": "Eksamens Projekt"
 		}
 	],
 	"settings": {
