@@ -1,9 +1,9 @@
 from tkinter import *
 from math import *
-import random
-import sympy
-from sympy.abc import X
-import numpy
+#import random
+#import sympy
+#from sympy.abc import X
+#import numpy
 import threading
 import asyncio
 
@@ -33,6 +33,7 @@ class Grapher(Canvas):
     
         x,y = self.calculate(self.X, self.Y)
         self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
+        self.Line = self.create_line(0,0,0,0)
 
 
         def motion(event):
@@ -95,7 +96,14 @@ class Grapher(Canvas):
         x,y = self.calculate(self.X, self.Y)
         #self.move(self.Oval, x, y)
         self.delete(self.Oval)
-        self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
+        self.delete(self.Line)
+
+        self.Oval = self.create_oval(x - 8, y - 8, x + 8, y + 8, fill="black")
+
+        xEnd = x + sin(angle) * 25
+        yEnd = y - cos(angle) * 25
+
+        self.Line = self.create_polygon([x , y, x + cos(angle) * 10, y + sin(angle)*10, xEnd, yEnd, x - cos(angle) * 10, y - sin(angle)*10])
 
     def calculate(self, x, y):
         size = (self.winfo_width(),
@@ -230,4 +238,6 @@ class Grapher(Canvas):
         # Render y-axis
         self.create_line(x0, 0,
                          x0, size[1], fill='black', width=0)
+        
+        self.updatePoint(self.X, self.Y, self.Angle)
         #root.after(10, self.render, root)
