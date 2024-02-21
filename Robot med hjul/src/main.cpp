@@ -66,58 +66,18 @@ double CurrY = 0;
 
 void updateMain(double *paramValue, char subtype)
 {
-  log_i("%f", *paramValue);
-  log_i("%c", subtype);
-
   switch(subtype){
     case 'x':
-      //rotate
-      log_i("X %f", *paramValue);
-
-      // if (*paramValue > 0){
-      //   speedRX = 2000;
-      //   speedLX = -2000;
-      // }else if (*paramValue < 0){
-      //   speedRX = -2000;
-      //   speedLX = 2000;
-      // }else {
-      //   speedRX = 0;
-      //   speedLX = 0;
-      // }
-
+      //rotate 
       CurrX = (*paramValue)/1000;
-
-      //log_i("SpeedX %i, %i", speedRX, speedLX);
       break;
     case 'y':
       //forward
-      //log_i("Y");
-
-
-
-      // if (*paramValue > 0){
-      //   //log_i("<");
-      //   speedRY = -2000;
-      //   speedLY = -2000;
-      // }else if (*paramValue < 0){
-      //   //log_i(">");
-      //   speedRY = 2000;
-      //   speedLY =   2000;
-      // }else {
-      //   //log_i("0");
-      //   speedRY = 0;
-      //   speedLY = 0;
-      // }
-
       CurrY = (*paramValue)/1000;
 
-      //log_i("SpeedY %i, %i", speedRY, speedLY);
       break;
   };
-
   //Calculate directions
-  log_i("X: %f, Y: %f", CurrX, CurrY);
-
   SpeedX = CurrX * (-6000);
   SpeedY = CurrY * (-6000);
 } 

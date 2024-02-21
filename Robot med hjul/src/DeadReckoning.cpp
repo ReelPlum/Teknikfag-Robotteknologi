@@ -12,6 +12,7 @@ double CalculateVelocity(double angleVelocity, double wheelRadius)
 
 void GetPosition(double *currentX, double *currentY, double *currentAngle, double aR, double aL, double wR, double wL, double b, double t)
 {
+    
     double A = (aR + aL) / 2;
     double B = (wR + wL) / 2;
     double C = (aR - aL) / (2*b);

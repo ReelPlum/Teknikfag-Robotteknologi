@@ -170,16 +170,6 @@ void onWebSocketEvent(uint8_t client_num,
 
 void setup_network()
 {
-#ifdef SOFT_AP
-  // Start access point
-  WiFi.softAP(ssid, password, wifi_channel); // (alle grupper skal bruge en unik kanal)
-  // Print our IP address
-
-  log_i("AP running");
-  log_i("My IP address: ");
-  log_i("IP: %s", WiFi.softAPIP().toString().c_str());
-
-#else
   // connect to local network
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
@@ -189,8 +179,7 @@ void setup_network()
   }
   log_i("Connected to network");
   log_i("IP: %s", WiFi.localIP().toString().c_str());
-#endif
-
+  
   WebSocket.begin();
   WebSocket.onEvent(onWebSocketEvent);
 }

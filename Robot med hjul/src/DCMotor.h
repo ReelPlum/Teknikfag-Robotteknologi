@@ -1,5 +1,4 @@
 #include <Arduino.h>
-// #include "global.h"
 #include <pid.h>
 #include <hbridge.h>
 #include <ESP32Encoder.h>
@@ -27,9 +26,6 @@ public:
 
     //Set den ønskede hastighed af DC-motoren. Virker kun hvis position_mode er sat til 'false
     void set_velocity(double velocity);
-
-    // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
-    // ...
 
 private:
     void waitMove();
