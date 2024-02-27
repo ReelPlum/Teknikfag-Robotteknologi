@@ -2,12 +2,12 @@
 
 Stabilizer::Stabilizer(DCMotor RightMotor, DCMotor LeftMotor){
 
-}
+};
 
-Stabilizer::Update(){
+void Stabilizer::Update(){
 
 };
 
-Stabilizer::ReadSensors(){
+void Stabilizer::ReadSensors(){
 
 };

@@ -153,7 +153,7 @@ void onWebSocketEvent(uint8_t client_num,
   }
 }
 
-void setup_network(char* ssid, char* password)
+void setup_network(const char* ssid, const char* password)
 {
 #ifdef SOFT_AP
   // Start access point
@@ -242,7 +242,7 @@ void setup_tasks()
       1); /* Core where the task should run */
 }
 
-void init_web(char* SSID, char* password, callbackChange onChange, callbackUpdate onUpdate)
+void init_web(const char* SSID, const char* password, callbackChange onChange, callbackUpdate onUpdate)
 {
   log_i("loading");
 

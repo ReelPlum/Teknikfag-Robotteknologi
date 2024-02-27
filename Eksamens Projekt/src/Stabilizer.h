@@ -1,13 +1,9 @@
 #include <DCMotor.h>
 
-class Stabilizer{
-  public:
-  Stabilizer(DCMotor RightMotor, DCMotor LeftMotor ); //And IMU sensors!!!
+class Stabilizer {
+public:
+    Stabilizer(DCMotor RightMotor, DCMotor LeftMotor); // Constructor declaration
 
-  void Setup();
-
-  void Update();
-  void ReadSensors();
-
-  private:
-}
+    void Update();
+    void ReadSensors();
+};
