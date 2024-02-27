@@ -1,17 +1,17 @@
-/*
- * With inspiration from:
- *
- * https://shawnhymel.com/1882/how-to-create-a-web-server-with-websockets-using-an-esp32-in-arduino/
- *
- * Author: J. Sanggaard
- * Date: 10. september 2020
- *
- */
+// /*
+//  * With inspiration from:
+//  *
+//  * https://shawnhymel.com/1882/how-to-create-a-web-server-with-websockets-using-an-esp32-in-arduino/
+//  *
+//  * Author: J. Sanggaard
+//  * Date: 10. september 2020
+//  *
+//  */
 #include <WebServer.h>
 
-/***********************************************************
- * Functions
- */
+// /***********************************************************
+//  * Functions
+//  */
 callbackChange changeCallback;
 callbackUpdate updateCallback;
 
@@ -155,16 +155,7 @@ void onWebSocketEvent(uint8_t client_num,
 
 void setup_network(const char* ssid, const char* password)
 {
-#ifdef SOFT_AP
-  // Start access point
-  WiFi.softAP(ssid, password, wifi_channel); // (alle grupper skal bruge en unik kanal)
-  // Print our IP address
 
-  log_i("AP running");
-  log_i("My IP address: ");
-  log_i("IP: %s", WiFi.softAPIP().toString().c_str());
-
-#else
   // connect to local network
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
@@ -174,7 +165,7 @@ void setup_network(const char* ssid, const char* password)
   }
   log_i("Connected to network");
   log_i("IP: %s", WiFi.localIP().toString().c_str());
-#endif
+
 
   WebSocket.begin();
   WebSocket.onEvent(onWebSocketEvent);
@@ -235,7 +226,7 @@ void setup_tasks()
   xTaskCreatePinnedToCore(
       syncTask,
       "UpdateSync_loop",
-      10000, /* Stack size in words */
+      1000, /* Stack size in words */
       NULL,  /* Task input parameter */
       1,     /* Priority of the task from 0 to 25, higher number = higher priority */
       &SyncTaskHandle,
