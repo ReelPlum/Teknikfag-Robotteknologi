@@ -1,9 +1,7 @@
-class SensorFusion{
+class SensorFusion {
     public:
-
-    SensorFusion(double k);
-    
-    double getCurrentValue();
+    SensorFusion(){};
+    void setup(double k);
     double calculateValue(double a, double b);
 
     private:

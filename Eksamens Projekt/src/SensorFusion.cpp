@@ -1,6 +1,7 @@
 #include <SensorFusion.h>
 
-SensorFusion::SensorFusion(double k){
+
+void SensorFusion::setup(double k){
     this->k = k;
 };
 
