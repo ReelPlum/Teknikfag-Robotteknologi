@@ -10,6 +10,7 @@
  * Distributed as-is; no warranty is given.
  ***************************************************************/
 #include "ICM_20948.h" // Click here to get the library: http://librarymanager/All#SparkFun_ICM_20948_IMU
+#include <math.h>
 
 //#define USE_SPI       // Uncomment this to use SPI
 
@@ -28,6 +29,10 @@ ICM_20948_SPI myICM; // If using SPI create an ICM_20948_SPI object
 #else
 ICM_20948_I2C myICM; // Otherwise create an ICM_20948_I2C object
 #endif
+
+int32_t acc_y0 = 0;
+int32_t acc_x0 = 0;
+int32_t acc_z0 = 0;
 
 
 void printFormattedFloat(float val, uint8_t leading, uint8_t decimals)
@@ -77,28 +82,38 @@ void printScaledAGMT(ICM_20948_SPI *sensor)
 #else
 void printScaledAGMT(ICM_20948_I2C *sensor)
 {
-  SERIAL_PORT.print("Scaled. Acc (mg) [ ");
-  printFormattedFloat(sensor->accX(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->accY(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->accZ(), 5, 2);
-  SERIAL_PORT.print(" ], Gyr (DPS) [ ");
-  printFormattedFloat(sensor->gyrX(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->gyrY(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->gyrZ(), 5, 2);
-  SERIAL_PORT.print(" ], Mag (uT) [ ");
-  printFormattedFloat(sensor->magX(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->magY(), 5, 2);
-  SERIAL_PORT.print(", ");
-  printFormattedFloat(sensor->magZ(), 5, 2);
-  SERIAL_PORT.print(" ], Tmp (C) [ ");
-  printFormattedFloat(sensor->temp(), 5, 2);
-  SERIAL_PORT.print(" ]");
-  SERIAL_PORT.println();
+    int32_t acc_z = sensor->accZ();
+    int32_t acc_y = sensor->accY();
+
+    if (acc_y == 0){
+        return;
+    }
+
+    double angle = atan(acc_z/acc_y);
+    log_i("Angle: %f", angle);
+
+//   SERIAL_PORT.print("Scaled. Acc (mg) [ ");
+//   printFormattedFloat(sensor->accX(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->accY(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->accZ(), 5, 2);
+//   SERIAL_PORT.print(" ], Gyr (DPS) [ ");
+//   printFormattedFloat(sensor->gyrX(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->gyrY(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->gyrZ(), 5, 2);
+//   SERIAL_PORT.print(" ], Mag (uT) [ ");
+//   printFormattedFloat(sensor->magX(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->magY(), 5, 2);
+//   SERIAL_PORT.print(", ");
+//   printFormattedFloat(sensor->magZ(), 5, 2);
+//   SERIAL_PORT.print(" ], Tmp (C) [ ");
+//   printFormattedFloat(sensor->temp(), 5, 2);
+//   SERIAL_PORT.print(" ]");
+//   SERIAL_PORT.println();
 }
 #endif
 
@@ -142,6 +157,17 @@ void setup()
     else
     {
       initialized = true;
+    }
+  }
+
+  bool set = false;
+  while (!set){
+    if (myICM.dataReady()){
+        acc_x0 = myICM.accX();
+        acc_y0 = myICM.accY();
+        acc_z0 = myICM.accZ();
+
+        set = true;
     }
   }
 }
