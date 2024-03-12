@@ -98,7 +98,7 @@ void printScaledAGMT(ICM_20948_I2C *sensor)
         accAngle = atan(acc_z/acc_y);
     }
 
-    log_i("Acc Angle: %f", radiansToDegrees(accAngle));
+    //log_i("Acc Angle: %f", radiansToDegrees(accAngle));
 
     gyroAngle = angle + 0.05 * sensor->gyrX();
 
