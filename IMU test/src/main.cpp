@@ -84,7 +84,7 @@ void printScaledAGMT(ICM_20948_SPI *sensor)
 #else
 void printScaledAGMT(ICM_20948_I2C *sensor)
 {
-    angle += angle + 0.5 * sensor->gyrZ();
+    angle = angle + 0.5 * sensor->gyrZ();
 
     log_i("Angle: %f", angle);
 
