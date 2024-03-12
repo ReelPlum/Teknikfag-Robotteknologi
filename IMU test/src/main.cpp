@@ -76,8 +76,13 @@ void printFormattedFloat(float val, uint8_t leading, uint8_t decimals)
   }
 }
 
+double radiansToDegrees(double radians){
+    return radians * 180/PI;
+}
+
 double angle = 0;
-double k = .2;
+double k = .8;
+double gyroAngle = 0;
 
 #ifdef USE_SPI
 void printScaledAGMT(ICM_20948_SPI *sensor)
@@ -93,9 +98,14 @@ void printScaledAGMT(ICM_20948_I2C *sensor)
         accAngle = atan(acc_z/acc_y);
     }
 
-    double gyroAngle = angle + 0.5 * sensor->gyrZ();
+    log_i("Acc Angle: %f", radiansToDegrees(accAngle));
 
-    angle = k * accAngle + (k - 1)*gyroAngle;
+    gyroAngle = angle + 0.05 * sensor->gyrX();
+
+    //log_i("Gyro: %f", sensor->gyrZ());
+    //log_i("Gyro Angle: %f", gyroAngle);
+
+    angle = k * radiansToDegrees(accAngle) - (k - 1)*gyroAngle;
 
     log_i("Angle: %f", angle);
 
@@ -188,7 +198,7 @@ void loop()
     myICM.getAGMT();         // The values are only updated when you call 'getAGMT'
                              //    printRawAGMT( myICM.agmt );     // Uncomment this to see the raw values, taken directly from the agmt structure
     printScaledAGMT(&myICM); // This function takes into account the scale settings from when the measurement was made to calculate the values with units
-    delay(350);
+    delay(50);
   }
   else
   {
