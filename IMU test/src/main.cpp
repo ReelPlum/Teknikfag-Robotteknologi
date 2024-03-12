@@ -176,17 +176,6 @@ void setup()
       initialized = true;
     }
   }
-
-  bool set = false;
-  while (!set){
-    if (myICM.dataReady()){
-        acc_x0 = myICM.accX();
-        acc_y0 = myICM.accY();
-        acc_z0 = myICM.accZ();
-
-        set = true;
-    }
-  }
 }
 
 

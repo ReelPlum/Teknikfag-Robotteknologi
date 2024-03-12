@@ -1,6 +1,12 @@
 #include <Stabilizer.h>
 #include <math.h>
 
+#define WIRE_PORT Wire
+#define AD0_VAL 1
+
+double radiansToDegrees(double radians){
+    return radians * 180/PI;
+}
 
 void Stabilizer::Init(DCMotor RightMotor, DCMotor LeftMotor){
     //Initialize stuff here
@@ -12,6 +18,10 @@ void Stabilizer::Init(DCMotor RightMotor, DCMotor LeftMotor){
 
     this->RightMotor = RightMotor;
     this->LeftMotor = LeftMotor;
+
+    WIRE_PORT.begin();
+    WIRE_PORT.setClock(400000);
+    this->myICM.begin(WIRE_PORT, AD0_VAL);
 
     //start update task
     xTaskCreate(
@@ -31,6 +41,11 @@ void Stabilizer::Update(void *arg){
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     { // loop tager mindre end 18us * 2
+        //Check if sensors are ready
+        if (!p->myICM.dataReady()){
+            continue;
+        }
+
         p->ReadSensors();
 
         p->anglePID.update(p->wanted_angle, p->current_angle, &(p->ctrl_angle), p->integration_threshold);
@@ -39,6 +54,7 @@ void Stabilizer::Update(void *arg){
         double x = 1;
         double value = p->current_angle + x * p->wx;
 
+        log_i("Value: %f", value);
 
         //Set motors
         p->RightMotor.set_velocity(value + p->extraSpeedRight);
@@ -54,17 +70,16 @@ void Stabilizer::SetExtraEngineSpeed(double right, double left){
 
 double Stabilizer::ReadSensors(){
     //Read IMU sensors
-    double accx = 1;
-    double accy = 1;
+    this->myICM.getAGMT();
 
-    double acc = atan(accx/accy);
+    double acc = atan(this->myICM.accZ()/this->myICM.accY());
 
-    double wx = 1;
+    this->wx = this->myICM.gyrX();
 
-    double gyro = this->current_angle + this->DT * wx;
+    double gyro = this->current_angle + this->DT * this->wx;
 
-    this->wx = wx;
+    this->gyro = gyro;
     this->acc = acc;
 
-    this->current_angle = this->sensorFusion.calculateValue(acc, gyro);
+    this->current_angle = this->sensorFusion.calculateValue(radiansToDegrees(acc), gyro);
 };

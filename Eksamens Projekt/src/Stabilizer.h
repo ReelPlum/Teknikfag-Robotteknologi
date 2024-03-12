@@ -1,10 +1,12 @@
 #include <DCMotor.h>
 #include <SensorFusion.h>
 #include <PID.h>
+#include "ICM_20948.h"
+#include <math.h>
 
 class Stabilizer {
 public:
-    Stabilizer(DCMotor RightMotor, DCMotor LeftMotor); // Constructor declaration
+    Stabilizer(); // Constructor declaration
 
     void Init(DCMotor RightMotor, DCMotor LeftMotor);
     static void Update(void *arg);
@@ -15,8 +17,9 @@ public:
 private:
   double DT;
   double value;
-  double wx;
+  double gyro;
   double acc;
+  double wx;
 
   double current_angle;
   double ctrl_angle;
@@ -32,4 +35,5 @@ private:
 
   DCMotor RightMotor;
   DCMotor LeftMotor;
+  ICM_20948_I2C myICM;
 };
