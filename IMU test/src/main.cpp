@@ -77,6 +77,7 @@ void printFormattedFloat(float val, uint8_t leading, uint8_t decimals)
 }
 
 double angle = 0;
+double k = .2;
 
 #ifdef USE_SPI
 void printScaledAGMT(ICM_20948_SPI *sensor)
@@ -84,7 +85,17 @@ void printScaledAGMT(ICM_20948_SPI *sensor)
 #else
 void printScaledAGMT(ICM_20948_I2C *sensor)
 {
-    angle = angle + 0.5 * sensor->gyrZ();
+    double acc_z = sensor->accZ();
+    double acc_y = sensor->accY();
+
+    double accAngle = 0;
+    if (acc_y != 0){
+        accAngle = atan(acc_z/acc_y);
+    }
+
+    double gyroAngle = angle + 0.5 * sensor->gyrZ();
+
+    angle = k * accAngle + (k - 1)*gyroAngle;
 
     log_i("Angle: %f", angle);
 
