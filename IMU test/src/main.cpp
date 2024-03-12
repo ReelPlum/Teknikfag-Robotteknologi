@@ -98,16 +98,16 @@ void printScaledAGMT(ICM_20948_I2C *sensor)
         accAngle = atan(acc_z/acc_y);
     }
 
-    //log_i("Acc Angle: %f", radiansToDegrees(accAngle));
+    log_i("Acc Angle: %f", radiansToDegrees(accAngle));
 
     gyroAngle = angle + 0.05 * sensor->gyrX();
 
     //log_i("Gyro: %f", sensor->gyrZ());
-    //log_i("Gyro Angle: %f", gyroAngle);
+    log_i("Gyro Angle: %f", gyroAngle);
 
     angle = k * radiansToDegrees(accAngle) - (k - 1)*gyroAngle;
 
-    log_i("Angle: %f", angle);
+    //log_i("Angle: %f", angle);
 
 //   SERIAL_PORT.print("Scaled. Acc (mg) [ ");
 //   printFormattedFloat(sensor->accX(), 5, 2);

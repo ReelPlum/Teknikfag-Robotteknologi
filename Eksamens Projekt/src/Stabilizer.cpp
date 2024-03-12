@@ -13,7 +13,7 @@ void Stabilizer::Init(DCMotor RightMotor, DCMotor LeftMotor){
 
     this->DT = .01;
 
-    this->sensorFusion.setup(1);
+    this->sensorFusion.setup(.8);
     this->anglePID.init(this->DT, 1200);
 
     this->RightMotor = RightMotor;
@@ -59,6 +59,8 @@ void Stabilizer::Update(void *arg){
         //Set motors
         p->RightMotor.set_velocity(value + p->extraSpeedRight);
         p->LeftMotor.set_velocity(value + p->extraSpeedLeft);
+
+        vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
 };
 
