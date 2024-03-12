@@ -82,8 +82,8 @@ void printScaledAGMT(ICM_20948_SPI *sensor)
 #else
 void printScaledAGMT(ICM_20948_I2C *sensor)
 {
-    int32_t acc_z = sensor->accZ();
-    int32_t acc_y = sensor->accY();
+    double acc_z = sensor->accZ();
+    double acc_y = sensor->accY();
 
     if (acc_y == 0){
         return;
