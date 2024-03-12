@@ -76,7 +76,7 @@ void printFormattedFloat(float val, uint8_t leading, uint8_t decimals)
   }
 }
 
-int32_t angle = 0;
+double angle = 0;
 
 #ifdef USE_SPI
 void printScaledAGMT(ICM_20948_SPI *sensor)
@@ -86,7 +86,7 @@ void printScaledAGMT(ICM_20948_I2C *sensor)
 {
     angle += angle + 0.5 * sensor->gyrZ();
 
-    log_i("Angle: %i", sensor->gyrX());
+    log_i("Angle: %f", angle);
 
 //   SERIAL_PORT.print("Scaled. Acc (mg) [ ");
 //   printFormattedFloat(sensor->accX(), 5, 2);
