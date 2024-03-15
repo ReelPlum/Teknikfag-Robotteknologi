@@ -78,7 +78,7 @@ double Stabilizer::ReadSensors(){
 
     this->wx = this->myICM.gyrX();
 
-    double gyro = this->current_angle + this->DT * this->wx;
+    double gyro = this->current_angle - this->DT * this->wx;
 
     this->gyro = gyro;
     this->acc = acc;
