@@ -34,6 +34,9 @@
 		{
 			"name": "Eksamens Projekt",
 			"path": "Eksamens Projekt"
+		},
+		{
+			"path": "IMU test"
 		}
 	],
 	"settings": {

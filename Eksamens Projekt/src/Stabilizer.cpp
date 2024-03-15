@@ -8,12 +8,12 @@ double radiansToDegrees(double radians){
     return radians * 180/PI;
 }
 
-void Stabilizer::Init(DCMotor RightMotor, DCMotor LeftMotor){
+void Stabilizer::init(DCMotor RightMotor, DCMotor LeftMotor){
     //Initialize stuff here
 
     this->DT = .01;
 
-    this->sensorFusion.setup(.8);
+    this->sensorFusion.setup(.2);
     this->anglePID.init(this->DT, 1200);
 
     this->RightMotor = RightMotor;

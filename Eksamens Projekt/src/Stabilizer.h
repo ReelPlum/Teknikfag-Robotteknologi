@@ -8,7 +8,7 @@ class Stabilizer {
 public:
     Stabilizer(); // Constructor declaration
 
-    void Init(DCMotor RightMotor, DCMotor LeftMotor);
+    void init(DCMotor RightMotor, DCMotor LeftMotor);
     static void Update(void *arg);
     void SetExtraEngineSpeed(double right, double left);
 
