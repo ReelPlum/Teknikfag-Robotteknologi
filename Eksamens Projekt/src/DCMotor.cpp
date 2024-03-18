@@ -120,7 +120,7 @@ void DCMotor::pidTask(void *arg)
         digitalWrite(p->pid_loop_pin, LOW);
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
-        //log_i("%f, %f", p->current_vel, p->req_vel);
+        log_i("%f, %f", p->current_vel, p->req_vel);
     }
 }
 
@@ -134,6 +134,10 @@ double DCMotor::get_velocity()
 {
     // Returns rotational velocity
     return (this->current_vel / this->impulses_per_rotation) * 2*PI;
+}
+
+void DCMotor::set_velocity_deg(double velocity_deg){
+    this->req_vel = velocity_deg / 360 * this->impulses_per_rotation;
 }
 
 void DCMotor::set_velocity(double velocity)

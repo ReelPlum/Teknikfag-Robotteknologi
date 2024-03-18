@@ -8,12 +8,12 @@ double radiansToDegrees(double radians){
     return radians * 180/PI;
 }
 
-void Stabilizer::init(DCMotor RightMotor, DCMotor LeftMotor){
+void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor){
     //Initialize stuff here
 
     this->DT = .01;
 
-    this->sensorFusion.setup(.2);
+    this->sensorFusion.setup(.05);
     this->anglePID.init(this->DT, 1200);
 
     this->RightMotor = RightMotor;
@@ -22,6 +22,8 @@ void Stabilizer::init(DCMotor RightMotor, DCMotor LeftMotor){
     WIRE_PORT.begin();
     WIRE_PORT.setClock(400000);
     this->myICM.begin(WIRE_PORT, AD0_VAL);
+
+    log_i("Init");
 
     //start update task
     xTaskCreate(
@@ -36,6 +38,7 @@ void Stabilizer::init(DCMotor RightMotor, DCMotor LeftMotor){
 void Stabilizer::Update(void *arg){
     Stabilizer *p = static_cast<Stabilizer *>(arg);
 
+    log_i("Hi");
 
     TickType_t xTimeIncrement = configTICK_RATE_HZ * p->anglePID.get_dt();
     TickType_t xLastWakeTime = xTaskGetTickCount();
@@ -52,13 +55,13 @@ void Stabilizer::Update(void *arg){
 
         //x er en indstilling ligesom k værdierne i PID. Tune den som ønsket :)
         double x = 1;
-        double value = p->current_angle + x * p->wx;
+        double value = (p->current_angle + x * p->wx);
 
-        log_i("Value: %f", value);
+        //log_i("Value: %f", value);
 
         //Set motors
-        p->RightMotor.set_velocity(value + p->extraSpeedRight);
-        p->LeftMotor.set_velocity(value + p->extraSpeedLeft);
+        p->RightMotor->set_velocity_deg(value + p->extraSpeedRight);
+        p->LeftMotor->set_velocity_deg(value + p->extraSpeedLeft);
 
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
@@ -70,7 +73,7 @@ void Stabilizer::SetExtraEngineSpeed(double right, double left){
     this->extraSpeedLeft = left;
 };
 
-double Stabilizer::ReadSensors(){
+void Stabilizer::ReadSensors(){
     //Read IMU sensors
     this->myICM.getAGMT();
 

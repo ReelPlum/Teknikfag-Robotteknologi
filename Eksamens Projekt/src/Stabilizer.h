@@ -6,13 +6,13 @@
 
 class Stabilizer {
 public:
-    Stabilizer(); // Constructor declaration
+    Stabilizer(){}; // Constructor declaration
 
-    void init(DCMotor RightMotor, DCMotor LeftMotor);
+    void init(DCMotor *RightMotor, DCMotor *LeftMotor);
     static void Update(void *arg);
     void SetExtraEngineSpeed(double right, double left);
 
-    double ReadSensors();
+    void ReadSensors();
 
 private:
   double DT;
@@ -33,7 +33,7 @@ private:
   Pid anglePID;
   TaskHandle_t updateTaskHandle;
 
-  DCMotor RightMotor;
-  DCMotor LeftMotor;
+  DCMotor *RightMotor;
+  DCMotor *LeftMotor;
   ICM_20948_I2C myICM;
 };

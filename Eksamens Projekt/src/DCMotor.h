@@ -27,6 +27,7 @@ public:
 
     //Set den ønskede hastighed af DC-motoren. Virker kun hvis position_mode er sat til 'false
     void set_velocity(double velocity);
+    void set_velocity_deg(double velocity_deg);
 
     // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
     // ...
