@@ -31,32 +31,29 @@ struct direction {
 };
 
 direction FindDirection(double x, double y, double angle, double targetX, double targetY){
-    //Find angle to target
-    double vX = targetX - x; //Vektor til target
-    double vY = targetY - y; //Vektor til target
+    //Find vector to target
+    double vX = targetX - x;
+    double vY = targetY - y;
 
-    // double rX = 1 * cos(angle); //Vektor i robottens retning
-    // double rY = 1 * sin(angle); //Vektor i robottens retning
-
-    // double v = acos(rX*vX + rY*vY); //Vinkel til target
-
-    double vAngle = 1/2 * PI - (atan2(vY,vX)); //angle 2?
-
-    //Find local vector
     double L = sqrt(vX * vX + vY * vY) / 4;
 
     if (L > 1){
-        L = 1;
+        //Length cannot be greater than 1
+        vX = vX/L;
+        vY = vY/L;
     }
+    //Formula from ChatGPT
+    /*
+        https://chat.openai.com/share/61943bfc-6008-4a91-aefb-5fdf748e2b42
+        Normal coordinatesystem to rotated coordinatesystem
 
-    //Kig i geogebra fil? Virker ikke endnu :(
+        x' = x * cos(phi) - y * sin(phi)
+        y' = x * sin(phi) - y * cos(phi)
+    */
 
     direction dir;
-    dir.x = (L * cos((vAngle - angle)));
-    dir.y = (L * sin ((vAngle - angle)));
-
-    log_i("vAngle: %f", vAngle);
-    log_i("Angle: %f", angle);
+    dir.x = vX * cos(angle) - vY * sin(angle);
+    dir.y = vX * sin(angle) - vY * cos(angle);
 
     return dir;
 };
