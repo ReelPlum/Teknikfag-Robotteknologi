@@ -36,6 +36,15 @@ direction FindDirection(double x, double y, double angle, double targetX, double
 
     double L = sqrt(vX * vX + vY * vY) / 4;
 
+    if (L <= 10){
+        //Stop robot
+        direction zeroDir;
+        zeroDir.x = 0;
+        zeroDir.y = 0;
+
+        return zeroDir;
+    }
+
     if (L > 1){
         //Length cannot be greater than 1
         vX = vX/L;
