@@ -15,42 +15,24 @@ double currentAngle = 0;
 DCMotor motorR(false, 17, 33, 32, 1, 5, 4, 2, 1, 19500, 12, DT, 4000, -100, 100, 6000, 100000, 1990);
 DCMotor motorL(false, 17, 27, 26, 1, 18, 19, 23, 2, 19500, 12, DT, 4000, -100, 100, 6000, 100000, 1990);
 
-TaskHandle_t DeadReckoningTaskHandle;
-
-void DeadReckoningTask(void *args)
-{
-  TickType_t xTimeIncrement = configTICK_RATE_HZ * DT;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  for (;;)
-  { // loop tager mindre end 18us * 2
-    double aR = CalculateAcceleration(motorR.get_acceleration(), WHEELRADIUS);
-    double aL = CalculateAcceleration(motorL.get_acceleration(), WHEELRADIUS);
-    double wR = CalculateVelocity(motorR.get_velocity(), WHEELRADIUS);
-    double wL = CalculateVelocity(motorL.get_velocity(), WHEELRADIUS);
-    GetPosition(&currentX, &currentY, &currentAngle, aR, aL, wR, wL, b, DT);
-
-    //log_i("Accelerations are R: %f, L: %f and velocities are R: %f, L: %f",aR,aL,wR,wL);
-
-    //log_i("Position is %f, %f and angle is %f", currentX, currentY, currentAngle);
-
-    vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
-  }
-}
+DeadReckoning deadReckoning;
 
 double getData(char subtype){
+  DeadReckoningData data = deadReckoning.getData();
+
   if (subtype == 'x')
   {
-    return currentX;
+    return data.X;
 
   }
   else if (subtype == 'y')
   {
-    return currentY;
+    return data.Y;
 
   }
   else if (subtype == 'a')
   {
-    return currentAngle;
+    return data.Angle;
 
   }
   
@@ -63,6 +45,13 @@ double SpeedY = 0;
 
 double CurrX = 0;
 double CurrY = 0;
+
+void MoveCallback(double x, double y){
+  SpeedX = x * (-6000);
+  SpeedY = y * (-6000);
+
+  //stabilizer.SetExtraEngineSpeed(SpeedY - SpeedX, SpeedY + SpeedX);
+};
 
 void updateMain(double *paramValue, char subtype)
 {
@@ -78,8 +67,8 @@ void updateMain(double *paramValue, char subtype)
       break;
   };
   //Calculate directions
-  SpeedX = CurrX * (-6000);
-  SpeedY = CurrY * (-6000);
+  //SpeedX = CurrX * (-6000);
+  //SpeedY = CurrY * (-6000);
 } 
 
 void setup()
@@ -88,19 +77,12 @@ void setup()
 
   delay(100);
 
+  deadReckoning.init(&motorR, &motorL, MoveCallback, WHEELRADIUS, b, DT);
+
   motorR.init(1, 0, 0.05);
   motorL.init(1, 0, 0.05);
 
   init_web(updateMain, getData);
-
-  xTaskCreatePinnedToCore(
-      DeadReckoningTask,       /* Function to implement the task */
-      "Dead Reckoning",     /* Name of the task */
-      3000,           /* Stack size in words */
-      NULL,           /* Task input parameter */
-      3,              /* Priority of the task from 0 to 25, higher number = higher priority */
-      &DeadReckoningTaskHandle, /* Task handle. */
-      1);             /* Core where the task should run */
 }
 
 void loop()

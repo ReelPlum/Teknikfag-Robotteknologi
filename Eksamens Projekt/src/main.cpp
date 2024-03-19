@@ -44,6 +44,9 @@ DCMotor motorL(false, false, 17, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PW
 Stabilizer stabilizer;
 DeadReckoning deadReckoning;
 
+double SpeedX;
+double SpeedY;
+
 double UpdateCallback(char subtype){
   return 1.0;
 };
@@ -53,7 +56,10 @@ void ChangeCallback(double *paramValue, char subtype)
 };
 
 void MoveCallback(double x, double y){
-  //Set 
+  SpeedX = x * (180);
+  SpeedY = y * (180);
+
+  stabilizer.SetExtraEngineSpeed(SpeedY - SpeedX, SpeedY + SpeedX);
 };
 
 void setup() {

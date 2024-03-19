@@ -18,17 +18,10 @@ void GetPosition(double *currentX, double *currentY, double *currentAngle, doubl
     double C = (aR - aL) / (2 * b);
     double D = (wR - wL) / b;
 
-    *currentY = *currentY - ((A * t + B) * cos(C * (t * t) + D * t + *currentAngle));
-    *currentX = *currentX - ((A * t + B) * sin(C * (t * t) + D * t + *currentAngle));
+    *currentY = *currentY - ((A * t + B) * cos(C * (t * t) + D * t + *currentAngle)) / 95;
+    *currentX = *currentX - ((A * t + B) * sin(C * (t * t) + D * t + *currentAngle)) / 95;
 
-    *currentAngle = PI/180*(C * (t * t) + D * t) + *currentAngle;
-
-    if (*currentAngle >= 2*PI){
-        *currentAngle -= 2*PI;
-    }
-    else if (*currentAngle < 0){
-        *currentAngle += 2*PI;
-    };
+    *currentAngle = (C * (t * t) + D * t) + *currentAngle;
 };
 
 struct direction {
@@ -50,9 +43,14 @@ direction FindDirection(double x, double y, double angle, double targetX, double
 
     //Find local vector
     double L = sqrt(vX * vX + vY * vY);
+
+    if (L > 1){
+        L = 1;
+    }
+
     direction dir;
-    dir.x = (L * cos((angle - vAngle) - 1/2 * PI));
-    dir.y = (L * sin ((angle - vAngle) + 1/2 * PI));
+    dir.x = (L * cos((PI/180 * angle - vAngle) - 1/2 * PI));
+    dir.y = (L * sin ((PI/180 * angle - vAngle) + 1/2 * PI));
 
     return dir;
 };
@@ -77,10 +75,6 @@ void DeadReckoning::init(DCMotor *RightMotor, DCMotor *LeftMotor, moveDirection 
 
 void DeadReckoning::setTarget(double x, double y){
     //Set target
-};
-
-void DeadReckoning::setMoveDirection(moveDirection callback){
-    //Set callback
 };
 
 void DeadReckoning::Task(void *arg){

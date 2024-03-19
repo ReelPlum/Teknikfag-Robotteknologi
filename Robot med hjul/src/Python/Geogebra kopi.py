@@ -44,6 +44,7 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 app.Y = float(m[1])
             if m[0] == "angle":
                 app.Angle = float(m[1])
+                print(float(m[1]))
         else:
             return
         
