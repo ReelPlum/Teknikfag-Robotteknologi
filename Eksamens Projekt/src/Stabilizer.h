@@ -14,6 +14,8 @@ public:
 
     void ReadSensors();
 
+    double current_angle;
+
 private:
   double DT;
   double value;
@@ -21,7 +23,6 @@ private:
   double acc;
   double wx;
 
-  double current_angle;
   double ctrl_angle;
   double wanted_angle;
   double integration_threshold;

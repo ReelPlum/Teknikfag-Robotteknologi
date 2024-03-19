@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Arduino.h>
 // #include "global.h"
 #include <pid.h>
@@ -8,7 +10,7 @@ class DCMotor
 {
 public:
     //Konstruer DC motor klassen. Her vil vi sætte den op i starten af koden for at gemme den givne data i Heap'en.
-    DCMotor(bool position_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
+    DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
             int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
             int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt, double pid_max_ctrl_value,
             double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation);
@@ -28,6 +30,9 @@ public:
     //Set den ønskede hastighed af DC-motoren. Virker kun hvis position_mode er sat til 'false
     void set_velocity(double velocity);
     void set_velocity_deg(double velocity_deg);
+    void set_PWM(int32_t pwm);
+
+    int32_t calculate_degtovel(int32_t val);
 
     // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
     // ...
@@ -38,6 +43,7 @@ private:
     static void pidTask(void *args);
 
     bool position_mode;
+    bool pid_mode;
     int32_t pid_loop_pin;
     int32_t enc_a_pin;
     int32_t enc_b_pin;

@@ -2,7 +2,7 @@
 
 // DCMotor motor(false, 17, 26, 27, 1, 18, 19, 23, 1, 19500, 12, 0.1, 4000, -100, 100, 100, 200, 1990);
 
-DCMotor::DCMotor(bool position_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
+DCMotor::DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
                  int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
                  int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt, double pid_max_ctrl_value,
                  double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation)
@@ -27,12 +27,12 @@ DCMotor::DCMotor(bool position_mode, int32_t pid_loop_pin, int32_t enc_a_pin, in
     this->position_mode = position_mode;
     this->max_vel = max_vel;
     this->impulses_per_rotation = impulses_per_rotation;
+    this->pid_mode = pid_mode;
 
     pinMode(this->pid_loop_pin, OUTPUT);
     pinMode(this->limit_sw_pin, INPUT);
 
-    ESP32Encoder::useInternalWeakPullResistors = UP;                // Enable the weak pull up resistors
-
+    ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
 }
 
 void DCMotor::init(double ki, double kd, double kp)
@@ -56,26 +56,35 @@ void DCMotor::init(double ki, double kd, double kp)
     this->pidVel.set_kp(kp);
 
     // Start task
-    xTaskCreate(
-        this->pidTask,
-        "Pid Task",
-        10000,
-        this, //< Pointer gets forwarded to the task
-        1,
-        NULL);
-
+    if (this->pid_mode)
+    {
+        xTaskCreate(
+            this->pidTask,
+            "Pid Task",
+            10000,
+            this, //< Pointer gets forwarded to the task
+            1,
+            NULL);
+    }
 }
 
-// Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
-// ...
+int32_t DCMotor::calculate_degtovel(int32_t val){
+    return (val / 360.0) * this->impulses_per_rotation;
+};
 
-// Andre private medlemsvariabler og hjælpefunktioner
-// ...
+void DCMotor::set_PWM(int32_t pwm){
+    //Set HBridge PWM
+    if (this->pid_mode){
+        //Cannot set PWM manually when pid mode is enabled
+        return;
+    }
+
+    this->hbridge.set_pwm(pwm);
+};
 
 // Statiske medlemsfunktioner til brug i xTaskCreatePinnedToCore
 void DCMotor::pidTask(void *arg)
 {
-
 
     DCMotor *p = static_cast<DCMotor *>(arg);
 
@@ -88,14 +97,15 @@ void DCMotor::pidTask(void *arg)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     { // loop tager mindre end 18us * 2
+
         digitalWrite(p->pid_loop_pin, HIGH);
 
-        //log_i("Hej mor");
+        // log_i("Hej mor");
 
         p->current_pos = p->encoder.getCount();
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
 
-        //log_i("%f", p->current_pos);
+        // log_i("%f", p->current_pos);
 
         p->acceleration = (p->current_vel - last_vel) / p->dt;
 
@@ -111,9 +121,9 @@ void DCMotor::pidTask(void *arg)
         // log_i("Verdies %f and %f", current_vel, req_pos);
         p->hbridge.set_pwm(p->ctrl_vel);
 
-        //log_i("Current pos")
-        //log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
-        //log_i("Ctrl vel: %f", p->ctrl_vel);
+        // log_i("Current pos")
+        // log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
+        // log_i("Ctrl vel: %f", p->ctrl_vel);
 
         last_vel = p->current_vel;
         prev_pos = p->current_pos;
@@ -127,16 +137,17 @@ void DCMotor::pidTask(void *arg)
 double DCMotor::get_acceleration()
 {
     // Returns rotational velocity
-    return (this->acceleration / this->impulses_per_rotation) * 2*PI;
+    return (this->acceleration / this->impulses_per_rotation) * 2 * PI;
 }
 
 double DCMotor::get_velocity()
 {
     // Returns rotational velocity
-    return (this->current_vel / this->impulses_per_rotation) * 2*PI;
+    return (this->current_vel / this->impulses_per_rotation) * 2 * PI;
 }
 
-void DCMotor::set_velocity_deg(double velocity_deg){
+void DCMotor::set_velocity_deg(double velocity_deg)
+{
     this->req_vel = velocity_deg / 360 * this->impulses_per_rotation;
 }
 

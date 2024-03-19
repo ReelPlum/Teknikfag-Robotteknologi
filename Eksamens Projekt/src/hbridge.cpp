@@ -36,8 +36,12 @@ void H_Bridge::set_pwm(int32_t ctrl_value)
         digitalWrite(pin_inb, LOW);
     }
 
+    
+
     double pwm_value = map_double(ctrl_value, 0, max_ctrl_value, 0, pwm_max);
     ledcWrite(pwm_ch, pwm_value);
+
+    //log_i("PWM VAl: %i", pwm_value);
 }
 
 void H_Bridge::break_motor()
