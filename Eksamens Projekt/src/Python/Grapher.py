@@ -20,6 +20,10 @@ class Grapher(Canvas):
         self.X = 0
         self.Y = 0
         self.Angle = 0
+        self.TX = 0
+        self.TY = 0
+        
+        self.TargetEnabled = False
 
         self.Zoom = 1
         self.Offset = [0, 0]
@@ -65,15 +69,20 @@ class Grapher(Canvas):
             
             self.LastMousePosition = None                
 
-        def zoomOut(event):
-            self.Zoom -= .25
-            #print(self.Zoom)
-
+        def setTarget(event):
+            size = (self.winfo_width(), self.winfo_height())
+            
+            x = event.x - size[0]/2 + self.Offset[0]
+            y = event.y - size[1]/2 + self.Offset[1]
+            
+            self.TX = x
+            self.TY = -y
+            
             self.render()
 
-        def zoomIn(event):
-            self.Zoom += .25
-
+        def setTargetMode(event):
+            self.TargetEnabled = not self.TargetEnabled
+            
             self.render()
 
         def changed(event):
@@ -82,16 +91,18 @@ class Grapher(Canvas):
         self.bind('<B1-Motion>', motion)
         self.bind('<Button-1>', mouseDown)
         self.bind('<ButtonRelease-1>', mouseRelease)
-        self.bind('<Double-Button-1>', zoomIn)
-        self.bind('<Double-Button-3>', zoomOut)
+        self.bind('<Double-Button-1>', setTarget)
+        self.bind('<Double-Button-3>', setTargetMode)
         self.bind('<Configure>', changed)
 
         self.render()
 
-    def updatePoint(self, x, y, angle):
+    def updatePoint(self, x, y, angle, tx, ty):
         self.X = x
         self.Y = y
         self.Angle = angle
+        self.TX = tx
+        self.TY = ty
         
         x,y = self.calculate(self.X, self.Y)
         #self.move(self.Oval, x, y)
@@ -104,6 +115,13 @@ class Grapher(Canvas):
         yEnd = y - cos(angle) * 25
 
         self.Line = self.create_polygon([x , y, x + cos(angle) * 10, y + sin(angle)*10, xEnd, yEnd, x - cos(angle) * 10, y - sin(angle)*10])
+        
+        tx, ty = self.calculate(self.TX, self.TY)
+        c = "red"
+        if self.TargetEnabled:
+            c = "green"
+        
+        self.Oval = self.create_oval(tx - 8, ty - 8, tx + 8, ty + 8, fill=c)
 
     def calculate(self, x, y):
         size = (self.winfo_width(),
@@ -239,5 +257,5 @@ class Grapher(Canvas):
         self.create_line(x0, 0,
                          x0, size[1], fill='black', width=0)
         
-        self.updatePoint(self.X, self.Y, self.Angle)
+        self.updatePoint(self.X, self.Y, self.Angle, self.TX, self.TY)
         #root.after(10, self.render, root)

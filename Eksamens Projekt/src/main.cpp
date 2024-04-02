@@ -1,8 +1,8 @@
+#include <Global.h>
 #include <Arduino.h>
 #include <Stabilizer.h>
 #include <WebServer.h>
 #include <DeadReckoning.h>
-#include <Global.h>
 
 // Setup classes
 DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
@@ -137,6 +137,6 @@ void setup()
 void loop()
 {
   // put your main code here, to run repeatedly:
-  log_i("Angle: %f", stabilizer.current_angle);
-  delay(100);
+  // log_i("Angle: %f", stabilizer.current_angle);
+  // delay(100);
 };

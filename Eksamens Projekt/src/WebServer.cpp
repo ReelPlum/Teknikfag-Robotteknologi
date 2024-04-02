@@ -323,14 +323,14 @@ void syncTask(void *arg)
     sprintf(MsgBuf, "%s:%f", "angle", a);
     web_socket_send(MsgBuf, 1, true);
 
-    //Location
+    // Location
     sprintf(MsgBuf, "%s:%f", "targetx", lx);
     web_socket_send(MsgBuf, 1, true);
 
     sprintf(MsgBuf, "%s:%f", "targety", ly);
     web_socket_send(MsgBuf, 1, true);
 
-    //Location toggle
+    // Location toggle
     sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
     web_socket_send(MsgBuf, 1, true);
 
@@ -361,7 +361,7 @@ void setup_tasks()
       1); /* Core where the task should run */
 }
 
-void init_web(const char *SSID, const char *password, callbackChange onChange, callbackUpdate onUpdate)
+void init_web(const char* SSID, const char* password, callbackChange onChange, callbackUpdate onUpdate)
 {
   log_i("loading");
 

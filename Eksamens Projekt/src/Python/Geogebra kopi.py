@@ -41,19 +41,23 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             if m[0] == "xpos":
                 app.X = float(m[1])
                 
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle)
+                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
             if m[0] == "ypos":
                 app.Y = float(m[1])
                 
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle)
+                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
             if m[0] == "angle":
                 app.Angle = float(m[1])
                 
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle)
+                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
             if m[0] == "targetx":
                 app.TargetX = float(m[1])
+                
+                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
             if m[0] == "targety":
                 app.TargetY = float(m[1])
+                
+                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
             if m[0] == "locationtoggle":
                 if int(m[1]) == 1:
                     app.LocationToggle = True
@@ -64,7 +68,7 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             return
         
         #Update point on graph
-        self.Canvas.updatePoint(app.X, app.Y, app.Angle)
+        self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
 
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
@@ -144,6 +148,14 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             if self.Y != y:
                 self.Y = y
                 self.ws.send(f'forward:{round(y*1000)}')
+                
+            self.ws.send(f'locationx:{round(self.Canvas.TX*1000)}')
+            self.ws.send(f'locationy:{round(self.Canvas.TY*1000)}')
+            v = 0
+            if self.Canvas.TargetEnabled:
+                v = 1
+            
+            self.ws.send(f'toggle_location:{v}')
 
 root = Tk()
 

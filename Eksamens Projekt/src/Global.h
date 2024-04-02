@@ -1,37 +1,37 @@
 #pragma once
 
-#include <Arduino.h>
+#include<Arduino.h>
 
 // General DC motor stuff
-#define DT .1
-#define KI 1
-#define KD 0
-#define KP 0.05
-#define PWM_Freq 19500
-#define PWM_Res 12
-#define PID_CtrlMax 2000
-#define CtrlMin -100
-#define CtrlMax 100
-#define MaxVel 6000
-#define IntegrationThreshold 100000
-#define ImpulsesPerRotation 1990
+const double DT = .1;
+const double KI = 1;
+const double KD = 0;
+const double KP = 0.05;
+const int32_t PWM_Freq = 19500;
+const int32_t PWM_Res = 12;
+const double PID_CtrlMax = 2000;
+const double CtrlMin = -100;
+const double CtrlMax = 100;
+const double MaxVel = 6000;
+const double IntegrationThreshold = 100000;
+const double ImpulsesPerRotation = 1990;
 
 // DC motor right
-#define DCR_ENCA 4
-#define DCR_ENCB 13
-#define DCR_INA 26
-#define DCR_INB 27
-#define DCR_PWM 2
-#define DCR_PWMCH 1
+const int32_t DCR_ENCA = 4;
+const int32_t DCR_ENCB = 13;
+const int32_t DCR_INA = 26;
+const int32_t DCR_INB = 27;
+const int32_t DCR_PWM = 2;
+const int32_t DCR_PWMCH = 1;
 
 // DC motor left
-#define DCL_ENCA 16
-#define DCL_ENCB 17
-#define DCL_INA 23
-#define DCL_INB 25
-#define DCL_PWM 23
-#define DCL_PWMCH 2
+const int32_t DCL_ENCA = 16;
+const int32_t DCL_ENCB = 17;
+const int32_t DCL_INA = 23;
+const int32_t DCL_INB = 25;
+const int32_t DCL_PWM = 23;
+const int32_t DCL_PWMCH = 2;
 
 // Robot Dimensions
-#define WHEELRADIUS 7 // cm
-#define b 15          // cm
+const double WHEELRADIUS = 7; // cm
+const double b = 15;          // cm
