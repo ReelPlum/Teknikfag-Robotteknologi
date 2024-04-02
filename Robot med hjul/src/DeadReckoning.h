@@ -33,8 +33,8 @@ class DeadReckoning{
     double b;
     double DT;
 
-    double targetX = -200;
-    double targetY = -200;
+    double targetX = 200;
+    double targetY = 200;
 
     DeadReckoningData Data;
 

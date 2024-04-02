@@ -32,17 +32,20 @@ struct direction {
 
 direction FindDirection(double x, double y, double angle, double targetX, double targetY){
     //Find vector to target
-    double vX = targetX - x;
+        double vX = targetX - x;
     double vY = targetY - y;
 
     double L = sqrt(vX * vX + vY * vY) / 4;
+    if (L <= 10)
+    {
+        // Stop robot
+        direction zeroDir;
+        zeroDir.x = 0;
+        zeroDir.y = 0;
 
-    if (L > 1){
-        //Length cannot be greater than 1
-        vX = vX/L;
-        vY = vY/L;
+        return zeroDir;
     }
-    //Formula from ChatGPT
+    // Formula from ChatGPT
     /*
         https://chat.openai.com/share/61943bfc-6008-4a91-aefb-5fdf748e2b42
         Normal coordinatesystem to rotated coordinatesystem
@@ -51,9 +54,20 @@ direction FindDirection(double x, double y, double angle, double targetX, double
         y' = x * sin(phi) - y * cos(phi)
     */
 
+    angle += 1/2 * PI;
+
     direction dir;
     dir.x = vX * cos(angle) - vY * sin(angle);
-    dir.y = vX * sin(angle) - vY * cos(angle);
+    dir.y = vX * sin(angle) + vY * cos(angle);
+
+    double L2 = sqrt(dir.x * dir.x + dir.y * dir.y);
+
+    if (L2 > 1)
+    {
+        // Length cannot be greater than 1
+        dir.y = -dir.y / L2;
+        dir.x = -dir.x / L2;
+    }
 
     return dir;
 };

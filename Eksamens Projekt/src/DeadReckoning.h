@@ -11,6 +11,11 @@ struct DeadReckoningData {
 
 typedef void (*moveDirection)(double x, double y);
 
+struct direction {
+    double x;
+    double y;
+};
+
 class DeadReckoning{
     public:
     DeadReckoning(){};
@@ -21,6 +26,8 @@ class DeadReckoning{
 
     void setMoveDirection(moveDirection callback);
     void setTarget(double x, double y);
+
+    direction getTarget();
 
     private:
     static void Task(void *arg);
