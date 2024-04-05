@@ -35,3 +35,6 @@ const int32_t DCL_PWMCH = 2;
 // Robot Dimensions
 const double WHEELRADIUS = 7; // cm
 const double b = 15;          // cm
+
+//Led lys
+const double POSITIONMODE_LED_PIN = 0;

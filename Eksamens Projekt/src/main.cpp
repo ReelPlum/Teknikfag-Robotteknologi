@@ -3,10 +3,14 @@
 #include <Stabilizer.h>
 #include <WebServer.h>
 #include <DeadReckoning.h>
+#include <PulsingLed.h>
+#include <DCMotor.h>
 
 // Setup classes
 DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
+
+PulsingLed led(3, 8, 19500, POSITIONMODE_LED_PIN, 0.5);
 
 Stabilizer stabilizer;
 DeadReckoning deadReckoning;
@@ -124,6 +128,8 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
 
+  led.init();
+
   deadReckoning.init(&motorR, &motorL, MoveCallback, WHEELRADIUS, b, DT);
 
   motorR.init(KI, KD, KP);
@@ -134,9 +140,7 @@ void setup()
   init_web("IOT_NET", "esp32esp", ChangeCallback, UpdateCallback);
 };
 
+double i = 0;
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  // log_i("Angle: %f", stabilizer.current_angle);
-  // delay(100);
 };

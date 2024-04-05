@@ -37,6 +37,10 @@
 		},
 		{
 			"path": "IMU test"
+		},
+		{
+			"name": "PCB test program",
+			"path": "PCB test program"
 		}
 	],
 	"settings": {
