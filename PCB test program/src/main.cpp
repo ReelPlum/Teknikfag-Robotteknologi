@@ -2,8 +2,7 @@
 
 // put function declarations here:
 
-
-int8_t pins[] = {4, 13, 16, 17, 21, 22, 26, 27, 23, 25, 18, 19, 32, 33};
+int8_t pins[] = {4, 5, 13, 16, 17, 21, 22, 26, 27, 23, 25, 18, 19, 32, 33};
 
 void setup() {
   // put your setup code here, to run once:
