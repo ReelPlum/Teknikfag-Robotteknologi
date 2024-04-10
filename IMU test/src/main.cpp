@@ -66,7 +66,7 @@ void getAngles(ICM_20948_I2C *sensor)
 
     //log_i("Acc Angle: %f", radiansToDegrees(accAngle));
 
-    gyroAngle = angle - (DT/1000.0) * sensor->gyrX();
+    gyroAngle = angle - (DT/1000.0) * sensor->gyrZ();
 
     //log_i("Gyro: %f", (DT/1000.0)*sensor->gyrX());
     //log_i("Gyro Angle: %f", gyroAngle);
@@ -149,7 +149,7 @@ void setup()
 void loop()
 {
   //Print mean
-  log_i("Mean: %f", sum/(1000/DT*T));
+  //log_i("Mean: %f", sum/(1000/DT*T));
 
   double mean = sum/(1000.0/DT*T);
   double varians = 0;
@@ -158,15 +158,17 @@ void loop()
   }
 
   varians = varians / (1000/DT*T);
-  log_i("Varians: %f", varians);
+  //log_i("Varians: %f", varians);
 
   /*
     Jeg har valgt at systemet virker i de øverste 180 grader. Den har en ændringsperiode ved ændring af orentiation fra opad til nedad og omvendt.
     Dette er pga at accererometeret har orientationerne 
   */
 
-  // log_i("Acc Angle: %f", radiansToDegrees(accAngle));
-  // log_i("Gyro Angle: %f", gyroAngle);
+  //log_i("Acc Angle: %f", radiansToDegrees(accAngle));
+  //log_i("Gyro Angle: %f", gyroAngle);
+
+  log_i("Angle: %f", angle);
 
   delay(1000);
 }

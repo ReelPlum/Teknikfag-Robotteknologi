@@ -10,7 +10,7 @@
 DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 
-PulsingLed led(3, 8, 19500, POSITIONMODE_LED_PIN, 0.5);
+PulsingLed led(5, 8, 19500, POSITIONMODE_LED_PIN, 0.5);
 
 Stabilizer stabilizer;
 DeadReckoning deadReckoning;

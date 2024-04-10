@@ -32,7 +32,7 @@ DCMotor::DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_
     pinMode(this->pid_loop_pin, OUTPUT);
     pinMode(this->limit_sw_pin, INPUT);
 
-    ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
+    ESP32Encoder::useInternalWeakPullResistors = puType::up; // Enable the weak pull up resistors
 }
 
 void DCMotor::init(double ki, double kd, double kp)

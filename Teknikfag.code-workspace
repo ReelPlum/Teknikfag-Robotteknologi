@@ -41,6 +41,14 @@
 		{
 			"name": "PCB test program",
 			"path": "PCB test program"
+		},
+		{
+			"name": "PCB test af motor",
+			"path": "PCB test af motor"
+		},
+		{
+			"name": "led blink",
+			"path": "led blink"
 		}
 	],
 	"settings": {
