@@ -4,6 +4,8 @@
 #include "ICM_20948.h"
 #include <math.h>
 
+typedef void (*angleChangeCallback)(double *angle);
+
 class Stabilizer {
 public:
     Stabilizer(){}; // Constructor declaration
@@ -13,6 +15,7 @@ public:
     void SetExtraEngineSpeed(double right, double left);
 
     void ReadSensors();
+    void RegisterAngleCallback(angleChangeCallback callback);
 
     double current_angle;
 
@@ -37,4 +40,7 @@ private:
   DCMotor *RightMotor;
   DCMotor *LeftMotor;
   ICM_20948_I2C myICM;
+
+  angleChangeCallback angleCallbacks[5];
+  int32_t angleCallbacksNum;
 };

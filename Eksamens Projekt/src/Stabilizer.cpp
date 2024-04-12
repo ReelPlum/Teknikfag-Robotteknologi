@@ -109,7 +109,7 @@ void Stabilizer::ReadSensors()
         acc = 0;
     }
 
-    this->wx = this->myICM.gyrZ();
+    this->wx = this->myICM.gyrX();
 
     double gyro = this->current_angle + (this->DT) * this->wx;
 
@@ -117,4 +117,15 @@ void Stabilizer::ReadSensors()
     this->acc = acc;
 
     this->current_angle = this->sensorFusion.calculateValue(-radiansToDegrees(acc), gyro);
+
+    //Call registered callbacks
+    for (angleChangeCallback callback : this->angleCallbacks){
+        //Run callback function
+        callback(&(this->current_angle));
+    };
+};
+
+void Stabilizer::RegisterAngleCallback(angleChangeCallback callback){
+    this->angleCallbacksNum++;
+    this->angleCallbacks[this->angleCallbacksNum] = callback;
 };

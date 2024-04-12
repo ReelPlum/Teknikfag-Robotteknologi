@@ -5,6 +5,7 @@
 #include <DeadReckoning.h>
 #include <PulsingLed.h>
 #include <DCMotor.h>
+#include <Buzzer.h>
 
 // Setup classes
 DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
@@ -14,6 +15,7 @@ PulsingLed led(5, 8, 19500, POSITIONMODE_LED_PIN, 0.5);
 
 Stabilizer stabilizer;
 DeadReckoning deadReckoning;
+Buzzer angleBuzzer;
 
 double SpeedX;
 double SpeedY;
@@ -22,6 +24,10 @@ double LocationX;
 double LocationY;
 
 bool LocationMode = false;
+
+void buzzerAngleChangeCallback(double *angle){
+  angleBuzzer.change_freq(map_int(*angle, 0, 90, 4000000, 4500000));
+};
 
 double UpdateCallback(char subtype)
 {
@@ -136,6 +142,9 @@ void setup()
   motorL.init(KI, KD, KP);
 
   stabilizer.init(&motorR, &motorL);
+  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200000);
+
+  stabilizer.RegisterAngleCallback(buzzerAngleChangeCallback);
 
   init_web("IOT_NET", "esp32esp", ChangeCallback, UpdateCallback);
 };

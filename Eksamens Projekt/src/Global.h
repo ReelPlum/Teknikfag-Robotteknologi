@@ -38,3 +38,7 @@ const double b = 15;          // cm
 
 //Led lys
 const double POSITIONMODE_LED_PIN = 19;
+
+//buzzer
+const int32_t BUZZER_PIN = 0;
+const int32_t BUZZER_PWM_CH = 6;
