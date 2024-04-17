@@ -68,6 +68,10 @@ double UpdateCallback(char subtype)
   }
   else if (subtype == 't'){
     return stabilizer.getTargetAngle();
+  }
+  else if (subtype == 'e'){
+    Pid* anglePID = stabilizer.getPid();
+    return anglePID->get_error();
   };
   
   //If it asks for something weird for some stupid reason

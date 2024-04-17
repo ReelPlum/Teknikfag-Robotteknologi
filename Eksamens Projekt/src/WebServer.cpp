@@ -443,6 +443,7 @@ void syncTask(void *arg)
     double k = updateCallback('k');
     double i = updateCallback('i');
     double p = updateCallback('p');
+    double error = updateCallback('e');
 
     // Sync data in websocket
     sprintf(MsgBuf, "%s:%f", "xpos", x);
@@ -475,6 +476,9 @@ void syncTask(void *arg)
     web_socket_send(MsgBuf, 1, true);
 
     sprintf(MsgBuf, "%s:%i", "p", (int)p);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "error", (int)error);
     web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);

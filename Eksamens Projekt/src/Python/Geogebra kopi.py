@@ -83,6 +83,9 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 else:
                     app.LocationToggle = False
 
+            if m[0] == "error":
+                self.CurrentAngle.set(f"Error: {float(m[1])}")
+
         else:
             return
 
@@ -185,6 +188,9 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.TargetAngleVar.trace_add(mode="write", callback=self.updateTargetAngle)
         self.TargetAngleVar.set(str(0))
 
+        self.CurrentAngle = StringVar()
+        self.CurrentAngle.set(f"Error: {str(0)}")
+
         # formulaEntry = Entry(self, textvariable=strVar)
         # formulaEntry.grid(row=1, column=1, sticky=N+S+E+W)
         # self.rowconfigure(1, weight=0)
@@ -236,6 +242,11 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
         TargetAngleTxt = Label(self, text="Target Angle:")
         TargetAngleTxt.grid(row=5, column=3, sticky=N + S + E + W)
+
+        TargetAngleTxt = Label(
+            self, text="Target Angle:", textvariable=self.CurrentAngle
+        )
+        TargetAngleTxt.grid(row=6, column=4, sticky=N + S + E + W)
 
     def chooseMovement(self):
         self.Y = 0
