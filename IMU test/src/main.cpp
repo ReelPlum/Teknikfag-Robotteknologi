@@ -37,7 +37,7 @@ double radiansToDegrees(double radians){
 }
 
 double angle = 0;
-double k = .05;
+double k = .04;
 volatile double gyroAngle = 0;
 
 const int32_t DT = 10;
@@ -66,7 +66,7 @@ void getAngles(ICM_20948_I2C *sensor)
 
     //log_i("Acc Angle: %f", radiansToDegrees(accAngle));
 
-    gyroAngle = angle - (DT/1000.0) * sensor->gyrZ();
+    gyroAngle = angle - (DT/1000.0) * sensor->gyrX();
 
     //log_i("Gyro: %f", (DT/1000.0)*sensor->gyrX());
     //log_i("Gyro Angle: %f", gyroAngle);
@@ -76,7 +76,7 @@ void getAngles(ICM_20948_I2C *sensor)
     sum += angle;
     circular_array[i] = angle;
 
-    i+=1;
+    i++;
     if (i >= 1000.0/DT * T){
       i = 0;
     };
@@ -158,7 +158,7 @@ void loop()
   }
 
   varians = varians / (1000/DT*T);
-  //log_i("Varians: %f", varians);
+  log_i("Varians: %f", varians);
 
   /*
     Jeg har valgt at systemet virker i de øverste 180 grader. Den har en ændringsperiode ved ændring af orentiation fra opad til nedad og omvendt.

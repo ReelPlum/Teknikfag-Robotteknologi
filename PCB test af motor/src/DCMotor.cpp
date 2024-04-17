@@ -105,8 +105,6 @@ void DCMotor::pidTask(void *arg)
         p->current_pos = p->encoder.getCount();
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
 
-        //log_i("%f", p->current_pos);
-
         p->acceleration = (p->current_vel - last_vel) / p->dt;
 
         if (p->position_mode)

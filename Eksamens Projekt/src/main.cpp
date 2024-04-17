@@ -11,7 +11,7 @@
 DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 
-PulsingLed led(5, 8, 19500, POSITIONMODE_LED_PIN, 0.5);
+PulsingLed led(8, 8, 19500, POSITIONMODE_LED_PIN, 0.25);
 
 Stabilizer stabilizer;
 DeadReckoning deadReckoning;
@@ -53,53 +53,70 @@ double UpdateCallback(char subtype)
   }
   else if (subtype == 'y'){
     return location.y;
+  }
+  else if (subtype == 'g'){
+    return stabilizer.getGyroSens();
+  }
+  else if (subtype == 'k'){
+    return stabilizer.getK();
+  }
+  else if (subtype == 'i'){
+    return stabilizer.getKI();
+  }
+  else if (subtype == 'p'){
+    return stabilizer.getKP();
   };
   
   //If it asks for something weird for some stupid reason
   return 0.0;
 };
 
+const double res = 1000;
+
 void ChangeCallback(double *paramValue, char subtype)
 {
-  switch (subtype)
-  {
-  case 'x':
+
+  if (subtype == 'x'){
     // rotate
-    if (!LocationMode)
+    log_i("%i", LocationMode);
+    if (LocationMode)
     {
-      break;
+      return;
     }
 
-    SpeedX = (*paramValue) / 1000.0 * (-6000);
+    log_i("Setting speed");
 
-    stabilizer.SetExtraEngineSpeed(SpeedY - SpeedX, SpeedY + SpeedX);
+    SpeedX = (*paramValue) / res * (-6000);
 
-    break;
-  case 'y':
+    stabilizer.SetExtraEngineSpeed(-SpeedX, SpeedX);
+
+  }
+  else if (subtype == 'y'){
     // forward / backward
-    if (!LocationMode)
+    if (LocationMode)
     {
-      break;
+      return;
     }
 
-    SpeedY = (*paramValue) / 1000.0 * (-6000);
+    log_i("Setting speed");
 
-    stabilizer.SetExtraEngineSpeed(SpeedY - SpeedX, SpeedY + SpeedX);
+    SpeedY = (*paramValue) / res * (6);
 
-    break;
-  case 'a':
+    stabilizer.SetExtraAngle(SpeedY * 10);
+  }
+  else if (subtype == 'a'){
     // location x
-    LocationX = *paramValue / 1000.0;
+    LocationX = *paramValue / res;
 
     deadReckoning.setTarget(LocationX, LocationY);
-    break;
-  case 'b':
+  }
+  else if  (subtype == 'b'){
     // location y
-    LocationY = *paramValue / 1000.0;
+    LocationY = *paramValue / res;
 
     deadReckoning.setTarget(LocationX, LocationY);
-    break;
-  case 'l':
+  }
+  else if (subtype == 'l'){
     // location toggle
     SpeedY = 0;
     SpeedX = 0;
@@ -112,7 +129,53 @@ void ChangeCallback(double *paramValue, char subtype)
     {
       LocationMode = false;
     }
-    break;
+  }
+  if (subtype == 'g'){
+    log_i("Setting gyro sens!!");
+
+    //change k on stabilizer
+    log_i("sens: %f", (*paramValue)/res);
+    
+    stabilizer.SetGyroSens((*paramValue)/res);
+
+  }
+  if (subtype == 'k'){
+    //change gyro sens on stabilizer
+    log_i("Setting k!!");
+
+    //change k on stabilizer
+    log_i("k: %f", (*paramValue)/res);
+
+    if ((*paramValue)/res > 1.0) {
+      stabilizer.SetK(1);
+      return;
+    }
+    if ((*paramValue)/res < 0) {
+      stabilizer.SetK(0);
+      return;
+    }
+    
+    stabilizer.SetK((*paramValue)/res);
+
+  };
+  if (subtype == 'i'){
+    //change gyro sens on stabilizer
+    log_i("Setting ki!!");
+
+    //change k on stabilizer
+    log_i("ki: %f", (*paramValue)/res);
+    
+    stabilizer.SetKI((*paramValue)/res);
+
+  };
+  if (subtype == 'p'){
+    log_i("Setting kp!!");
+
+    //change k on stabilizer
+    log_i("kp: %f", (*paramValue)/res);
+    
+    stabilizer.SetKP((*paramValue)/res);
+
   };
 };
 
@@ -141,10 +204,10 @@ void setup()
   motorR.init(KI, KD, KP);
   motorL.init(KI, KD, KP);
 
-  stabilizer.init(&motorR, &motorL);
-  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200000);
+  stabilizer.init(&motorR, &motorL, .5);
 
-  stabilizer.RegisterAngleCallback(buzzerAngleChangeCallback);
+  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200);
+  //stabilizer.RegisterAngleCallback(buzzerAngleChangeCallback);
 
   init_web("IOT_NET", "esp32esp", ChangeCallback, UpdateCallback);
 };
@@ -152,4 +215,17 @@ void setup()
 double i = 0;
 void loop()
 {
+  //log_i("Current speed: %f, %f", SpeedX, SpeedY);
+  // log_i("Gyrosens %f", stabilizer.getGyroSens());
+  // log_i("KI: %f", stabilizer.getKI());
+  // log_i("KP: %f", stabilizer.getKP());
+  // log_i("K: %f", stabilizer.getK());
+
+  Pid* anglePID = stabilizer.getPid();
+
+  log_i("Error: %f", anglePID->get_error());
+
+  log_i("Target Angle: %f", stabilizer.getTargetAngle());
+
+  delay(2000);
 };

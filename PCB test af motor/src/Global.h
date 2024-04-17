@@ -9,12 +9,12 @@ const double KD = 0;
 const double KP = 0.05;
 const int32_t PWM_Freq = 19500;
 const int32_t PWM_Res = 12;
-const double PID_CtrlMax = 2000;
+const double PID_CtrlMax = 20000;
 const double CtrlMin = -100;
 const double CtrlMax = 100;
 const double MaxVel = 6000;
 const double IntegrationThreshold = 100000;
-const double ImpulsesPerRotation = 1990;
+const double ImpulsesPerRotation = 2000;
 
 // DC motor right
 const int32_t DCR_ENCA = 4;

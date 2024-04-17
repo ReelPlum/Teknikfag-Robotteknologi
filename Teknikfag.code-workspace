@@ -49,6 +49,10 @@
 		{
 			"name": "led blink",
 			"path": "led blink"
+		},
+		{
+			"name": "Motor Test Segway",
+			"path": "Motor Test Segway"
 		}
 	],
 	"settings": {

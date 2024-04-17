@@ -56,26 +56,26 @@ void DCMotor::init(double ki, double kd, double kp)
     this->pidVel.set_kp(kp);
 
     // Start task
-    if (this->pid_mode)
-    {
-        xTaskCreate(
-            this->pidTask,
-            "Pid Task",
-            10000,
-            this, //< Pointer gets forwarded to the task
-            1,
-            NULL);
-    }
+    xTaskCreate(
+        this->pidTask,
+        "Pid Task",
+        10000,
+        this, //< Pointer gets forwarded to the task
+        1,
+        NULL);
 }
 
-int32_t DCMotor::calculate_degtovel(int32_t val){
+int32_t DCMotor::calculate_degtovel(int32_t val)
+{
     return (val / 360.0) * this->impulses_per_rotation;
 };
 
-void DCMotor::set_PWM(int32_t pwm){
-    //Set HBridge PWM
-    if (this->pid_mode){
-        //Cannot set PWM manually when pid mode is enabled
+void DCMotor::set_PWM(int32_t pwm)
+{
+    // Set HBridge PWM
+    if (this->pid_mode)
+    {
+        // Cannot set PWM manually when pid mode is enabled
         return;
     }
 
@@ -98,28 +98,28 @@ void DCMotor::pidTask(void *arg)
     for (;;)
     { // loop tager mindre end 18us * 2
 
-        digitalWrite(p->pid_loop_pin, HIGH);
-
-        // log_i("Hej mor");
-
         p->current_pos = p->encoder.getCount();
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
 
-        //log_i("%f", p->current_pos);
+        //log_i("%f", p->current_vel);
 
         p->acceleration = (p->current_vel - last_vel) / p->dt;
 
-        if (p->position_mode)
+        if (p->pid_mode)
         {
-            p->pidPos.update(p->req_pos, p->current_pos, &(p->ctrl_pos), p->integration_threshold);
+            if (p->position_mode)
+            {
+                p->pidPos.update(p->req_pos, p->current_pos, &(p->ctrl_pos), p->integration_threshold);
 
-            p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
+                p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
+            }
+
+            p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
+
+            // log_i("Verdies %f and %f", current_vel, req_pos);
+
+            p->hbridge.set_pwm(p->ctrl_vel);
         }
-
-        p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
-
-        // log_i("Verdies %f and %f", current_vel, req_pos);
-        p->hbridge.set_pwm(p->ctrl_vel);
 
         // log_i("Current pos")
         // log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);
@@ -127,10 +127,10 @@ void DCMotor::pidTask(void *arg)
 
         last_vel = p->current_vel;
         prev_pos = p->current_pos;
-        digitalWrite(p->pid_loop_pin, LOW);
+        //digitalWrite(p->pid_loop_pin, LOW);
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 
-        //log_i("%f, %f", p->current_vel, p->req_vel);
+        // log_i("%f, %f", p->current_vel, p->req_vel);
     }
 }
 

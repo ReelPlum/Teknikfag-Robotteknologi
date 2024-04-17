@@ -56,8 +56,12 @@ void Pid::update(double set_value, double current_value, double *ctrl_value, dou
 
     error = set_value - current_value;
 
-    if (fabs(error) < integration_threshold)
+    if (fabs(error) < integration_threshold){
         error_sum += error;
+        //log_i("Error!");
+    }
+
+    //log_i("error: %f", error_sum);
 
     kp_val = error;
     ki_val = error_sum * dt;

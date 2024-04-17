@@ -13,8 +13,8 @@ const double PID_CtrlMax = 2000;
 const double CtrlMin = -100;
 const double CtrlMax = 100;
 const double MaxVel = 6000;
-const double IntegrationThreshold = 100000;
-const double ImpulsesPerRotation = 1990;
+const double IntegrationThreshold = 5;
+const double ImpulsesPerRotation = 2000;
 
 // DC motor right
 const int32_t DCR_ENCA = 4;
@@ -33,12 +33,12 @@ const int32_t DCL_PWM = 23;
 const int32_t DCL_PWMCH = 3;
 
 // Robot Dimensions
-const double WHEELRADIUS = 7; // cm
-const double b = 15;          // cm
+const double WHEELRADIUS = .075; // m
+const double b = .15;          // cm
 
 //Led lys
-const double POSITIONMODE_LED_PIN = 19;
+const int32_t POSITIONMODE_LED_PIN = 19;
 
 //buzzer
-const int32_t BUZZER_PIN = 0;
+const int32_t BUZZER_PIN = 33;
 const int32_t BUZZER_PWM_CH = 6;

@@ -18,11 +18,9 @@ from math import *
 class Application(Frame):  # Application is a Frame (inheritance from Frame)
     def __init__(self, master):
         Frame.__init__(self, master, background='#ffffff')
-        self.grid(sticky=N+S+E+W)  # put frame in toplevel window
-        self.createWidgets(master)
     
 
-        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
+        self.ws = websocket.WebSocketApp("ws://192.168.1.104:1337", on_message=self.onMessage)
         
         self.ws.X = 0
         self.ws.Y =0
@@ -31,6 +29,14 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.X = 0
         self.Y = 0
         self.Angle = 0
+        
+        self.K = .05
+        self.GyroSens = .5
+        self.KI = .01
+        self.KP = .5
+        
+        self.grid(sticky=N+S+E+W)  # put frame in toplevel window
+        self.createWidgets(master)
         
         Thread(target = self.ws.run_forever).start()
         Thread(target = self.chooseMovement).start()
@@ -73,28 +79,133 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
 
+    def updateGyroSens(self,a,b,c):
+        print("Gyro sens")
+        try:
+            value = float(self.SensVar.get())
+            
+            self.GyroSens = value
+            
+            self.ws.send(f'setgyrosens:{round(self.GyroSens*1000)}')
+            
+        except Exception as e:
+            print(f"Error on set gyrosens: {e}")
+        
+    def updateK(self,a,b,c):
+        try:
+            value = float(self.KVar.get())
+            if value > 1:
+                value = 1
+                
+            if value < 0:
+                value = 0
+            
+            self.K = value
+            
+            self.ws.send(f'setk:{round(self.K*1000)}')
+        except Exception as e:
+            print(f"Error on set k: {e}")
+        
+    def updateKI(self,a,b,c):
+        try:
+            value = float(self.KIVar.get())
+            
+            self.KI = value
+            
+            self.ws.send(f'set_ki:{round(self.KI*1000)}')
+        except Exception as e:
+            print(f"Error on set KI: {e}")
+        
+    def updateKP(self,a,b,c):
+        try:
+            value = float(self.KPVar.get())
+            
+            self.KP = value
+            
+            self.ws.send(f'set_kp:{round(self.KP*1000)}')
+        except Exception as e:
+            print(f"Error on set KP: {e}")
+
     def createWidgets(self, root):
         top = self.winfo_toplevel()
         # top.geometry("500x500")
         top.rowconfigure(0, weight=1)     # toplevel window rows scalable
         top.columnconfigure(0, weight=1)  # toplevel window colums scalable
         self.Canvas = Grapher(self)
-        self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=4, sticky=N+S+E+W)
+        self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N+S+E+W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
 
         #Graph(canvas, "a*x^3+b*x^2+c*x+d")
 
-        strVar = StringVar()
+        self.KVar = StringVar()
+        self.KVar.trace_add(mode="write", callback=self.updateK)
+        self.KVar.set(str(self.K))
+        
+        self.SensVar = StringVar()
+        self.SensVar.trace_add(mode="write", callback=self.updateGyroSens)
+        self.SensVar.set(str(self.GyroSens))
+        
+        self.KIVar = StringVar()
+        self.KIVar.trace_add(mode="write", callback=self.updateKI)
+        self.KIVar.set(str(self.KI))
+        
+        self.KPVar = StringVar()
+        self.KPVar.trace_add(mode="write", callback=self.updateKP)
+        self.KPVar.set(str(self.KP))
 
-        formulaEntry = Entry(self, textvariable=strVar)
-        formulaEntry.grid(row=1, column=1, sticky=N+S+E+W)
+        # formulaEntry = Entry(self, textvariable=strVar)
+        # formulaEntry.grid(row=1, column=1, sticky=N+S+E+W)
+        # self.rowconfigure(1, weight=0)
+        # self.columnconfigure(1, weight=1)
+        
+        SensorFusionTxt = Label(self, text = "K:")
+        SensorFusionTxt.grid(row=1, column=1, sticky=N+S+E+W)
         self.rowconfigure(1, weight=0)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(1, weight=0)
+        
+        self.KEntry = Entry(self, textvariable=self.KVar)
+        self.KEntry.grid(row=1, column=2, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(2, weight=1)
+        
+        KDTxt = Label(self, text = "KD:")
+        KDTxt.grid(row=1, column=3, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(3, weight=0)
+        
+        self.SensEntry = Entry(self, textvariable=self.SensVar)
+        self.SensEntry.grid(row=1, column=4, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(4, weight=1)
+        
+        KITxt = Label(self, text = "KI:")
+        KITxt.grid(row=1, column=5, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(5, weight=0)
+        
+        self.KIEntry = Entry(self, textvariable=self.KIVar)
+        self.KIEntry.grid(row=1, column=6, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(6, weight=1)
+        
+        KPTxt = Label(self, text = "KP:")
+        KPTxt.grid(row=1, column=7, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(7, weight=0)
+        
+        self.KPEntry = Entry(self, textvariable=self.KPVar)
+        self.KPEntry.grid(row=1, column=8, sticky=N+S+E+W)
+        self.rowconfigure(1, weight=0)
+        self.columnconfigure(8, weight=1)
 
     def chooseMovement(self):
         self.Y = 0
         self.X = 0
+        
+        locy = 0
+        locx = 0
+        loctog = False
 
         while True:
             time.sleep(0.1)
@@ -133,10 +244,7 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
             if y != 0:
                 y = y/l
-
-
-            message = (f"x:{x}, y:{y}]")
-            #print(message)
+            
             x = x * multiplier
             y = y * multiplier
 
@@ -149,11 +257,21 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 self.Y = y
                 self.ws.send(f'forward:{round(y*1000)}')
                 
-            self.ws.send(f'locationx:{round(self.Canvas.TX*1000)}')
-            self.ws.send(f'locationy:{round(self.Canvas.TY*1000)}')
+
+            if self.Canvas.TX != locx:
+                self.ws.send(f'locationx:{round(self.Canvas.TX*1000)}')
+                locx = self.Canvas.TX
+                
+            if self.Canvas.TY != locy:
+                self.ws.send(f'locationy:{round(self.Canvas.TY*1000)}')
+                locy = self.Canvas.TY
+            
             v = 0
             if self.Canvas.TargetEnabled:
                 v = 1
+            
+            if loctog == self.Canvas.TargetEnabled:
+                continue
             
             self.ws.send(f'toggle_location:{v}')
 

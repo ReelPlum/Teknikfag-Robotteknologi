@@ -124,6 +124,8 @@ void DeadReckoning::Task(void *arg)
         // Update move callback
         direction dir = FindDirection(p->Data.X, p->Data.Y, p->Data.Angle, p->targetX, p->targetY);
 
+        //log_i("X: %f, Y: %f, A: %f", p->Data.X, p->Data.Y, p->Data.Angle);
+
         p->moveCallback(dir.x, dir.y);
 
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);

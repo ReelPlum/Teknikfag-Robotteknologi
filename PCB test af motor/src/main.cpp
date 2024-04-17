@@ -16,8 +16,8 @@ void setup() {
   motorR.init(KI, KD, KP);
   motorL.init(KI, KD, KP);
 
-  motorR.set_velocity(500);
-  motorL.set_velocity(500);
+  motorR.set_velocity(-1000);
+  motorL.set_velocity(-1000);
 }
 
 void loop() {

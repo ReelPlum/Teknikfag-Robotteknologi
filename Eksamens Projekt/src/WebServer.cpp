@@ -9,6 +9,9 @@
  */
 #include <WebServer.h>
 
+
+#include <PulsingLed.h>
+
 /***********************************************************
  * Functions
  */
@@ -19,13 +22,17 @@ callbackUpdate updateCallback;
 // #define SOFT_AP
 
 const int32_t ws_port = 1337;
-const int32_t led_pin = 17;
+const int32_t led_pin = 5;
 
 const char *cmd_forward = "forward";
 const char *cmd_rotate = "rotate";
 const char *cmd_toggle_location = "toggle_location";
 const char *cmd_locationx = "locationx";
 const char *cmd_locationy = "locationy";
+const char *cmd_setK = "setk";
+const char *cmd_setGyroSens = "setgyrosens";
+const char *cmd_setKP = "set_kp";
+const char *cmd_setKI = "set_ki";
 
 // Globals
 WebSocketsServer WebSocket = WebSocketsServer(ws_port);
@@ -115,6 +122,94 @@ void handle_locationy(char *command, uint8_t client_num)
   }
 }
 
+void handle_set_k(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    changeCallback(&result, 'k');
+  }
+  else
+  {
+    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
+  }
+}
+
+void handle_set_gyrosens(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    changeCallback(&result, 'g');
+  }
+  else
+  {
+    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
+  }
+}
+
+void handle_set_ki(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    changeCallback(&result, 'i');
+  }
+  else
+  {
+    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
+  }
+}
+
+void handle_set_kp(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    changeCallback(&result, 'p');
+  }
+  else
+  {
+    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
+  }
+}
+
 void handle_rotate(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
@@ -138,6 +233,29 @@ void handle_rotate(char *command, uint8_t client_num)
   }
 }
 
+void handle_location_toggle(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    // update rotate
+    changeCallback(&result, 'l');
+  }
+  else
+  {
+    log_e("[%u]: illegal rotate state received: %s", client_num, value + 1);
+  }
+}
+
 void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
 {
   char *command = (char *)payload;
@@ -152,65 +270,33 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   {
     handle_rotate(command, client_num);
   }
-  else
+  else if (strncmp(command, cmd_locationx, strlen(cmd_locationx)) == 0)
   {
-    log_e("[%u] Message not recognized", client_num);
-  }
-
-  WebSocket.connectedClients();
-}
-
-void handle_toggle_location(uint8_t client_num, uint8_t *payload, size_t length)
-{
-  char *command = (char *)payload;
-
-  log_d("[%u] Received text: %s", client_num, command);
-
-  if (strncmp(command, cmd_forward, strlen(cmd_toggle_location)) == 0)
-  {
-    // toggle between listening to location input to move input.
-    char *value = strstr(command, ":");
-
-    if (value == NULL || *value != ':')
-    {
-      log_e("[%u]: Bad command %s", client_num, command);
-      return;
-    }
-    errno = 0;
-    char *e;
-    double result = strtol(value + 1, &e, 10);
-    if (*e == '\0' && 0 == errno) // no error
-    {
-      changeCallback(&result, 'l');
-    }
-    else
-    {
-      log_e("[%u]: illegal location toggle state received: %s", client_num, value + 1);
-    }
-  }
-  else
-  {
-    log_e("[%u] Message not recognized", client_num);
-  }
-
-  WebSocket.connectedClients();
-}
-
-void handle_location(uint8_t client_num, uint8_t *payload, size_t length)
-{
-  char *command = (char *)payload;
-
-  log_d("[%u] Received text: %s", client_num, command);
-
-  if (strncmp(command, cmd_forward, strlen(cmd_locationx)) == 0)
-  {
-    // Set wanted x location
     handle_locationx(command, client_num);
   }
-  else if (strncmp(command, cmd_forward, strlen(cmd_locationy)) == 0)
+  else if (strncmp(command, cmd_locationy, strlen(cmd_locationy)) == 0)
   {
-    // Set wanted y location
     handle_locationy(command, client_num);
+  }
+  else if (strncmp(command, cmd_toggle_location, strlen(cmd_toggle_location)) == 0)
+  {
+    handle_location_toggle(command, client_num);
+  }
+  else if (strncmp(command, cmd_setK, strlen(cmd_setK)) == 0)
+  {
+    handle_set_k(command, client_num);
+  }
+  else if (strncmp(command, cmd_setGyroSens, strlen(cmd_setGyroSens)) == 0)
+  {
+    handle_set_gyrosens(command, client_num);
+  }
+  else if (strncmp(command, cmd_setKI, strlen(cmd_setKI)) == 0)
+  {
+    handle_set_ki(command, client_num);
+  }
+  else if (strncmp(command, cmd_setKP, strlen(cmd_setKP)) == 0)
+  {
+    handle_set_kp(command, client_num);
   }
   else
   {
@@ -232,8 +318,11 @@ void onWebSocketEvent(uint8_t client_num,
   // Client has disconnected
   case WStype_DISCONNECTED:
     log_i("[%u] Disconnected!", client_num);
-    changeCallback(0, 'x');
-    changeCallback(0, 'y');
+
+    digitalWrite(led_pin, LOW);
+    delay(100);
+    digitalWrite(led_pin, HIGH);
+
     break;
   // New client has connected
   case WStype_CONNECTED:
@@ -241,6 +330,11 @@ void onWebSocketEvent(uint8_t client_num,
     IPAddress ip = WebSocket.remoteIP(client_num);
     log_i("[%u] Connection from ", client_num);
     log_i("IP: %s", ip.toString().c_str());
+
+    digitalWrite(led_pin, LOW);
+    delay(100);
+    digitalWrite(led_pin, HIGH);
+
     break;
   }
   // Handle text messages from client
@@ -260,20 +354,23 @@ void onWebSocketEvent(uint8_t client_num,
   }
 }
 
-void setup_network(const char *ssid, const char *password)
+void setup_network()
 {
-#ifdef SOFT_AP
+  // log_i("SSID: %s",ssid);
+  // log_i("password: %s", password);
+
+// #ifdef SOFT_AP
   // Start access point
-  WiFi.softAP(ssid, password, wifi_channel); // (alle grupper skal bruge en unik kanal)
-  // Print our IP address
+  // WiFi.softAP("Segway", NULL, 6); // (alle grupper skal bruge en unik kanal)
+  // // Print our IP address
 
-  log_i("AP running");
-  log_i("My IP address: ");
-  log_i("IP: %s", WiFi.softAPIP().toString().c_str());
+  // log_i("AP running");
+  // log_i("My IP address: ");
+  // log_i("IP: %s", WiFi.softAPIP().toString().c_str());
 
-#else
-  // connect to local network
-  WiFi.begin(ssid, password);
+// #else
+//   // connect to local network
+  WiFi.begin("IOT_NET", "esp32esp");
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
@@ -281,10 +378,13 @@ void setup_network(const char *ssid, const char *password)
   }
   log_i("Connected to network");
   log_i("IP: %s", WiFi.localIP().toString().c_str());
-#endif
+// #endif
 
+  log_i("Beginning websocket!");
   WebSocket.begin();
   WebSocket.onEvent(onWebSocketEvent);
+
+  digitalWrite(led_pin, HIGH);
 }
 
 void webSocketLoop(void *arg)
@@ -312,6 +412,10 @@ void syncTask(void *arg)
     double lx = updateCallback('x');
     double ly = updateCallback('y');
     double lt = updateCallback('l');
+    double gyrosens = updateCallback('g');
+    double k = updateCallback('k');
+    double i = updateCallback('i');
+    double p = updateCallback('p');
 
     // Sync data in websocket
     sprintf(MsgBuf, "%s:%f", "xpos", x);
@@ -332,6 +436,18 @@ void syncTask(void *arg)
 
     // Location toggle
     sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "gyrosens", (int)gyrosens);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "k", (int)k);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "i", (int)i);
+    web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "p", (int)p);
     web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
@@ -373,6 +489,8 @@ void init_web(const char* SSID, const char* password, callbackChange onChange, c
   pinMode(led_pin, OUTPUT);
   digitalWrite(led_pin, LOW);
 
-  setup_network(SSID, password);
+  log_i("loading network");
+  setup_network();
+  log_i("loading tasks");
   setup_tasks();
 }

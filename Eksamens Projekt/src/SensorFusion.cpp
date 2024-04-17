@@ -5,6 +5,14 @@ void SensorFusion::setup(double k)
     this->k = k;
 };
 
+void SensorFusion::setK(double k){
+    this->k = k;
+}
+
+double SensorFusion::getK(){
+    return this->k;
+}
+
 double SensorFusion::calculateValue(double a, double b)
 {
     double value = this->k * a + (1 - this->k) * b;
