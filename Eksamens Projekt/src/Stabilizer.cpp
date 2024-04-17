@@ -15,12 +15,16 @@ double Stabilizer::getTargetAngle(){
     return this->wanted_angle + this->extraAngle;
 };
 
-void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double gyro_sens)
+void Stabilizer::setWantedAngle(double WantedAngle){
+    this->WantedAngle = WantedAngle
+}
+
+void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd)
 {
     // Initialize stuff here
 
     this->DT = .005;
-    this->gyro_sens = gyro_sens;
+    this->kd = kd;
 
     this->sensorFusion.setup(.05);
     this->anglePID.init(this->DT, 50000);
@@ -46,6 +50,15 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double gyro_sens)
         this, //< Pointer gets forwarded to the task
         1,
         NULL);
+
+    xTaskCreate(
+        this->CallbackTask,
+        "Stabilizer Callback Handler",
+        10000,
+        this,
+        1,
+        NULL
+    );
 };
 
 Pid* Stabilizer::getPid(){
@@ -56,12 +69,12 @@ double Stabilizer::getK(){
     return this->sensorFusion.getK();
 }
 
-double Stabilizer::getGyroSens(){
-    return this->gyro_sens;
+double Stabilizer::getKD(){
+    return this->kd;
 }
 
-void Stabilizer::SetGyroSens(double gyro_sens){
-    this->gyro_sens = gyro_sens;
+void Stabilizer::SetKD(double KD){
+    this->kd = KD;
 }
 
 void Stabilizer::SetKI(double KI){
@@ -88,6 +101,21 @@ void Stabilizer::SetK(double k){
     (this->sensorFusion).setK(k);
 }
 
+void Stabilizer::CallbackTask(void *arg)
+{
+    Stabilizer *p = static_cast<Stabilizer *>(arg);
+
+    TickType_t xTimeIncrement = configTICK_RATE_HZ * 1;
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    for (;;)
+    { // loop tager mindre end 18us * 2
+        for (angleChangeCallback callback : this->angleCallbacks){
+            //Run callback function
+            callback(&(this->current_angle));
+        };
+    }
+}
+
 void Stabilizer::Update(void *arg)
 {
     Stabilizer *p = static_cast<Stabilizer *>(arg);
@@ -112,7 +140,7 @@ void Stabilizer::Update(void *arg)
         //Taget angle = 0 + extra angle
         p->anglePID.update(p->getTargetAngle(), p->current_angle, &(p->ctrl_angle), IntegrationThreshold);
 
-        double value = (p->ctrl_angle + p->gyro_sens * p->wx);
+        double value = (p->ctrl_angle + p->kd * p->wx);
 
         if (abs(p->current_angle) >= 91)
         {

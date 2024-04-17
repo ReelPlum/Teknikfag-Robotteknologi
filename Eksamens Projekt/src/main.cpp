@@ -26,7 +26,7 @@ double LocationY;
 bool LocationMode = false;
 
 void buzzerAngleChangeCallback(double *angle){
-  angleBuzzer.change_freq(map_int(*angle, 0, 90, 4000000, 4500000));
+  angleBuzzer.change_freq(map_int(*angle, 0, 45, 4200, 3700));
 };
 
 double UpdateCallback(char subtype)
@@ -54,7 +54,7 @@ double UpdateCallback(char subtype)
   else if (subtype == 'y'){
     return location.y;
   }
-  else if (subtype == 'g'){
+  else if (subtype == 'd'){
     return stabilizer.getGyroSens();
   }
   else if (subtype == 'k'){
@@ -65,6 +65,9 @@ double UpdateCallback(char subtype)
   }
   else if (subtype == 'p'){
     return stabilizer.getKP();
+  }
+  else if (subtype == 't'){
+    return stabilizer.getTargetAngle();
   };
   
   //If it asks for something weird for some stupid reason
@@ -130,21 +133,14 @@ void ChangeCallback(double *paramValue, char subtype)
       LocationMode = false;
     }
   }
-  if (subtype == 'g'){
-    log_i("Setting gyro sens!!");
+  if (subtype == 'd'){
 
-    //change k on stabilizer
-    log_i("sens: %f", (*paramValue)/res);
-    
-    stabilizer.SetGyroSens((*paramValue)/res);
+    //change kd on stabilizer
+    stabilizer.SetKD((*paramValue)/res);
 
   }
   if (subtype == 'k'){
-    //change gyro sens on stabilizer
-    log_i("Setting k!!");
-
     //change k on stabilizer
-    log_i("k: %f", (*paramValue)/res);
 
     if ((*paramValue)/res > 1.0) {
       stabilizer.SetK(1);
@@ -159,11 +155,7 @@ void ChangeCallback(double *paramValue, char subtype)
 
   };
   if (subtype == 'i'){
-    //change gyro sens on stabilizer
-    log_i("Setting ki!!");
-
-    //change k on stabilizer
-    log_i("ki: %f", (*paramValue)/res);
+    //change ki on stabilizer
     
     stabilizer.SetKI((*paramValue)/res);
 
@@ -171,12 +163,15 @@ void ChangeCallback(double *paramValue, char subtype)
   if (subtype == 'p'){
     log_i("Setting kp!!");
 
-    //change k on stabilizer
+    //change kp on stabilizer
     log_i("kp: %f", (*paramValue)/res);
     
     stabilizer.SetKP((*paramValue)/res);
 
   };
+  if (subtype == 't'){
+    stabilizer.setWantedAngle((*paramValue)/res);
+  }
 };
 
 void MoveCallback(double x, double y)

@@ -10,13 +10,13 @@ class Stabilizer {
 public:
     Stabilizer(){}; // Constructor declaration
 
-    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double gyro_sens);
-    static void Update(void *arg);
+    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd);
     void SetExtraEngineSpeed(double right, double left);
-    void SetGyroSens(double gyro_sens);
+    void SetKD(double KD);
     void SetK(double k);
     void SetKP(double KP);
     void SetKI(double KI);
+    void setTargetAngle(double WantedAngle);
 
     void SetExtraAngle(double angle);
 
@@ -24,7 +24,7 @@ public:
     void RegisterAngleCallback(angleChangeCallback callback);
 
     double getK();
-    double getGyroSens();
+    double getKD();
     double getKI();
     double getKP();
 
@@ -35,6 +35,9 @@ public:
     Pid* getPid();
 
 private:
+  static void Update(void *arg);
+  static void CallbackTask(void *arg);
+
   double DT;
   double value;
   double gyro;
@@ -45,7 +48,7 @@ private:
 
   double ki;
   double kp;
-  double gyro_sens;
+  double kd;
   double ctrl_angle;
   double wanted_angle = -0.1;
 

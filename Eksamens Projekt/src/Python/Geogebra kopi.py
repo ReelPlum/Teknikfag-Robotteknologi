@@ -15,194 +15,232 @@ from threading import Thread
 import time
 from math import *
 
+
 class Application(Frame):  # Application is a Frame (inheritance from Frame)
     def __init__(self, master):
-        Frame.__init__(self, master, background='#ffffff')
-    
+        Frame.__init__(self, master, background="#ffffff")
 
-        self.ws = websocket.WebSocketApp("ws://192.168.1.104:1337", on_message=self.onMessage)
-        
+        self.ws = websocket.WebSocketApp(
+            "ws://192.168.1.104:1337", on_message=self.onMessage
+        )
+
         self.ws.X = 0
-        self.ws.Y =0
+        self.ws.Y = 0
         self.ws.Angle = 0
 
         self.X = 0
         self.Y = 0
         self.Angle = 0
-        
-        self.K = .05
-        self.GyroSens = .5
-        self.KI = .01
-        self.KP = .5
-        
-        self.grid(sticky=N+S+E+W)  # put frame in toplevel window
+
+        self.K = 0.05
+        self.GyroSens = 0.5
+        self.KI = 0.01
+        self.KP = 0.5
+        self.TargetAngle = 0
+
+        self.grid(sticky=N + S + E + W)  # put frame in toplevel window
         self.createWidgets(master)
-        
-        Thread(target = self.ws.run_forever).start()
-        Thread(target = self.chooseMovement).start()
+
+        Thread(target=self.ws.run_forever).start()
+        Thread(target=self.chooseMovement).start()
 
     def onMessage(self, app, msg):
         m = msg.split(":")
         if len(m) == 2:
             if m[0] == "xpos":
                 app.X = float(m[1])
-                
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+
+                self.Canvas.updatePoint(
+                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
+                )
             if m[0] == "ypos":
                 app.Y = float(m[1])
-                
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+
+                self.Canvas.updatePoint(
+                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
+                )
             if m[0] == "angle":
                 app.Angle = float(m[1])
-                
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+
+                self.Canvas.updatePoint(
+                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
+                )
             if m[0] == "targetx":
                 app.TargetX = float(m[1])
-                
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+
+                self.Canvas.updatePoint(
+                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
+                )
             if m[0] == "targety":
                 app.TargetY = float(m[1])
-                
-                self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+
+                self.Canvas.updatePoint(
+                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
+                )
             if m[0] == "locationtoggle":
                 if int(m[1]) == 1:
                     app.LocationToggle = True
                 else:
                     app.LocationToggle = False
-            
+
         else:
             return
-        
-        #Update point on graph
+
+        # Update point on graph
         self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
 
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
 
-    def updateGyroSens(self,a,b,c):
-        print("Gyro sens")
+    def updateGyroSens(self, a, b, c):
         try:
             value = float(self.SensVar.get())
-            
+
             self.GyroSens = value
-            
-            self.ws.send(f'setgyrosens:{round(self.GyroSens*1000)}')
-            
+
+            self.ws.send(f"set_kd:{round(self.GyroSens*1000)}")
+
         except Exception as e:
-            print(f"Error on set gyrosens: {e}")
-        
-    def updateK(self,a,b,c):
+            print(f"Error on set kd: {e}")
+
+    def updateK(self, a, b, c):
         try:
             value = float(self.KVar.get())
             if value > 1:
                 value = 1
-                
+
             if value < 0:
                 value = 0
-            
+
             self.K = value
-            
-            self.ws.send(f'setk:{round(self.K*1000)}')
+
+            self.ws.send(f"setk:{round(self.K*1000)}")
         except Exception as e:
             print(f"Error on set k: {e}")
-        
-    def updateKI(self,a,b,c):
+
+    def updateKI(self, a, b, c):
         try:
             value = float(self.KIVar.get())
-            
+
             self.KI = value
-            
-            self.ws.send(f'set_ki:{round(self.KI*1000)}')
+
+            self.ws.send(f"set_ki:{round(self.KI*1000)}")
         except Exception as e:
             print(f"Error on set KI: {e}")
-        
-    def updateKP(self,a,b,c):
+
+    def updateKP(self, a, b, c):
         try:
             value = float(self.KPVar.get())
-            
+
             self.KP = value
-            
-            self.ws.send(f'set_kp:{round(self.KP*1000)}')
+
+            self.ws.send(f"set_kp:{round(self.KP*1000)}")
+        except Exception as e:
+            print(f"Error on set KP: {e}")
+
+    def updateTargetAngle(
+        self,
+        a,
+        b,
+        c,
+    ):
+        try:
+            value = float(self.TargetAngleVar.get())
+
+            self.TargetAngle = value
+
+            self.ws.send(f"set_target_angle:{round(self.TargetAngle*1000)}")
         except Exception as e:
             print(f"Error on set KP: {e}")
 
     def createWidgets(self, root):
         top = self.winfo_toplevel()
         # top.geometry("500x500")
-        top.rowconfigure(0, weight=1)     # toplevel window rows scalable
+        top.rowconfigure(0, weight=1)  # toplevel window rows scalable
         top.columnconfigure(0, weight=1)  # toplevel window colums scalable
         self.Canvas = Grapher(self)
-        self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N+S+E+W)
+        self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N + S + E + W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
 
-        #Graph(canvas, "a*x^3+b*x^2+c*x+d")
+        # Graph(canvas, "a*x^3+b*x^2+c*x+d")
 
         self.KVar = StringVar()
         self.KVar.trace_add(mode="write", callback=self.updateK)
         self.KVar.set(str(self.K))
-        
+
         self.SensVar = StringVar()
         self.SensVar.trace_add(mode="write", callback=self.updateGyroSens)
         self.SensVar.set(str(self.GyroSens))
-        
+
         self.KIVar = StringVar()
         self.KIVar.trace_add(mode="write", callback=self.updateKI)
         self.KIVar.set(str(self.KI))
-        
+
         self.KPVar = StringVar()
         self.KPVar.trace_add(mode="write", callback=self.updateKP)
         self.KPVar.set(str(self.KP))
+
+        self.TargetAngleVar = StringVar()
+        self.TargetAngleVar.trace_add(mode="write", callback=self.updateTargetAngle)
+        self.TargetAngleVar.set(str(0))
 
         # formulaEntry = Entry(self, textvariable=strVar)
         # formulaEntry.grid(row=1, column=1, sticky=N+S+E+W)
         # self.rowconfigure(1, weight=0)
         # self.columnconfigure(1, weight=1)
-        
-        SensorFusionTxt = Label(self, text = "K:")
-        SensorFusionTxt.grid(row=1, column=1, sticky=N+S+E+W)
+
+        SensorFusionTxt = Label(self, text="K:")
+        SensorFusionTxt.grid(row=1, column=1, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(1, weight=0)
-        
+
         self.KEntry = Entry(self, textvariable=self.KVar)
-        self.KEntry.grid(row=1, column=2, sticky=N+S+E+W)
+        self.KEntry.grid(row=1, column=2, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(2, weight=1)
-        
-        KDTxt = Label(self, text = "KD:")
-        KDTxt.grid(row=1, column=3, sticky=N+S+E+W)
+
+        KDTxt = Label(self, text="KD:")
+        KDTxt.grid(row=1, column=3, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(3, weight=0)
-        
+
         self.SensEntry = Entry(self, textvariable=self.SensVar)
-        self.SensEntry.grid(row=1, column=4, sticky=N+S+E+W)
+        self.SensEntry.grid(row=1, column=4, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(4, weight=1)
-        
-        KITxt = Label(self, text = "KI:")
-        KITxt.grid(row=1, column=5, sticky=N+S+E+W)
+
+        KITxt = Label(self, text="KI:")
+        KITxt.grid(row=1, column=5, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(5, weight=0)
-        
+
         self.KIEntry = Entry(self, textvariable=self.KIVar)
-        self.KIEntry.grid(row=1, column=6, sticky=N+S+E+W)
+        self.KIEntry.grid(row=1, column=6, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(6, weight=1)
-        
-        KPTxt = Label(self, text = "KP:")
-        KPTxt.grid(row=1, column=7, sticky=N+S+E+W)
+
+        KPTxt = Label(self, text="KP:")
+        KPTxt.grid(row=1, column=7, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(7, weight=0)
-        
+
         self.KPEntry = Entry(self, textvariable=self.KPVar)
-        self.KPEntry.grid(row=1, column=8, sticky=N+S+E+W)
+        self.KPEntry.grid(row=1, column=8, sticky=N + S + E + W)
         self.rowconfigure(1, weight=0)
         self.columnconfigure(8, weight=1)
+
+        TargetAngleEntry = Entry(self, textvariable=self.TargetAngleVar)
+        TargetAngleEntry.grid(row=5, column=4, sticky=N + S + E + W)
+        self.rowconfigure(5, weight=0)
+
+        TargetAngleTxt = Label(self, text="Target Angle:")
+        TargetAngleTxt.grid(row=5, column=3, sticky=N + S + E + W)
 
     def chooseMovement(self):
         self.Y = 0
         self.X = 0
-        
+
         locy = 0
         locx = 0
         loctog = False
@@ -211,8 +249,8 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             time.sleep(0.1)
             x = 0
             y = 0
-            Controllist = ["w","a","s","d"]
-            
+            Controllist = ["w", "a", "s", "d"]
+
             multiplier = 1
 
             if keyboard.is_pressed("shift"):
@@ -222,63 +260,61 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 multiplier = 0.25
 
             if keyboard.is_pressed("space"):
-                multiplier = 0    
+                multiplier = 0
 
             if keyboard.is_pressed(Controllist[0]) or keyboard.is_pressed("up_arrow"):
                 y = y + 1
-        
+
             if keyboard.is_pressed(Controllist[1]) or keyboard.is_pressed("left_arrow"):
                 x = x - 1
-                
+
             if keyboard.is_pressed(Controllist[2]) or keyboard.is_pressed("down_arrow"):
                 y = y - 1
-            
-            if keyboard.is_pressed(Controllist[3]) or keyboard.is_pressed("right_arrow"):
+
+            if keyboard.is_pressed(Controllist[3]) or keyboard.is_pressed(
+                "right_arrow"
+            ):
                 x = x + 1
-                    
 
             l = sqrt(x**2 + y**2)
-            #print(l)
+            # print(l)
             if x != 0:
-                x = x/l
+                x = x / l
 
             if y != 0:
-                y = y/l
-            
+                y = y / l
+
             x = x * multiplier
             y = y * multiplier
 
-
             if self.X != x:
                 self.X = x
-                self.ws.send(f'rotate:{round(x*1000)}')
+                self.ws.send(f"rotate:{round(x*1000)}")
 
             if self.Y != y:
                 self.Y = y
-                self.ws.send(f'forward:{round(y*1000)}')
-                
+                self.ws.send(f"forward:{round(y*1000)}")
 
             if self.Canvas.TX != locx:
-                self.ws.send(f'locationx:{round(self.Canvas.TX*1000)}')
+                self.ws.send(f"locationx:{round(self.Canvas.TX*1000)}")
                 locx = self.Canvas.TX
-                
+
             if self.Canvas.TY != locy:
-                self.ws.send(f'locationy:{round(self.Canvas.TY*1000)}')
+                self.ws.send(f"locationy:{round(self.Canvas.TY*1000)}")
                 locy = self.Canvas.TY
-            
+
             v = 0
             if self.Canvas.TargetEnabled:
                 v = 1
-            
+
             if loctog == self.Canvas.TargetEnabled:
                 continue
-            
-            self.ws.send(f'toggle_location:{v}')
+
+            self.ws.send(f"toggle_location:{v}")
+
 
 root = Tk()
 
 app = Application(root)
-app.master.title('Wilson lokation')
+app.master.title("Wilson lokation")
 app.mainloop()
-
-

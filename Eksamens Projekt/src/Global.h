@@ -13,7 +13,7 @@ const double PID_CtrlMax = 2000;
 const double CtrlMin = -100;
 const double CtrlMax = 100;
 const double MaxVel = 6000;
-const double IntegrationThreshold = 5;
+const double IntegrationThreshold = 3;
 const double ImpulsesPerRotation = 2000;
 
 // DC motor right

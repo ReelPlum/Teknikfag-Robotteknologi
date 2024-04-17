@@ -30,9 +30,10 @@ const char *cmd_toggle_location = "toggle_location";
 const char *cmd_locationx = "locationx";
 const char *cmd_locationy = "locationy";
 const char *cmd_setK = "setk";
-const char *cmd_setGyroSens = "setgyrosens";
+const char *cmd_setKD = "set_kd";
 const char *cmd_setKP = "set_kp";
 const char *cmd_setKI = "set_ki";
+const char *cmd_set_targetangle = "set_target_angle";
 
 // Globals
 WebSocketsServer WebSocket = WebSocketsServer(ws_port);
@@ -144,7 +145,7 @@ void handle_set_k(char *command, uint8_t client_num)
   }
 }
 
-void handle_set_gyrosens(char *command, uint8_t client_num)
+void handle_set_kd(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
 
@@ -158,7 +159,7 @@ void handle_set_gyrosens(char *command, uint8_t client_num)
   double result = strtol(value + 1, &e, 10);
   if (*e == '\0' && 0 == errno) // no error
   {
-    changeCallback(&result, 'g');
+    changeCallback(&result, 'd');
   }
   else
   {
@@ -203,6 +204,28 @@ void handle_set_kp(char *command, uint8_t client_num)
   if (*e == '\0' && 0 == errno) // no error
   {
     changeCallback(&result, 'p');
+  }
+  else
+  {
+    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
+  }
+}
+
+void handle_set_targetangle(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    changeCallback(&result, 't');
   }
   else
   {
@@ -286,9 +309,9 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   {
     handle_set_k(command, client_num);
   }
-  else if (strncmp(command, cmd_setGyroSens, strlen(cmd_setGyroSens)) == 0)
+  else if (strncmp(command, cmd_setKD, strlen(cmd_setKD)) == 0)
   {
-    handle_set_gyrosens(command, client_num);
+    handle_set_kd(command, client_num);
   }
   else if (strncmp(command, cmd_setKI, strlen(cmd_setKI)) == 0)
   {
@@ -297,6 +320,10 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   else if (strncmp(command, cmd_setKP, strlen(cmd_setKP)) == 0)
   {
     handle_set_kp(command, client_num);
+  }
+  else if (strncmp(command, cmd_set_targetangle, strlen(cmd_set_targetangle)) == 0)
+  {
+    handle_set_targetangle(command, client_num);
   }
   else
   {
@@ -412,7 +439,7 @@ void syncTask(void *arg)
     double lx = updateCallback('x');
     double ly = updateCallback('y');
     double lt = updateCallback('l');
-    double gyrosens = updateCallback('g');
+    double d = updateCallback('d');
     double k = updateCallback('k');
     double i = updateCallback('i');
     double p = updateCallback('p');
@@ -438,7 +465,7 @@ void syncTask(void *arg)
     sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
     web_socket_send(MsgBuf, 1, true);
 
-    sprintf(MsgBuf, "%s:%i", "gyrosens", (int)gyrosens);
+    sprintf(MsgBuf, "%s:%i", "d", (int)d);
     web_socket_send(MsgBuf, 1, true);
 
     sprintf(MsgBuf, "%s:%i", "k", (int)k);
