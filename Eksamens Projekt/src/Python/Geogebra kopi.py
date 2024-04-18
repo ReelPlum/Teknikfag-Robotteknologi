@@ -45,66 +45,41 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         Thread(target=self.chooseMovement).start()
 
     def onMessage(self, app, msg):
-        m = msg.split(":")
-        if len(m) == 2:
-            if m[0] == "xpos":
-                app.X = float(m[1])
+        try:
 
-                print(f"X: {float(m[1])}")
+            m = msg.split(":")
+            if len(m) == 2:
+                if m[0] == "xpos":
+                    app.X = float(m[1])
 
-                self.Canvas.updatePoint(
-                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
-                )
-            if m[0] == "ypos":
-                app.Y = float(m[1])
+                    print(f"X: {float(m[1])}")
+                if m[0] == "ypos":
+                    app.Y = float(m[1])
 
-                print(f"Y: {float(m[1])}")
+                    print(f"Y: {float(m[1])}")
+                if m[0] == "angle":
+                    app.Angle = float(m[1])
+                if m[0] == "error":
+                    self.CurrentAngle.set(f"Error: {float(m[1]) / 1000}")
 
-                self.Canvas.updatePoint(
-                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
-                )
-            if m[0] == "angle":
-                app.Angle = float(m[1])
+                if m[0] == "rightencoder":
+                    # self.CurrentAngle.set(f"Error: {m[1]/1000}")
+                    # print(f"Right encoder: {m[1]}")
+                    pass
 
-                self.Canvas.updatePoint(
-                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
-                )
-            if m[0] == "targetx":
-                app.TargetX = float(m[1])
+                if m[0] == "leftencoder":
+                    # self.CurrentAngle.set(f"Error: {m[1]/1000}")
+                    # print(f"Left encoder: {m[1]}")
+                    pass
 
-                self.Canvas.updatePoint(
-                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
-                )
-            if m[0] == "targety":
-                app.TargetY = float(m[1])
+            else:
+                return
 
-                self.Canvas.updatePoint(
-                    app.X, app.Y, app.Angle, app.TargetX, app.TargetY
-                )
-            if m[0] == "locationtoggle":
-                if int(m[1]) == 1:
-                    app.LocationToggle = True
-                else:
-                    app.LocationToggle = False
+            # Update point on graph
+            self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
 
-            if m[0] == "error":
-                self.CurrentAngle.set(f"Error: {float(m[1]) / 1000}")
-                
-            if m[0] == "rightencoder":
-                #self.CurrentAngle.set(f"Error: {m[1]/1000}")
-                #print(f"Right encoder: {m[1]}")
-                pass
-                
-            if m[0] == "leftencoder":
-                #self.CurrentAngle.set(f"Error: {m[1]/1000}")
-                #print(f"Left encoder: {m[1]}")
-                pass
-
-        else:
-            return
-
-        # Update point on graph
-        #self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+        except Exception as e:
+            print(f"error: {e}")
 
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
@@ -170,6 +145,10 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         except Exception as e:
             print(f"Error on set KP: {e}")
 
+    def toggleBuzzer(self, a):
+        # Toggle buzzer
+        self.ws.send(f"togglebuzzer:1")
+
     def createWidgets(self, root):
         top = self.winfo_toplevel()
         # top.geometry("500x500")
@@ -179,7 +158,7 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N + S + E + W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
-        
+
         self.ws.Canvas = self.Canvas
 
         # Graph(canvas, "a*x^3+b*x^2+c*x+d")
@@ -264,6 +243,11 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         )
         TargetAngleTxt.grid(row=6, column=4, sticky=N + S + E + W)
 
+        ToggleBuzzerButton = Button(
+            self, text="Toggle Buzzer", command=self.toggleBuzzer
+        )
+        ToggleBuzzerButton.grid(row=6, column=5, sticky=N + S + E + W)
+
     def chooseMovement(self):
         self.Y = 0
         self.X = 0
@@ -321,23 +305,6 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             if self.Y != y:
                 self.Y = y
                 self.ws.send(f"forward:{round(y*1000)}")
-
-            if self.Canvas.TX != locx:
-                self.ws.send(f"locationx:{round(self.Canvas.TX*1000)}")
-                locx = self.Canvas.TX
-
-            if self.Canvas.TY != locy:
-                self.ws.send(f"locationy:{round(self.Canvas.TY*1000)}")
-                locy = self.Canvas.TY
-
-            v = 0
-            if self.Canvas.TargetEnabled:
-                v = 1
-
-            if loctog == self.Canvas.TargetEnabled:
-                continue
-
-            self.ws.send(f"toggle_location:{v}")
 
 
 root = Tk()

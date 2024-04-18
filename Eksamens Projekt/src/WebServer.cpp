@@ -32,6 +32,7 @@ const char *cmd_setKD = "set_kd";
 const char *cmd_setKP = "set_kp";
 const char *cmd_setKI = "set_ki";
 const char *cmd_set_targetangle = "set_target_angle";
+const char *cmd_toggle_buzzer = "togglebuzzer";
 
 // Globals
 WebSocketsServer WebSocket = WebSocketsServer(ws_port);
@@ -277,6 +278,29 @@ void handle_location_toggle(char *command, uint8_t client_num)
   }
 }
 
+void handle_togglebuzzer(char *command, uint8_t client_num)
+{
+  char *value = strstr(command, ":");
+
+  if (value == NULL || *value != ':')
+  {
+    log_e("[%u]: Bad command %s", client_num, command);
+    return;
+  }
+  errno = 0;
+  char *e;
+  double result = strtol(value + 1, &e, 10);
+  if (*e == '\0' && 0 == errno) // no error
+  {
+    // update rotate
+    changeCallback(&result, 'b');
+  }
+  else
+  {
+    log_e("[%u]: illegal rotate state received: %s", client_num, value + 1);
+  }
+}
+
 void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
 {
   char *command = (char *)payload;
@@ -322,6 +346,10 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   else if (strncmp(command, cmd_set_targetangle, strlen(cmd_set_targetangle)) == 0)
   {
     handle_set_targetangle(command, client_num);
+  }
+  else if (strncmp(command, togglebuzzer, strlen(togglebuzzer)) == 0)
+  {
+    handle_togglebuzzer(command, client_num);
   }
   else
   {
@@ -379,23 +407,10 @@ void onWebSocketEvent(uint8_t client_num,
   }
 }
 
-void setup_network()
+void setup_network(char* SSID, char* PASSWORD)
 {
-  // log_i("SSID: %s",ssid);
-  // log_i("password: %s", password);
-
-// #ifdef SOFT_AP
-  // Start access point
-  // WiFi.softAP("Segway", NULL, 6); // (alle grupper skal bruge en unik kanal)
-  // // Print our IP address
-
-  // log_i("AP running");
-  // log_i("My IP address: ");
-  // log_i("IP: %s", WiFi.softAPIP().toString().c_str());
-
-// #else
 //   // connect to local network
-  WiFi.begin("IOT_NET", "esp32esp");
+  WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
@@ -409,6 +424,8 @@ void setup_network()
   WebSocket.begin();
   WebSocket.onEvent(onWebSocketEvent);
 
+
+  //Start Status LED
   digitalWrite(led_pin, HIGH);
 }
 
@@ -434,13 +451,6 @@ void syncTask(void *arg)
     double x = updateCallback('f');
     double y = updateCallback('r');
     double a = updateCallback('a');
-    double lx = updateCallback('x');
-    double ly = updateCallback('y');
-    double lt = updateCallback('l');
-    double d = updateCallback('d');
-    double k = updateCallback('k');
-    double i = updateCallback('i');
-    double p = updateCallback('p');
     double error = updateCallback('e');
 
     double le = updateCallback('v'); //left encoder
@@ -455,29 +465,6 @@ void syncTask(void *arg)
 
     sprintf(MsgBuf, "%s:%f", "angle", a);
     web_socket_send(MsgBuf, 1, true);
-
-    // // Location
-    // sprintf(MsgBuf, "%s:%f", "targetx", lx);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // sprintf(MsgBuf, "%s:%f", "targety", ly);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // // Location toggle
-    // sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // sprintf(MsgBuf, "%s:%i", "d", (int)d);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // sprintf(MsgBuf, "%s:%i", "k", (int)k);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // sprintf(MsgBuf, "%s:%i", "i", (int)i);
-    // web_socket_send(MsgBuf, 1, true);
-
-    // sprintf(MsgBuf, "%s:%i", "p", (int)p);
-    // web_socket_send(MsgBuf, 1, true);
 
     sprintf(MsgBuf, "%s:%i", "error", (int)(error*1000));
     web_socket_send(MsgBuf, 1, true);
@@ -528,7 +515,7 @@ void init_web(const char* SSID, const char* password, callbackChange onChange, c
   digitalWrite(led_pin, LOW);
 
   log_i("loading network");
-  setup_network();
+  setup_network(SSID, password);
   log_i("loading tasks");
   setup_tasks();
 }

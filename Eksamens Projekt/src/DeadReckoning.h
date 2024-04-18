@@ -9,39 +9,22 @@ struct DeadReckoningData {
     double Y;
 };
 
-typedef void (*moveDirection)(double x, double y);
-
-struct direction {
-    double x;
-    double y;
-};
-
 class DeadReckoning{
     public:
     DeadReckoning(){};
 
-    void init(DCMotor *RightMotor, DCMotor *LeftMotor, moveDirection moveCallback, double wheelRadius, double b, double DT);
+    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double wheelRadius, double b, double DT);
 
     DeadReckoningData getData();
 
-    void setMoveDirection(moveDirection callback);
-    void setTarget(double x, double y);
-
-    direction getTarget();
-
     private:
     static void Task(void *arg);
-
-    moveDirection moveCallback;
 
     DCMotor *DCMotorLeft;
     DCMotor *DCMotorRight;
     double wheelRadius;
     double b;
     double DT;
-
-    double targetX;
-    double targetY;
 
     DeadReckoningData Data;
 

@@ -1,10 +1,7 @@
 #include <Buzzer.h>
 #include <Global.h>
 
-
-Buzzer::Buzzer(){
-
-};
+Buzzer::Buzzer(){};
 
 void Buzzer::init(int8_t io_pin, int32_t pwm_ch, int32_t initial_frequency, Stabilizer *stabilizer){
     //Connect PWM to pin & channel with frequency
@@ -31,7 +28,7 @@ void Buzzer::init(int8_t io_pin, int32_t pwm_ch, int32_t initial_frequency, Stab
         BuzzerPriority,
         &(this->TaskHandle),
         BuzzerCore
-        );
+    );
 };
 
 void Buzzer::change_freq(int32_t frequency){
@@ -42,6 +39,10 @@ void Buzzer::change_freq(int32_t frequency){
     ledcWriteTone(this->pwm_ch, this->frequency);
 };
 
+void Buzzer::toggle(){
+    this->enabled = !this->enabled;
+}
+
 void Buzzer::Task(void *arg){
     Buzzer *p = static_cast<Buzzer *>(arg);
 
@@ -49,10 +50,10 @@ void Buzzer::Task(void *arg){
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     { // loop tager mindre end 18us * 2
-        double angle = p->stabilizer->getPid()->get_error();
-
-        p->change_freq(map_double(angle, 0, 90, 2000, 4200));
-
+        if (p->enabled){
+            double angle = p->stabilizer->getPid()->get_error();
+            p->change_freq(map_double(angle, 0, 90, 2000, 4200));
+        }
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Arduino.h>
+#include <Arduino.h>
 
 // General DC motor stuff
 #define MotorKI 1.0
@@ -53,6 +53,7 @@
 #define LedReloadSpeed 0.1
 #define BuzzerSpeed .25
 #define AngleTaskSpeed .0025
+#define DeadReckoningSpeed .05
 
 // DC motor right
 #define DCR_ENCA 4

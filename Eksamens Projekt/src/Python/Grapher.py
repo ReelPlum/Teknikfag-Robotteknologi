@@ -1,17 +1,18 @@
 from tkinter import *
 from math import *
-#import random
-#import sympy
-#from sympy.abc import X
-#import numpy
+
+# import random
+# import sympy
+# from sympy.abc import X
+# import numpy
 import threading
 import asyncio
 
 
 class Grapher(Canvas):
     def __init__(self, master):
-        Canvas.__init__(self, master, bg='white')
-        self.grid(sticky=N+S+E+W)
+        Canvas.__init__(self, master, bg="white")
+        self.grid(sticky=N + S + E + W)
 
         self.A = 0
         self.B = 0
@@ -20,10 +21,6 @@ class Grapher(Canvas):
         self.X = 0
         self.Y = 0
         self.Angle = 0
-        self.TX = 0
-        self.TY = 0
-        
-        self.TargetEnabled = False
 
         self.Zoom = 1
         self.Offset = [0, 0]
@@ -34,20 +31,21 @@ class Grapher(Canvas):
 
         self.Variables = []
         self.Threads = []
-    
-        x,y = self.calculate(self.X, self.Y)
-        self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
-        self.Line = self.create_line(0,0,0,0)
 
+        x, y = self.calculate(self.X, self.Y)
+        self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
+        self.Line = self.create_line(0, 0, 0, 0)
 
         def motion(event):
             if not self.LastMousePosition:
                 return
 
-            self.Offset[0] = self.Offset[0] - \
-                (event.x - self.LastMousePosition[0]) / self.Zoom
-            self.Offset[1] = self.Offset[1] - \
-                (event.y - self.LastMousePosition[1]) / self.Zoom
+            self.Offset[0] = (
+                self.Offset[0] - (event.x - self.LastMousePosition[0]) / self.Zoom
+            )
+            self.Offset[1] = (
+                self.Offset[1] - (event.y - self.LastMousePosition[1]) / self.Zoom
+            )
 
             self.LastMousePosition = (event.x, event.y)
 
@@ -58,57 +56,45 @@ class Grapher(Canvas):
 
         def mouseRelease(event):
             if self.LastMousePosition:
-                if self.LastMousePosition[0] == event.x and self.LastMousePosition[1] == event.y:
-                    #Check if a graph is at the current location
+                if (
+                    self.LastMousePosition[0] == event.x
+                    and self.LastMousePosition[1] == event.y
+                ):
+                    # Check if a graph is at the current location
                     for i in self.Objects:
-                        x,y = i.calculate(event.x)
+                        x, y = i.calculate(event.x)
                         print(abs(y - event.y))
                         if abs(y - event.y) <= 10:
                             i.select()
                             break
-            
-            self.LastMousePosition = None                
 
-        def setTarget(event):
-            size = (self.winfo_width(), self.winfo_height())
-            
-            x = event.x - size[0]/2 + self.Offset[0]
-            y = event.y - size[1]/2 + self.Offset[1]
-            
-            self.TX = x
-            self.TY = -y
-            
-            self.render()
-
-        def setTargetMode(event):
-            self.TargetEnabled = not self.TargetEnabled
-            
-            self.render()
+            self.LastMousePosition = None
 
         def changed(event):
             self.render()
 
-        self.bind('<B1-Motion>', motion)
-        self.bind('<Button-1>', mouseDown)
-        self.bind('<ButtonRelease-1>', mouseRelease)
-        self.bind('<Double-Button-1>', setTarget)
-        self.bind('<Double-Button-3>', setTargetMode)
-        self.bind('<Configure>', changed)
+        self.bind("<B1-Motion>", motion)
+        self.bind("<Button-1>", mouseDown)
+        self.bind("<ButtonRelease-1>", mouseRelease)
+        self.bind("<Configure>", changed)
 
         self.render()
 
-    def updatePoint(self, x, y, angle, tx, ty):
+    def updatePoint(
+        self,
+        x,
+        y,
+        angle,
+    ):
         self.X = x
         self.Y = y
         self.Angle = angle
-        self.TX = tx
-        self.TY = ty
-        
-        x,y = self.calculate(self.X, self.Y)
-        
+
+        x, y = self.calculate(self.X, self.Y)
+
         print(f"X: {x}, Y: {y}")
-        
-        #self.move(self.Oval, x, y)
+
+        # self.move(self.Oval, x, y)
         self.delete(self.Oval)
         self.delete(self.Line)
 
@@ -117,37 +103,40 @@ class Grapher(Canvas):
         xEnd = x + sin(angle) * 25
         yEnd = y - cos(angle) * 25
 
-        self.Line = self.create_polygon([x , y, x + cos(angle) * 10, y + sin(angle)*10, xEnd, yEnd, x - cos(angle) * 10, y - sin(angle)*10])
-        
-        tx, ty = self.calculate(self.TX, self.TY)
-        c = "red"
-        if self.TargetEnabled:
-            c = "green"
-        
-        self.Oval = self.create_oval(tx - 8, ty - 8, tx + 8, ty + 8, fill=c)
+        self.Line = self.create_polygon(
+            [
+                x,
+                y,
+                x + cos(angle) * 10,
+                y + sin(angle) * 10,
+                xEnd,
+                yEnd,
+                x - cos(angle) * 10,
+                y - sin(angle) * 10,
+            ]
+        )
 
     def calculate(self, x, y):
-        size = (self.winfo_width(),
-                self.winfo_height())
-        
+        size = (self.winfo_width(), self.winfo_height())
+
         middleX = self.Offset[0]
         middleY = self.Offset[1]
-        
+
         zoom = self.Zoom
-        
-        x0 = size[0]/2 - middleX*zoom
-        y0 = size[1]/2 - middleY*zoom
-        
-        xPos = x0 + x*zoom
-        yPos = y0 - y*zoom
-        
+
+        x0 = size[0] / 2 - middleX * zoom
+        y0 = size[1] / 2 - middleY * zoom
+
+        xPos = x0 + x * zoom
+        yPos = y0 - y * zoom
+
         return xPos, yPos
 
     def setZoom(self, zoom):
         self.Zoom = zoom
 
     def render(self):
-        
+
         self.delete(ALL)
 
         size = (self.winfo_width(), self.winfo_height())
@@ -162,8 +151,8 @@ class Grapher(Canvas):
         if zooms > 1:
             zooms = 1
 
-        x0 = size[0]/2 - middleX*zoom
-        y0 = size[1]/2 - middleY*zoom
+        x0 = size[0] / 2 - middleX * zoom
+        y0 = size[1] / 2 - middleY * zoom
 
         # Render squares
         num = round((50 / zoom) / 10) * 10
@@ -205,60 +194,60 @@ class Grapher(Canvas):
 
         # Create bigger lines
 
-        for i in range(1, int((size[1]/zooms-y0)/num) + 2, 1):
+        for i in range(1, int((size[1] / zooms - y0) / num) + 2, 1):
 
             y1 = y0 + num * zoom * i
 
             # if y1 > size[1] or y1 < 0:
             #     break
 
-            self.create_line(0, y1, size[0], y1, fill='gray')
+            self.create_line(0, y1, size[0], y1, fill="gray")
 
             # Render text
-            self.create_text(x0 + xTextPos, y0 + num *
-                             zoom * i, text=f'-{round(i * num)}')
+            self.create_text(
+                x0 + xTextPos, y0 + num * zoom * i, text=f"-{round(i * num)}"
+            )
 
-        for f in range(1, int((size[0]/zooms-x0)/num) + 2, 1):
+        for f in range(1, int((size[0] / zooms - x0) / num) + 2, 1):
             x1 = x0 + num * zoom * f
 
             # if x1 > size[0] or x1 < 0:
             #     break
 
-            self.create_line(x1, 0, x1, size[1], fill='gray')
+            self.create_line(x1, 0, x1, size[1], fill="gray")
 
             # Render text
-            self.create_text(x0 + num * zoom * f, y0 +
-                             yTextPos, text=f'{round(f * num)}')
+            self.create_text(
+                x0 + num * zoom * f, y0 + yTextPos, text=f"{round(f * num)}"
+            )
 
-        for i in range(0, int(y0/zooms / num) + 2, 1):
+        for i in range(0, int(y0 / zooms / num) + 2, 1):
             y1 = y0 - num * zoom * i
             # if y1 > size[1] or y1 < 0:
             #     break
 
-            self.create_line(0, y1, size[0], y1, fill='gray')
+            self.create_line(0, y1, size[0], y1, fill="gray")
 
             # Render text
-            self.create_text(x0 + xTextPos, y0 - num *
-                             zoom * i, text=f'{round(i*num)}')
+            self.create_text(x0 + xTextPos, y0 - num * zoom * i, text=f"{round(i*num)}")
 
-        for f in range(0, int(x0/zooms / num) + 2, 1):
+        for f in range(0, int(x0 / zooms / num) + 2, 1):
             x1 = x0 - num * zoom * f
             # if x1 > size[0] or x1 < 0:
             #     break
 
-            self.create_line(x1, 0, x1, size[1], fill='gray')
+            self.create_line(x1, 0, x1, size[1], fill="gray")
 
             # Render text
-            self.create_text(x0 - num * zoom * f, y0 +
-                             yTextPos, text=f'-{round(f * num)}')
+            self.create_text(
+                x0 - num * zoom * f, y0 + yTextPos, text=f"-{round(f * num)}"
+            )
 
         # Render x-axis
-        self.create_line(0, y0,
-                         size[0], y0, fill='black', width=0)
+        self.create_line(0, y0, size[0], y0, fill="black", width=0)
 
         # Render y-axis
-        self.create_line(x0, 0,
-                         x0, size[1], fill='black', width=0)
-        
+        self.create_line(x0, 0, x0, size[1], fill="black", width=0)
+
         self.updatePoint(self.X, self.Y, self.Angle, self.TX, self.TY)
-        #root.after(10, self.render, root)
+        # root.after(10, self.render, root)
