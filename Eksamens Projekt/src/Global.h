@@ -3,10 +3,10 @@
 #include<Arduino.h>
 
 // General DC motor stuff
-#define MotorKI 2.0
-#define MotorKD 20
-#define MotorKP 305.0
-#define MotorK 0.015
+#define MotorKI 1.0
+#define MotorKD 9.5
+#define MotorKP 250.0
+#define MotorK 0.02
 
 #define PWM_Freq 19500
 #define PWM_Res 12
@@ -25,6 +25,7 @@
 #define DCMotorStack 10000
 #define DeadReckoningStack 3000
 #define SyncTaskStack 10000
+#define StabilizerAngleStack 10000
 
 //Task priorities
 #define WebsocketPriority 25
@@ -34,6 +35,7 @@
 #define DCMotorPriority 24
 #define DeadReckoningPriority 23
 #define SyncTaskPriority 2
+#define StabilizerAnglePriority 24
 
 //Task Cores
 #define WebsocketCore 0
@@ -43,12 +45,14 @@
 #define DCMotorCore 1
 #define DeadReckoningCore 1
 #define SyncTaskCore 1
-#define SyncTaskCore 1
+#define StabilizerAngleCore 1
 
 //Update Speeds
 #define WebsocketSyncSpeed 0.5
 #define StabilizerSpeed 0.005
 #define LedReloadSpeed 0.1
+#define BuzzerSpeed .25
+#define AngleTaskSpeed .0025
 
 // DC motor right
 #define DCR_ENCA 4

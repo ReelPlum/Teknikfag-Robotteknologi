@@ -1,3 +1,5 @@
+#pragma once
+
 #include <DCMotor.h>
 #include <SensorFusion.h>
 #include <PID.h>
@@ -34,7 +36,8 @@ public:
     Pid* getPid();
 
 private:
-  static void Update(void *arg);
+  static void BalanceTask(void *arg);
+  static void AngleTask(void *arg);
 
   double DT;
   double value;
@@ -55,7 +58,8 @@ private:
 
   SensorFusion sensorFusion;
   Pid anglePID;
-  TaskHandle_t updateTaskHandle;
+  TaskHandle_t balanceTaskHandle;
+  TaskHandle_t angleTaskHandle;
 
   DCMotor *RightMotor;
   DCMotor *LeftMotor;

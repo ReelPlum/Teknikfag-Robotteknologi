@@ -44,13 +44,23 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double
 
     // start update task
     xTaskCreatePinnedToCore(
-        this->Update,
+        this->BalanceTask,
         "Stabilizer PID Task",
         StabilizerPIDStack,
         this, //< Pointer gets forwarded to the task
         StabilizerPIDPriority,
-        &(this->updateTaskHandle),
+        &(this->balanceTaskHandle),
         StabilizerPIDCore
+        );
+
+    xTaskCreatePinnedToCore(
+        this->AngleTask,
+        "Stabilizer Angle Task",
+        StabilizerAngleStack,
+        this, //< Pointer gets forwarded to the task
+        StabilizerAnglePriority,
+        &(this->angleTaskHandle),
+        StabilizerAngleCore
         );
 };
 
@@ -100,7 +110,25 @@ double Stabilizer::getCtrlAngle(){
     return this->ctrl_angle;
 }
 
-void Stabilizer::Update(void *arg)
+void Stabilizer::AngleTask(void *arg){
+    Stabilizer *p = static_cast<Stabilizer *>(arg);
+
+    while (!p->myICM.dataReady());
+
+    log_i("Ready!");
+
+    TickType_t xTimeIncrement = configTICK_RATE_HZ * AngleTaskSpeed;
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+
+    for (;;)
+    { // loop tager mindre end 18us * 2
+        p->ReadSensors();
+
+        vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+    }
+}
+
+void Stabilizer::BalanceTask(void *arg)
 {
     Stabilizer *p = static_cast<Stabilizer *>(arg);
 
@@ -111,15 +139,6 @@ void Stabilizer::Update(void *arg)
         // Check if sensors are ready
 
         digitalWrite(32, HIGH);
-
-        if (!p->myICM.dataReady())
-        {
-            continue;
-        }
-
-
-
-        p->ReadSensors();
 
         //Taget angle = 0 + extra angle
         p->anglePID.update(p->getTargetAngle(), p->current_angle, &(p->ctrl_angle), IntegrationThreshold, p->wx);

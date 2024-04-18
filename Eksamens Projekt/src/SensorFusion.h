@@ -9,6 +9,5 @@ class SensorFusion {
     private:
 
     double k;
-    double value;
 
 };

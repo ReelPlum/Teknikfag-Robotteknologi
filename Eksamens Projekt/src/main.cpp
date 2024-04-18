@@ -25,10 +25,6 @@ double LocationY;
 
 bool LocationMode = false;
 
-void buzzerAngleChangeCallback(double *angle){
-  angleBuzzer.change_freq(map_int(*angle, 0, 45, 4200, 3700));
-};
-
 double UpdateCallback(char subtype)
 {
   DeadReckoningData data = deadReckoning.getData();
@@ -113,9 +109,9 @@ void ChangeCallback(double *paramValue, char subtype)
 
     log_i("Setting speed");
 
-    SpeedY = (*paramValue) / res * (6);
+    SpeedY = (*paramValue) / res * (3);
 
-    stabilizer.SetExtraAngle(SpeedY * 10);
+    stabilizer.SetExtraAngle(SpeedY);
   }
   else if (subtype == 'a'){
     // location x
@@ -202,7 +198,7 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  //led.init();
+  led.init();
 
   //deadReckoning.init(&motorR, &motorL, MoveCallback, WHEELRADIUS, WHEELB, DT);
 
@@ -211,7 +207,7 @@ void setup()
 
   stabilizer.init(&motorR, &motorL, MotorKD, MotorK);
 
-  //angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200);
+  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200, &stabilizer);
 
   init_web("IOT_NET", "esp32esp", ChangeCallback, UpdateCallback);
 };
