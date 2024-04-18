@@ -10,24 +10,23 @@ class Stabilizer {
 public:
     Stabilizer(){}; // Constructor declaration
 
-    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd);
+    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double k);
     void SetExtraEngineSpeed(double right, double left);
     void SetKD(double KD);
     void SetK(double k);
     void SetKP(double KP);
     void SetKI(double KI);
-    void setTargetAngle(double WantedAngle);
+    void setWantedAngle(double WantedAngle);
 
     void SetExtraAngle(double angle);
 
     void ReadSensors();
-    void RegisterAngleCallback(angleChangeCallback callback);
 
     double getK();
     double getKD();
     double getKI();
     double getKP();
-
+    double getCtrlAngle();
     double getTargetAngle();
 
     double current_angle;
@@ -36,7 +35,6 @@ public:
 
 private:
   static void Update(void *arg);
-  static void CallbackTask(void *arg);
 
   double DT;
   double value;
@@ -62,7 +60,4 @@ private:
   DCMotor *RightMotor;
   DCMotor *LeftMotor;
   ICM_20948_I2C myICM;
-
-  angleChangeCallback angleCallbacks[5];
-  int32_t angleCallbacksNum;
 };

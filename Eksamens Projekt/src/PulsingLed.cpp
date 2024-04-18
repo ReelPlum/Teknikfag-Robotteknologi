@@ -1,4 +1,5 @@
 #include <PulsingLed.h>
+#include <Global.h>
 
 
 PulsingLed::PulsingLed(int32_t pwm_ch, int32_t pwm_resolution, int32_t pwm_freq, int32_t led_pin, double pulses_per_second){
@@ -17,20 +18,22 @@ void PulsingLed::init(){
     ledcAttachPin(this->led_pin, this->pwm_ch);
     ledcSetup(this->pwm_ch, this->pwm_freq, this->pwm_resolution);
 
-    xTaskCreate(
-            this->pulseTask,
-            "Pulse task",
-            10000,
-            this, //< Pointer gets forwarded to the task
-            1,
-            NULL);
+    xTaskCreatePinnedToCore(
+        this->pulseTask,
+        "Pulsing Led Task",
+        PulsingLedStack,
+        this, //< Pointer gets forwarded to the task
+        PulsingLedPriority,
+        &(this->TaskHandle),
+        PulsingLedPriority
+        );
 };
 
 void PulsingLed::pulseTask(void *args){
     PulsingLed *p = static_cast<PulsingLed *>(args);
 
 
-    double dt = .01;
+    double dt = LedReloadSpeed;
 
     double pwm_max = pow(2, p->pwm_resolution) - 1;
     double x = 0;

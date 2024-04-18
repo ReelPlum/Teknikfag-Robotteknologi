@@ -50,7 +50,7 @@ double Pid::squash(double value)
     return (value < min_ctrl_value) ? min_ctrl_value : ((value > max_ctrl_value) ? max_ctrl_value : value);
 }
 
-void Pid::update(double set_value, double current_value, double *ctrl_value, double integration_threshold)
+void Pid::update(double set_value, double current_value, double *ctrl_value, double integration_threshold, double wx)
 {
     double kp_val, ki_val, kd_val, ctrl;
 
@@ -65,10 +65,9 @@ void Pid::update(double set_value, double current_value, double *ctrl_value, dou
 
     kp_val = error;
     ki_val = error_sum * dt;
-    kd_val = (previus_error - error) / dt;
 
     previus_error = error;
-    ctrl = kp * kp_val + ki * ki_val + kd * kd_val;
+    ctrl = kp * kp_val + ki * ki_val - kd * wx;
 
     //Squash sørger for at ctrl værdien er indenfor et interval med en minimum værdi og maksimum værdi.
     *ctrl_value = squash(ctrl);

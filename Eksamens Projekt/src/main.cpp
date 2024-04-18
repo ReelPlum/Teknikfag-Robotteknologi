@@ -8,8 +8,8 @@
 #include <Buzzer.h>
 
 // Setup classes
-DCMotor motorR(false, false, 5, DCR_ENCA, DCR_ENCB, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
-DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DT, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
+DCMotor motorR(false, false, 5, DCR_ENCB, DCR_ENCA, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
+DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
 
 PulsingLed led(8, 8, 19500, POSITIONMODE_LED_PIN, 0.25);
 
@@ -55,7 +55,7 @@ double UpdateCallback(char subtype)
     return location.y;
   }
   else if (subtype == 'd'){
-    return stabilizer.getGyroSens();
+    return stabilizer.getKD();
   }
   else if (subtype == 'k'){
     return stabilizer.getK();
@@ -72,6 +72,12 @@ double UpdateCallback(char subtype)
   else if (subtype == 'e'){
     Pid* anglePID = stabilizer.getPid();
     return anglePID->get_error();
+  }
+  else if (subtype == 'v'){
+    return motorL.getEncoderPosition();
+  }
+  else if (subtype == 'h'){
+    return motorR.getEncoderPosition();
   };
   
   //If it asks for something weird for some stupid reason
@@ -196,22 +202,20 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  led.init();
+  //led.init();
 
-  deadReckoning.init(&motorR, &motorL, MoveCallback, WHEELRADIUS, b, DT);
+  //deadReckoning.init(&motorR, &motorL, MoveCallback, WHEELRADIUS, WHEELB, DT);
 
-  motorR.init(KI, KD, KP);
-  motorL.init(KI, KD, KP);
+  motorR.init(MotorKI, 0, MotorKP);
+  motorL.init(MotorKI, 0, MotorKP);
 
-  stabilizer.init(&motorR, &motorL, .5);
+  stabilizer.init(&motorR, &motorL, MotorKD, MotorK);
 
-  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200);
-  //stabilizer.RegisterAngleCallback(buzzerAngleChangeCallback);
+  //angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200);
 
   init_web("IOT_NET", "esp32esp", ChangeCallback, UpdateCallback);
 };
 
-double i = 0;
 void loop()
 {
   //log_i("Current speed: %f, %f", SpeedX, SpeedY);
@@ -220,11 +224,9 @@ void loop()
   // log_i("KP: %f", stabilizer.getKP());
   // log_i("K: %f", stabilizer.getK());
 
-  Pid* anglePID = stabilizer.getPid();
+  log_i("CtrlAngle: %f", stabilizer.getCtrlAngle());
 
-  log_i("Error: %f", anglePID->get_error());
-
-  log_i("Target Angle: %f", stabilizer.getTargetAngle());
+  //log_i("Target Angle: %f", stabilizer.getTargetAngle());
 
   delay(2000);
 };

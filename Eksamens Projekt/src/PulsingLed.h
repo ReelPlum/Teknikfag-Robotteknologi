@@ -17,4 +17,5 @@ class PulsingLed{
     int32_t led_pin;
     int32_t pwm_freq;
     double pulses_per_second;
+    TaskHandle_t TaskHandle;
 };

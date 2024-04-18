@@ -56,16 +56,18 @@ void DCMotor::init(double ki, double kd, double kp)
     this->pidVel.set_kp(kp);
 
     // Start task
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         this->pidTask,
         "Pid Task",
-        10000,
+        DCMotorStack,
         this, //< Pointer gets forwarded to the task
-        1,
-        NULL);
+        DCMotorPriority,
+        &(this->pidTaskHandle),
+        DCMotorCore
+        );
 }
 
-int32_t DCMotor::calculate_degtovel(int32_t val)
+double DCMotor::calculate_degtovel(double val)
 {
     return (val / 360.0) * this->impulses_per_rotation;
 };
@@ -81,6 +83,10 @@ void DCMotor::set_PWM(int32_t pwm)
 
     this->hbridge.set_pwm(pwm);
 };
+
+double DCMotor::getEncoderPosition(){
+    return this->current_pos;
+}
 
 // Statiske medlemsfunktioner til brug i xTaskCreatePinnedToCore
 void DCMotor::pidTask(void *arg)
@@ -105,21 +111,21 @@ void DCMotor::pidTask(void *arg)
 
         p->acceleration = (p->current_vel - last_vel) / p->dt;
 
-        if (p->pid_mode)
-        {
-            if (p->position_mode)
-            {
-                p->pidPos.update(p->req_pos, p->current_pos, &(p->ctrl_pos), p->integration_threshold);
+        // if (p->pid_mode)
+        // {
+        //     if (p->position_mode)
+        //     {
+        //         p->pidPos.update(p->req_pos, p->current_pos, &(p->ctrl_pos), p->integration_threshold);
 
-                p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
-            }
+        //         p->req_vel = constrain(p->ctrl_pos, -(p->max_vel), p->max_vel);
+        //     }
 
-            p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
+        //     p->pidVel.update(p->req_vel, p->current_vel, &(p->ctrl_vel), p->integration_threshold);
 
-            // log_i("Verdies %f and %f", current_vel, req_pos);
+        //     // log_i("Verdies %f and %f", current_vel, req_pos);
 
-            p->hbridge.set_pwm(p->ctrl_vel);
-        }
+        //     p->hbridge.set_pwm(p->ctrl_vel);
+        // }
 
         // log_i("Current pos")
         // log_i("Req vel %f og current vel %f",p->req_vel, p->current_vel);

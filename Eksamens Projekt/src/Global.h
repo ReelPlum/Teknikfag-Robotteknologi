@@ -3,42 +3,76 @@
 #include<Arduino.h>
 
 // General DC motor stuff
-const double DT = .1;
-const double KI = 1;
-const double KD = 0;
-const double KP = 0.05;
-const int32_t PWM_Freq = 19500;
-const int32_t PWM_Res = 12;
-const double PID_CtrlMax = 2000;
-const double CtrlMin = -100;
-const double CtrlMax = 100;
-const double MaxVel = 6000;
-const double IntegrationThreshold = 3;
-const double ImpulsesPerRotation = 2000;
+#define MotorKI 2.0
+#define MotorKD 20
+#define MotorKP 305.0
+#define MotorK 0.015
+
+#define PWM_Freq 19500
+#define PWM_Res 12
+#define PID_CtrlMax 6000.0
+#define CtrlMin -10000.0
+#define CtrlMax 10000.0
+#define MaxVel 6000.0
+#define IntegrationThreshold 5.0
+#define ImpulsesPerRotation 2000.0
+
+//Task Stack sizes
+#define WebsocketStack 10000
+#define StabilizerPIDStack 10000
+#define BuzzerStack 3000
+#define PulsingLedStack 3000
+#define DCMotorStack 10000
+#define DeadReckoningStack 3000
+#define SyncTaskStack 10000
+
+//Task priorities
+#define WebsocketPriority 25
+#define StabilizerPIDPriority 25
+#define PulsingLedPriority 1
+#define BuzzerPriority 1
+#define DCMotorPriority 24
+#define DeadReckoningPriority 23
+#define SyncTaskPriority 2
+
+//Task Cores
+#define WebsocketCore 0
+#define StabilizerPIDCore 1
+#define PulsingLedCore 1
+#define BuzzerCore 1
+#define DCMotorCore 1
+#define DeadReckoningCore 1
+#define SyncTaskCore 1
+#define SyncTaskCore 1
+
+//Update Speeds
+#define WebsocketSyncSpeed 0.5
+#define StabilizerSpeed 0.005
+#define LedReloadSpeed 0.1
 
 // DC motor right
-const int32_t DCR_ENCA = 4;
-const int32_t DCR_ENCB = 13;
-const int32_t DCR_INA = 26;
-const int32_t DCR_INB = 27;
-const int32_t DCR_PWM = 2;
-const int32_t DCR_PWMCH = 1;
+#define DCR_ENCA 4
+#define DCR_ENCB 13
+#define DCR_INA 26
+#define DCR_INB 27
+#define DCR_PWM 2
+#define DCR_PWMCH 1
 
 // DC motor left
-const int32_t DCL_ENCA = 16;
-const int32_t DCL_ENCB = 17;
-const int32_t DCL_INA = 23;
-const int32_t DCL_INB = 25;
-const int32_t DCL_PWM = 23;
-const int32_t DCL_PWMCH = 3;
+#define DCL_ENCA 16
+#define DCL_ENCB 17
+#define DCL_INA 23
+#define DCL_INB 25
+#define DCL_PWM 23
+#define DCL_PWMCH 3
 
 // Robot Dimensions
-const double WHEELRADIUS = .075; // m
-const double b = .15;          // cm
+#define WHEELRADIUS 0.075 // cm
+#define WHEELB 0.15          // cm
 
 //Led lys
-const int32_t POSITIONMODE_LED_PIN = 19;
+#define POSITIONMODE_LED_PIN 19
 
 //buzzer
-const int32_t BUZZER_PIN = 33;
-const int32_t BUZZER_PWM_CH = 6;
+#define BUZZER_PIN 33
+#define BUZZER_PWM_CH 6

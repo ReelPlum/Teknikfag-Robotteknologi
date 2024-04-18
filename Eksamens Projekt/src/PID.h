@@ -40,5 +40,5 @@ public:
     double get_error(void) { return error; };
 
     double squash(double value);
-    void update(double set_value, double current_value, double *ctrl_value, double integration_threshold);
+    void update(double set_value, double current_value, double *ctrl_value, double integration_threshold, double wx);
 };

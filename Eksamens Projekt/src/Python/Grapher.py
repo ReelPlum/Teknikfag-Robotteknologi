@@ -105,6 +105,9 @@ class Grapher(Canvas):
         self.TY = ty
         
         x,y = self.calculate(self.X, self.Y)
+        
+        print(f"X: {x}, Y: {y}")
+        
         #self.move(self.Oval, x, y)
         self.delete(self.Oval)
         self.delete(self.Line)

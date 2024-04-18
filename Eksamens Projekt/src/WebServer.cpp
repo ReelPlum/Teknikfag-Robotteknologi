@@ -8,9 +8,7 @@
  *
  */
 #include <WebServer.h>
-
-
-#include <PulsingLed.h>
+#include <Global.h>
 
 /***********************************************************
  * Functions
@@ -429,7 +427,7 @@ void syncTask(void *arg)
 {
   log_i("Loading");
 
-  TickType_t xTimeIncrement = 1000;
+  TickType_t xTimeIncrement = configTICK_RATE_HZ * 0.5;
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
@@ -445,6 +443,9 @@ void syncTask(void *arg)
     double p = updateCallback('p');
     double error = updateCallback('e');
 
+    double le = updateCallback('v'); //left encoder
+    double re = updateCallback('h'); //Right encoder
+
     // Sync data in websocket
     sprintf(MsgBuf, "%s:%f", "xpos", x);
     web_socket_send(MsgBuf, 1, true);
@@ -455,30 +456,36 @@ void syncTask(void *arg)
     sprintf(MsgBuf, "%s:%f", "angle", a);
     web_socket_send(MsgBuf, 1, true);
 
-    // Location
-    sprintf(MsgBuf, "%s:%f", "targetx", lx);
+    // // Location
+    // sprintf(MsgBuf, "%s:%f", "targetx", lx);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // sprintf(MsgBuf, "%s:%f", "targety", ly);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // // Location toggle
+    // sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // sprintf(MsgBuf, "%s:%i", "d", (int)d);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // sprintf(MsgBuf, "%s:%i", "k", (int)k);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // sprintf(MsgBuf, "%s:%i", "i", (int)i);
+    // web_socket_send(MsgBuf, 1, true);
+
+    // sprintf(MsgBuf, "%s:%i", "p", (int)p);
+    // web_socket_send(MsgBuf, 1, true);
+
+    sprintf(MsgBuf, "%s:%i", "error", (int)(error*1000));
     web_socket_send(MsgBuf, 1, true);
 
-    sprintf(MsgBuf, "%s:%f", "targety", ly);
+    sprintf(MsgBuf, "%s:%i", "rightencoder", (int)re);
     web_socket_send(MsgBuf, 1, true);
 
-    // Location toggle
-    sprintf(MsgBuf, "%s:%i", "locationtoggle", (int)lt);
-    web_socket_send(MsgBuf, 1, true);
-
-    sprintf(MsgBuf, "%s:%i", "d", (int)d);
-    web_socket_send(MsgBuf, 1, true);
-
-    sprintf(MsgBuf, "%s:%i", "k", (int)k);
-    web_socket_send(MsgBuf, 1, true);
-
-    sprintf(MsgBuf, "%s:%i", "i", (int)i);
-    web_socket_send(MsgBuf, 1, true);
-
-    sprintf(MsgBuf, "%s:%i", "p", (int)p);
-    web_socket_send(MsgBuf, 1, true);
-
-    sprintf(MsgBuf, "%s:%i", "error", (int)error);
+    sprintf(MsgBuf, "%s:%i", "leftencoder", (int)le);
     web_socket_send(MsgBuf, 1, true);
 
     vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
@@ -491,21 +498,21 @@ void setup_tasks()
   xTaskCreatePinnedToCore(
       webSocketLoop,
       "WebSocket_loop",
-      10000, /* Stack size in words */
+      WebsocketStack, /* Stack size in words */
       NULL,  /* Task input parameter */
-      25,    /* Priority of the task from 0 to 25, higher number = higher priority */
+      WebsocketPriority,    /* Priority of the task from 0 to 25, higher number = higher priority */
       &WebSocketTaskHandle,
-      0); /* Core where the task should run */
+      WebsocketCore); /* Core where the task should run */
 
   log_i("starting updatesync task");
   xTaskCreatePinnedToCore(
       syncTask,
       "UpdateSync_loop",
-      10000, /* Stack size in words */
+      SyncTaskStack, /* Stack size in words */
       NULL,  /* Task input parameter */
-      1,     /* Priority of the task from 0 to 25, higher number = higher priority */
+      SyncTaskPriority,     /* Priority of the task from 0 to 25, higher number = higher priority */
       &SyncTaskHandle,
-      1); /* Core where the task should run */
+      SyncTaskCore); /* Core where the task should run */
 }
 
 void init_web(const char* SSID, const char* password, callbackChange onChange, callbackUpdate onUpdate)

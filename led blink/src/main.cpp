@@ -4,19 +4,34 @@
 
 PulsingLed led(1, 8, 19500, 19, 0.5);
 
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   Serial.begin(115200);
-  while(!Serial)
+  while (!Serial)
     ;
 
   log_i("setup");
   led.init();
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
-  //log_i("Hello world");
+  // log_i("Hello world");
 
-  //delay(200);
+  // delay(200);
+}
+
+#define PID_LOOP_DBG
+//#define DR_LOOP_DBG
+
+{
+#ifdef PID_LOOP_DBG
+  digitalWrite();    
+#endif
+
+#ifdef PID_LOOP_DBG
+  digitalWrite();
+#endif
 }

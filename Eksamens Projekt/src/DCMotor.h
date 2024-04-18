@@ -6,6 +6,7 @@
 //#include <hbridge.h>
 #include <drv8871.h>
 #include <ESP32Encoder.h>
+#include <Global.h>
 
 class DCMotor
 {
@@ -27,13 +28,14 @@ public:
 
     //Få accelerationen af DC-motoren ved den sidste kørte PID regulering
     double get_acceleration();
+    double getEncoderPosition();
 
     //Set den ønskede hastighed af DC-motoren. Virker kun hvis position_mode er sat til 'false
     void set_velocity(double velocity);
     void set_velocity_deg(double velocity_deg);
     void set_PWM(int32_t pwm);
 
-    int32_t calculate_degtovel(int32_t val);
+    double calculate_degtovel(double val);
 
     // Andre medlemsfunktioner og operationer, f.eks. setPos, waitMove, home, osv.
     // ...

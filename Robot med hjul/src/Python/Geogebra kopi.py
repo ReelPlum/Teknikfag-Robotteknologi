@@ -20,9 +20,9 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         Frame.__init__(self, master, background='#ffffff')
         self.grid(sticky=N+S+E+W)  # put frame in toplevel window
         self.createWidgets(master)
-    
+     
 
-        self.ws = websocket.WebSocketApp("ws://192.168.1.100:1337", on_message=self.onMessage)
+        self.ws = websocket.WebSocketApp("ws://192.168.1.104:1337", on_message=self.onMessage)
         
         self.ws.X = 0
         self.ws.Y =0

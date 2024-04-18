@@ -1,4 +1,5 @@
 #include <DeadReckoning.h>
+#include <Global.h>
 
 double CalculateAcceleration(double angleAcceleration, double wheelRadius)
 {
@@ -77,13 +78,15 @@ void DeadReckoning::init(DCMotor *RightMotor, DCMotor *LeftMotor, moveDirection 
     this->DT = DT;
 
     // Start Task
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         this->Task,
         "Dead Reckoning Task",
-        10000,
+        DeadReckoningStack,
         this, //< Pointer gets forwarded to the task
-        1,
-        NULL);
+        DeadReckoningPriority,
+        &(this->TaskHandle),
+        DeadReckoningCore
+        );
 };
 
 void DeadReckoning::setTarget(double x, double y)

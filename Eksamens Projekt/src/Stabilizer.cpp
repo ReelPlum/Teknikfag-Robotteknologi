@@ -16,17 +16,17 @@ double Stabilizer::getTargetAngle(){
 };
 
 void Stabilizer::setWantedAngle(double WantedAngle){
-    this->WantedAngle = WantedAngle
+    this->wanted_angle = WantedAngle;
 }
 
-void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd)
+void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double k)
 {
     // Initialize stuff here
 
-    this->DT = .005;
+    this->DT = StabilizerSpeed;
     this->kd = kd;
 
-    this->sensorFusion.setup(.05);
+    this->sensorFusion.setup(k);
     this->anglePID.init(this->DT, 50000);
 
     this->anglePID.set_kd(0);
@@ -43,22 +43,15 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd)
     pinMode(32, OUTPUT);
 
     // start update task
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         this->Update,
-        "Stabilizer PID task",
-        10000,
+        "Stabilizer PID Task",
+        StabilizerPIDStack,
         this, //< Pointer gets forwarded to the task
-        1,
-        NULL);
-
-    xTaskCreate(
-        this->CallbackTask,
-        "Stabilizer Callback Handler",
-        10000,
-        this,
-        1,
-        NULL
-    );
+        StabilizerPIDPriority,
+        &(this->updateTaskHandle),
+        StabilizerPIDCore
+        );
 };
 
 Pid* Stabilizer::getPid(){
@@ -75,6 +68,8 @@ double Stabilizer::getKD(){
 
 void Stabilizer::SetKD(double KD){
     this->kd = KD;
+
+    this->anglePID.set_kd(KD);
 }
 
 void Stabilizer::SetKI(double KI){
@@ -101,19 +96,8 @@ void Stabilizer::SetK(double k){
     (this->sensorFusion).setK(k);
 }
 
-void Stabilizer::CallbackTask(void *arg)
-{
-    Stabilizer *p = static_cast<Stabilizer *>(arg);
-
-    TickType_t xTimeIncrement = configTICK_RATE_HZ * 1;
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-    for (;;)
-    { // loop tager mindre end 18us * 2
-        for (angleChangeCallback callback : this->angleCallbacks){
-            //Run callback function
-            callback(&(this->current_angle));
-        };
-    }
+double Stabilizer::getCtrlAngle(){
+    return this->ctrl_angle;
 }
 
 void Stabilizer::Update(void *arg)
@@ -138,23 +122,23 @@ void Stabilizer::Update(void *arg)
         p->ReadSensors();
 
         //Taget angle = 0 + extra angle
-        p->anglePID.update(p->getTargetAngle(), p->current_angle, &(p->ctrl_angle), IntegrationThreshold);
+        p->anglePID.update(p->getTargetAngle(), p->current_angle, &(p->ctrl_angle), IntegrationThreshold, p->wx);
 
-        double value = (p->ctrl_angle + p->kd * p->wx);
+        //p->ctrl_angle = (p->ctrl_angle + p->kd * p->wx);
 
-        if (abs(p->current_angle) >= 91)
+        if (fabs(p->current_angle) >= 91.0)
         {
-            // Stop motors
-            p->RightMotor->set_PWM(0);
-            p->LeftMotor->set_PWM(0);
+            // // Stop motors
+            // p->RightMotor->set_PWM(0);
+            // p->LeftMotor->set_PWM(0);
 
-            return;
+            // return;
         }
         else
         {
             // Get velocity
-            int32_t velR = p->RightMotor->calculate_degtovel(value);
-            int32_t velL = p->LeftMotor->calculate_degtovel(value);
+            int32_t velR = p->RightMotor->calculate_degtovel(p->ctrl_angle);
+            int32_t velL = p->LeftMotor->calculate_degtovel(p->ctrl_angle);
 
             //Set PWM
             p->RightMotor->set_PWM(velR);
@@ -195,7 +179,7 @@ void Stabilizer::ReadSensors()
 
     // log_i("Acc: %f", -radiansToDegrees(acc));
 
-    this->wx = this->myICM.gyrX();
+    this->wx = (this->myICM.gyrX());
 
     double gyro = this->current_angle + (this->DT) * this->wx;
 
@@ -205,15 +189,4 @@ void Stabilizer::ReadSensors()
     this->acc = acc;
 
     this->current_angle = this->sensorFusion.calculateValue(-radiansToDegrees(acc), gyro);
-
-    // //Call registered callbacks
-    // for (angleChangeCallback callback : this->angleCallbacks){
-    //     //Run callback function
-    //     callback(&(this->current_angle));
-    // };
-};
-
-void Stabilizer::RegisterAngleCallback(angleChangeCallback callback){
-    this->angleCallbacksNum++;
-    this->angleCallbacks[this->angleCallbacksNum] = callback;
 };

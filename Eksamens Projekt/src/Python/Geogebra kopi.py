@@ -32,10 +32,10 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.Y = 0
         self.Angle = 0
 
-        self.K = 0.05
-        self.GyroSens = 0.5
-        self.KI = 0.01
-        self.KP = 0.5
+        self.K = 0.015
+        self.GyroSens = 20
+        self.KI = 2.0
+        self.KP = 305
         self.TargetAngle = 0
 
         self.grid(sticky=N + S + E + W)  # put frame in toplevel window
@@ -50,11 +50,15 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             if m[0] == "xpos":
                 app.X = float(m[1])
 
+                print(f"X: {float(m[1])}")
+
                 self.Canvas.updatePoint(
                     app.X, app.Y, app.Angle, app.TargetX, app.TargetY
                 )
             if m[0] == "ypos":
                 app.Y = float(m[1])
+
+                print(f"Y: {float(m[1])}")
 
                 self.Canvas.updatePoint(
                     app.X, app.Y, app.Angle, app.TargetX, app.TargetY
@@ -84,13 +88,23 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                     app.LocationToggle = False
 
             if m[0] == "error":
-                self.CurrentAngle.set(f"Error: {float(m[1])}")
+                self.CurrentAngle.set(f"Error: {float(m[1]) / 1000}")
+                
+            if m[0] == "rightencoder":
+                #self.CurrentAngle.set(f"Error: {m[1]/1000}")
+                #print(f"Right encoder: {m[1]}")
+                pass
+                
+            if m[0] == "leftencoder":
+                #self.CurrentAngle.set(f"Error: {m[1]/1000}")
+                #print(f"Left encoder: {m[1]}")
+                pass
 
         else:
             return
 
         # Update point on graph
-        self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+        #self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
 
     def commandHandler(self, bNo):
         print("Cmd handler called: " + str(bNo))
@@ -165,6 +179,8 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N + S + E + W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
+        
+        self.ws.Canvas = self.Canvas
 
         # Graph(canvas, "a*x^3+b*x^2+c*x+d")
 
