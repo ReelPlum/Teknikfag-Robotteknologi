@@ -5,7 +5,7 @@
 DCMotor::DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
                  int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
                  int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt, double pid_max_ctrl_value,
-                 double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation)
+                 double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation, double FullEncoderRotation)
 {
     this->pid_loop_pin = pid_loop_pin;
     this->enc_a_pin = enc_a_pin;
@@ -28,6 +28,8 @@ DCMotor::DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_
     this->max_vel = max_vel;
     this->impulses_per_rotation = impulses_per_rotation;
     this->pid_mode = pid_mode;
+
+    this->FullEncoderRotation = FullEncoderRotation;
 
     pinMode(this->pid_loop_pin, OUTPUT);
     pinMode(this->limit_sw_pin, INPUT);
@@ -143,18 +145,18 @@ void DCMotor::pidTask(void *arg)
 double DCMotor::get_acceleration()
 {
     // Returns rotational velocity
-    return (this->acceleration / this->impulses_per_rotation) * 2 * PI;
+    return (this->acceleration / this->FullEncoderRotation) * TWO_PI;
 }
 
 double DCMotor::get_velocity()
 {
     // Returns rotational velocity
-    return (this->current_vel / this->impulses_per_rotation) * 2 * PI;
+    return (this->current_vel / this->FullEncoderRotation) * TWO_PI;
 }
 
 void DCMotor::set_velocity_deg(double velocity_deg)
 {
-    this->req_vel = velocity_deg / 360 * this->impulses_per_rotation;
+    this->req_vel = (velocity_deg / 360) * (this->impulses_per_rotation);
 }
 
 void DCMotor::set_velocity(double velocity)

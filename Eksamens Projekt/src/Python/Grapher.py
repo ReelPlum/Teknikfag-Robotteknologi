@@ -92,8 +92,6 @@ class Grapher(Canvas):
 
         x, y = self.calculate(self.X, self.Y)
 
-        print(f"X: {x}, Y: {y}")
-
         # self.move(self.Oval, x, y)
         self.delete(self.Oval)
         self.delete(self.Line)
@@ -248,6 +246,4 @@ class Grapher(Canvas):
 
         # Render y-axis
         self.create_line(x0, 0, x0, size[1], fill="black", width=0)
-
-        self.updatePoint(self.X, self.Y, self.Angle, self.TX, self.TY)
         # root.after(10, self.render, root)

@@ -17,32 +17,48 @@ from math import *
 
 
 class Application(Frame):  # Application is a Frame (inheritance from Frame)
-    def __init__(self, master):
+    def __init__(self, master, ip):
         Frame.__init__(self, master, background="#ffffff")
-
-        self.ws = websocket.WebSocketApp(
-            "ws://192.168.1.104:1337", on_message=self.onMessage
-        )
-
-        self.ws.X = 0
-        self.ws.Y = 0
-        self.ws.Angle = 0
+        
+        self.IP = ip
+        self.Connected = False
 
         self.X = 0
         self.Y = 0
         self.Angle = 0
 
-        self.K = 0.015
-        self.GyroSens = 20
-        self.KI = 2.0
-        self.KP = 305
-        self.TargetAngle = 0
+        self.K = 0.02
+        self.GyroSens = 9.5
+        self.KI = -1.0
+        self.KP = 250
+        self.TargetAngle = 0.5
 
         self.grid(sticky=N + S + E + W)  # put frame in toplevel window
-        self.createWidgets(master)
 
+        self.ws = websocket.WebSocketApp(
+            f"ws://{ip}:1337", on_message=self.onMessage, on_error = self.onError, on_close=self.onClose
+        )
+        
+        self.createWidgets(master)
+        
         Thread(target=self.ws.run_forever).start()
+        
+        self.ws.X = 0
+        self.ws.Y = 0
+        self.ws.Angle = 0
+
         Thread(target=self.chooseMovement).start()
+
+    def onClose(self, app, a, closeMsg):
+        self.Connected = False
+        exit("Lost connection to server...")
+        
+    def onOpen(self, app, openMsg):
+        self.Connected = True
+        print("Successfully connected!!!")
+        
+    def onError(self, app, err):
+        print(f"Got websocket error {err}")
 
     def onMessage(self, app, msg):
         try:
@@ -52,11 +68,10 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 if m[0] == "xpos":
                     app.X = float(m[1])
 
-                    print(f"X: {float(m[1])}")
                 if m[0] == "ypos":
                     app.Y = float(m[1])
 
-                    print(f"Y: {float(m[1])}")
+
                 if m[0] == "angle":
                     app.Angle = float(m[1])
                 if m[0] == "error":
@@ -76,7 +91,7 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 return
 
             # Update point on graph
-            self.Canvas.updatePoint(app.X, app.Y, app.Angle, app.TargetX, app.TargetY)
+            self.Canvas.updatePoint(app.X, app.Y, app.Angle)
 
         except Exception as e:
             print(f"error: {e}")
@@ -145,11 +160,22 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         except Exception as e:
             print(f"Error on set KP: {e}")
 
-    def toggleBuzzer(self, a):
+    def toggleBuzzer(self):
         # Toggle buzzer
-        self.ws.send(f"togglebuzzer:1")
+        try:
+            self.ws.send(f"togglebuzzer:1")
+        except:
+            print("failed to send toggle button command on websocket")
 
     def createWidgets(self, root):
+        retries = 0
+        # while ((not self.Connected) or (retries < 5)):
+        #     retries += 1
+        #     time.sleep(2)
+            
+        # if (not self.Connected):
+        #     exit(f"Could not connect to websocket server with ip {self.IP}")
+        
         top = self.winfo_toplevel()
         # top.geometry("500x500")
         top.rowconfigure(0, weight=1)  # toplevel window rows scalable
@@ -158,8 +184,6 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N + S + E + W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
-
-        self.ws.Canvas = self.Canvas
 
         # Graph(canvas, "a*x^3+b*x^2+c*x+d")
 
@@ -300,15 +324,27 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
             if self.X != x:
                 self.X = x
-                self.ws.send(f"rotate:{round(x*1000)}")
+                
+                try:
+                    self.ws.send(f"rotate:{round(x*1000)}")
+                except: 
+                    print("Failed to send websocket rotate command")
 
             if self.Y != y:
                 self.Y = y
-                self.ws.send(f"forward:{round(y*1000)}")
+                
+                try:
+                    self.ws.send(f"forward:{round(y*1000)}")
+                except:
+                    print("Failed to send websocket forward command")
 
+
+ip = input("Hvilken ip vil du gerne tilkoble? (Skriv intet for standard ip!)")
+if not ip:
+    ip = "192.168.1.104"
 
 root = Tk()
 
-app = Application(root)
-app.master.title("Wilson lokation")
+app = Application(root, ip)
+app.master.title("Robot Kontrolpanel")
 app.mainloop()

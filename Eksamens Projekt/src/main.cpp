@@ -8,8 +8,8 @@
 #include <Buzzer.h>
 
 // Setup classes
-DCMotor motorR(false, false, 5, DCR_ENCB, DCR_ENCA, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
-DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation);
+DCMotor motorR(false, false, 5, DCR_ENCB, DCR_ENCA, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation, DCEncoderGearing);
+DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation, EncoderFullRotation);
 
 PulsingLed led(8, 8, 19500, POSITIONMODE_LED_PIN, 0.25);
 
@@ -20,9 +20,8 @@ Buzzer angleBuzzer;
 double UpdateCallback(char subtype)
 {
   DeadReckoningData data = deadReckoning.getData();
-  direction location = deadReckoning.getTarget();
 
-  if (subtype == 'u')
+  if (subtype == 'f')
   {
     return data.X;
   }
@@ -66,9 +65,9 @@ void ChangeCallback(double *paramValue, char subtype)
   //   stabilizer.SetExtraEngineSpeed(-SpeedX, SpeedX);
 
   // }
-  else if (subtype == 'y'){
+  if (subtype == 'y'){
     // forward / backward
-    stabilizer.SetExtraAngle((*paramValue) / res * (3));
+    stabilizer.SetExtraAngle((*paramValue) / res * (1));
   }
   if (subtype == 'd'){
     //change kd on stabilizer
@@ -116,7 +115,7 @@ void setup()
   stabilizer.init(&motorR, &motorL, MotorKD, MotorK);
 
   //Start the angle buzzer
-  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, 4200, &stabilizer);
+  angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, Buzzer_Freq_Max, Buzzer_Freq_Min, &stabilizer);
 
   //Start pulsing LED
   led.init();
@@ -133,6 +132,14 @@ void loop()
   // log_i("K: %f", stabilizer.getK());
   //log_i("CtrlAngle: %f", stabilizer.getCtrlAngle());
   //log_i("Target Angle: %f", stabilizer.getTargetAngle());
+
+  //DeadReckoningData location = deadReckoning.getData();
+
+  //log_i("X: %f", location.X);
+  //log_i("Y: %f", location.Y);
+
+  //log_i("Encoder Position Right: %f", motorR.getEncoderPosition() / (ImpulsesPerRotation * DCEncoderGearing));
+  //log_i("Encoder Position Left: %f", motorL.getEncoderPosition() / (ImpulsesPerRotation * DCEncoderGearing));
 
   delay(2000);
 };

@@ -347,7 +347,7 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   {
     handle_set_targetangle(command, client_num);
   }
-  else if (strncmp(command, togglebuzzer, strlen(togglebuzzer)) == 0)
+  else if (strncmp(command, cmd_toggle_buzzer, strlen(cmd_toggle_buzzer)) == 0)
   {
     handle_togglebuzzer(command, client_num);
   }
@@ -457,6 +457,8 @@ void syncTask(void *arg)
     double re = updateCallback('h'); //Right encoder
 
     // Sync data in websocket
+
+
     sprintf(MsgBuf, "%s:%f", "xpos", x);
     web_socket_send(MsgBuf, 1, true);
 
@@ -502,7 +504,7 @@ void setup_tasks()
       SyncTaskCore); /* Core where the task should run */
 }
 
-void init_web(const char* SSID, const char* password, callbackChange onChange, callbackUpdate onUpdate)
+void init_web(char* SSID, char* password, callbackChange onChange, callbackUpdate onUpdate)
 {
   log_i("loading");
 

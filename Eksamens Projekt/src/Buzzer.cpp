@@ -3,21 +3,22 @@
 
 Buzzer::Buzzer(){};
 
-void Buzzer::init(int8_t io_pin, int32_t pwm_ch, int32_t initial_frequency, Stabilizer *stabilizer){
+void Buzzer::init(int8_t io_pin, int32_t pwm_ch, int32_t max_frequency, int32_t min_frequency, Stabilizer *stabilizer){
     //Connect PWM to pin & channel with frequency
     this->pwm_ch = pwm_ch;
     this->pin = io_pin;
-    this->frequency = initial_frequency;
+    this->max_frequency = max_frequency;
+    this->min_frequency = min_frequency;
 
     this->stabilizer = stabilizer;
 
     int32_t resolution = 6; //Resolution in bits
 
     ledcAttachPin(this->pin, this->pwm_ch);
-    ledcSetup(this->pwm_ch, this->frequency, resolution);
+    ledcSetup(this->pwm_ch, this->min_frequency, resolution);
 
     //Write tone with PWM to buzzer
-    ledcWriteTone(this->pwm_ch, this->frequency);
+    ledcWriteTone(this->pwm_ch, this->min_frequency);
 
     //Start Task
     xTaskCreatePinnedToCore(
@@ -33,13 +34,12 @@ void Buzzer::init(int8_t io_pin, int32_t pwm_ch, int32_t initial_frequency, Stab
 
 void Buzzer::change_freq(int32_t frequency){
     //Change PWM frequency
-    this->frequency = frequency;
-
     //Change written tone to buzzer
-    ledcWriteTone(this->pwm_ch, this->frequency);
+    ledcWriteTone(this->pwm_ch, frequency);
 };
 
 void Buzzer::toggle(){
+    log_i("TOGGLE!");
     this->enabled = !this->enabled;
 }
 
@@ -52,8 +52,12 @@ void Buzzer::Task(void *arg){
     { // loop tager mindre end 18us * 2
         if (p->enabled){
             double angle = p->stabilizer->getPid()->get_error();
-            p->change_freq(map_double(angle, 0, 90, 2000, 4200));
+            p->change_freq(map_double(fabs(angle), 0, 90, p->min_frequency, p->max_frequency));
         }
+        else {
+            p->change_freq(0);
+        }
+
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
 }

@@ -15,7 +15,7 @@ public:
     DCMotor(bool position_mode, bool pid_mode, int32_t pid_loop_pin, int32_t enc_a_pin, int32_t enc_b_pin, int32_t limit_sw_pin,
             int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
             int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt, double pid_max_ctrl_value,
-            double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation);
+            double min_ctrl_value, double max_ctrl_value, double max_vel, double integration_threshold, double impulses_per_rotation, double EncoderGearing);
 
     //Start DC motoren i setup funktionen med værdierne til PID reguleringen.
     void init(double ki, double kd, double kp);
@@ -70,10 +70,13 @@ private:
     volatile double acceleration;
     volatile double req_pos;
     volatile double req_vel;
-    volatile double current_pos;
+    volatile int64_t current_pos;
     volatile double current_vel;
     double ctrl_pos;
     double ctrl_vel;
+    double EncoderGearing;
+
+    double FullEncoderRotation;
 
     ESP32Encoder encoder;
     Pid pidVel;

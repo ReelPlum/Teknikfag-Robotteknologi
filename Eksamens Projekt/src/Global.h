@@ -5,7 +5,7 @@
 // General DC motor stuff
 #define MotorKI 1.0
 #define MotorKD 9.5
-#define MotorKP 250.0
+#define MotorKP 150.0
 #define MotorK 0.02
 
 #define PWM_Freq 19500
@@ -16,6 +16,8 @@
 #define MaxVel 6000.0
 #define IntegrationThreshold 5.0
 #define ImpulsesPerRotation 2000.0
+#define DCEncoderGearing 4.8
+#define EncoderFullRotation 9600 //4.8 * 2000
 
 //Task Stack sizes
 #define WebsocketStack 10000
@@ -52,8 +54,7 @@
 #define StabilizerSpeed 0.005
 #define LedReloadSpeed 0.1
 #define BuzzerSpeed .25
-#define AngleTaskSpeed .0025
-#define DeadReckoningSpeed .05
+#define DeadReckoningSpeed .125
 
 // DC motor right
 #define DCR_ENCA 4
@@ -72,12 +73,14 @@
 #define DCL_PWMCH 3
 
 // Robot Dimensions
-#define WHEELRADIUS 0.075 // cm
-#define WHEELB 0.15          // cm
+#define WHEELRADIUS 7.5 // cm
+#define WHEELB 15.0          // cm
 
 //Led lys
 #define POSITIONMODE_LED_PIN 19
 
 //buzzer
 #define BUZZER_PIN 33
-#define BUZZER_PWM_CH 6
+#define BUZZER_PWM_CH 12
+#define Buzzer_Freq_Max 4200.0
+#define Buzzer_Freq_Min 2800.0

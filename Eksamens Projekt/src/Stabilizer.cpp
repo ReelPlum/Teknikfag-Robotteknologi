@@ -29,9 +29,9 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double
     this->sensorFusion.setup(k);
     this->anglePID.init(this->DT, 50000);
 
-    this->anglePID.set_kd(0);
-    this->anglePID.set_kp(0);
-    this->anglePID.set_ki(0);
+    this->anglePID.set_kd(MotorKD);
+    this->anglePID.set_kp(MotorKP);
+    this->anglePID.set_ki(MotorKI);
 
     this->RightMotor = RightMotor;
     this->LeftMotor = LeftMotor;
@@ -117,7 +117,7 @@ void Stabilizer::AngleTask(void *arg){
 
     log_i("Ready!");
 
-    TickType_t xTimeIncrement = configTICK_RATE_HZ * AngleTaskSpeed;
+    TickType_t xTimeIncrement = configTICK_RATE_HZ * (StabilizerSpeed / 5); //5 angle measurements per stabilizer task
     TickType_t xLastWakeTime = xTaskGetTickCount();
 
     for (;;)
@@ -145,13 +145,11 @@ void Stabilizer::BalanceTask(void *arg)
 
         //p->ctrl_angle = (p->ctrl_angle + p->kd * p->wx);
 
-        if (fabs(p->current_angle) >= 91.0)
+        if (fabs(p->current_angle) >= 45.0)
         {
             // // Stop motors
-            // p->RightMotor->set_PWM(0);
-            // p->LeftMotor->set_PWM(0);
-
-            // return;
+            p->RightMotor->set_PWM(0);
+            p->LeftMotor->set_PWM(0);
         }
         else
         {
@@ -205,7 +203,17 @@ void Stabilizer::ReadSensors()
     // log_i("Gyro: %f", gyro);
 
     this->gyro = gyro;
-    this->acc = acc;
+    //this->acc = acc;
+
+    //Get mean for accelerometer angles.
+    if (this->accn > 4){
+        this->accn = 0;
+    }
+    this->accSum += acc;
+    this->accSum -= this->accelerations[this->accn];
+    this->accelerations[this->accn] = acc;
+    this->acc = this->accSum / 5;
+    this->accn++;
 
     this->current_angle = this->sensorFusion.calculateValue(-radiansToDegrees(acc), gyro);
 };
