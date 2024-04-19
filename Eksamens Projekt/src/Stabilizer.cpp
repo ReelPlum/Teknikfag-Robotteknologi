@@ -40,8 +40,6 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double
     WIRE_PORT.setClock(400000);
     this->myICM.begin(WIRE_PORT, AD0_VAL);
 
-    pinMode(32, OUTPUT);
-
     // start update task
     xTaskCreatePinnedToCore(
         this->BalanceTask,
@@ -137,13 +135,12 @@ void Stabilizer::BalanceTask(void *arg)
     for (;;)
     { // loop tager mindre end 18us * 2
         // Check if sensors are ready
-
-        digitalWrite(32, HIGH);
+        #ifdef OutputStabilizerLoop
+            digitalWrite(TestOutputPin, HIGH);
+        #endif
 
         //Taget angle = 0 + extra angle
         p->anglePID.update(p->getTargetAngle(), p->current_angle, &(p->ctrl_angle), IntegrationThreshold, p->wx);
-
-        //p->ctrl_angle = (p->ctrl_angle + p->kd * p->wx);
 
         if (fabs(p->current_angle) >= 45.0)
         {
@@ -162,7 +159,9 @@ void Stabilizer::BalanceTask(void *arg)
             p->LeftMotor->set_PWM(velL);
         };
 
-        digitalWrite(32, LOW);
+        #ifdef OutputStabilizerLoop
+            digitalWrite(TestOutputPin, LOW);
+        #endif
 
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }
@@ -194,26 +193,12 @@ void Stabilizer::ReadSensors()
         acc = 0;
     }
 
-    // log_i("Acc: %f", -radiansToDegrees(acc));
-
     this->wx = (this->myICM.gyrX());
 
     double gyro = this->current_angle + (this->DT) * this->wx;
 
-    // log_i("Gyro: %f", gyro);
-
     this->gyro = gyro;
-    //this->acc = acc;
-
-    //Get mean for accelerometer angles.
-    if (this->accn > 4){
-        this->accn = 0;
-    }
-    this->accSum += acc;
-    this->accSum -= this->accelerations[this->accn];
-    this->accelerations[this->accn] = acc;
-    this->acc = this->accSum / 5;
-    this->accn++;
+    this->acc = acc;
 
     this->current_angle = this->sensorFusion.calculateValue(-radiansToDegrees(acc), gyro);
 };

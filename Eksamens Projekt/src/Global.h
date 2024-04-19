@@ -54,7 +54,8 @@
 #define StabilizerSpeed 0.005
 #define LedReloadSpeed 0.1
 #define BuzzerSpeed .25
-#define DeadReckoningSpeed .125
+#define DeadReckoningSpeed .0025
+#define DCMotorSpeed = .0025
 
 // DC motor right
 #define DCR_ENCA 4
@@ -84,3 +85,9 @@
 #define BUZZER_PWM_CH 12
 #define Buzzer_Freq_Max 4200.0
 #define Buzzer_Freq_Min 2800.0
+
+//Test & logging
+#define TestOutputPin 32
+//#define OutputStabilizerLoop 1
+//#define OutputDeadReckoningLoop 1
+//#define OutputDCMotorLoop 1

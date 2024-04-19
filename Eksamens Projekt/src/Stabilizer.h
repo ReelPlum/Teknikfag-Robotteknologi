@@ -43,9 +43,6 @@ private:
   double value;
   double gyro;
   double acc;
-  double accSum;
-  double accelerations[5];
-  int32_t accn;
 
   double wx;
   

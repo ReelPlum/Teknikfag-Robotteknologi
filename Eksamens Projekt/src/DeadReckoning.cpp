@@ -18,10 +18,10 @@ void GetPosition(double *currentX, double *currentY, double *currentAngle, doubl
     double C = (aR - aL) / (2 * b);
     double D = (wR - wL) / b;
 
-    *currentY = *currentY + ((A * t + B) * cos(C * (t * t) + D * t + *currentAngle)) / 95;
-    *currentX = *currentX + ((A * t + B) * sin(C * (t * t) + D * t + *currentAngle)) / 95;
+    *currentY = *currentY + ((A * t + B) * cos(C * (t * t) + D * t + *currentAngle));
+    *currentX = *currentX + ((A * t + B) * sin(C * (t * t) + D * t + *currentAngle));
 
-    *currentAngle = (C * (t * t) + D * t) / 3 + *currentAngle;
+    *currentAngle = (C * (t * t) + D * t) + *currentAngle;
 };
 
 void DeadReckoning::init(DCMotor *RightMotor, DCMotor *LeftMotor, double wheelRadius, double b, double DT)
@@ -52,11 +52,19 @@ void DeadReckoning::Task(void *arg)
     TickType_t xLastWakeTime = xTaskGetTickCount();
     for (;;)
     { // loop tager mindre end 18us * 2
+        #ifdef OutputDeadReckoningLoop
+            digitalWrite(TestOutputPin, HIGH);
+        #endif
+
         double aR = CalculateAcceleration(p->DCMotorRight->get_acceleration(), p->wheelRadius);
         double aL = CalculateAcceleration(p->DCMotorLeft->get_acceleration(), p->wheelRadius);
         double wR = CalculateVelocity(p->DCMotorRight->get_velocity(), p->wheelRadius);
         double wL = CalculateVelocity(p->DCMotorLeft->get_velocity(), p->wheelRadius);
         GetPosition(&(p->Data.X), &(p->Data.Y), &(p->Data.Angle), aR, aL, wR, wL, p->b, p->DT);
+
+        #ifdef OutputDeadReckoningLoop
+            digitalWrite(TestOutputPin, LOW);
+        #endif
 
         vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
     }

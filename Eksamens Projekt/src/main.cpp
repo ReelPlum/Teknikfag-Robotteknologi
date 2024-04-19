@@ -8,8 +8,8 @@
 #include <Buzzer.h>
 
 // Setup classes
-DCMotor motorR(false, false, 5, DCR_ENCB, DCR_ENCA, 1, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation, DCEncoderGearing);
-DCMotor motorL(false, false, 5, DCL_ENCA, DCL_ENCB, 1, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, StabilizerSpeed, PID_CtrlMax, CtrlMin, CtrlMax, MaxVel, IntegrationThreshold, ImpulsesPerRotation, EncoderFullRotation);
+DCMotor motorL(DCR_ENCB, DCR_ENCA, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DCMotorSpeed, CtrlMin, CtrlMax, ImpulsesPerRotation, DCMotorSpeed);
+DCMotor motorR(DCL_ENCA, DCL_ENCB, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DCMotorSpeed, CtrlMin, CtrlMax, ImpulsesPerRotation, EncoderFullRotation);
 
 PulsingLed led(8, 8, 19500, POSITIONMODE_LED_PIN, 0.25);
 
@@ -52,19 +52,6 @@ const double res = 1000;
 
 void ChangeCallback(double *paramValue, char subtype)
 {
-
-  // if (subtype == 'x'){
-  //   // rotate
-  //   if (LocationMode)
-  //   {
-  //     return;
-  //   }
-
-  //   SpeedX = (*paramValue) / res * (-6000);
-
-  //   stabilizer.SetExtraEngineSpeed(-SpeedX, SpeedX);
-
-  // }
   if (subtype == 'y'){
     // forward / backward
     stabilizer.SetExtraAngle((*paramValue) / res * (1));
@@ -103,6 +90,7 @@ void setup()
 {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  pinMode(TestOutputPin, OUTPUT);
 
   //Start DC motors (Tracking encoders etc.)
   motorR.init(MotorKI, 0, MotorKP);
