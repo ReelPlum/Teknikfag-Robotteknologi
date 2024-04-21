@@ -10,3 +10,8 @@ Function Buzzer(){
     ledcWriteTone(PWMChannel, 0)
   }
 }
+
+Function ToggleBuzzer(){
+  //Toggle buzzerens boolean ved brug af "not" operator skrevet som !
+  enabled = !enabled;
+}

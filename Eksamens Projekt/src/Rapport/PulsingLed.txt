@@ -5,3 +5,7 @@ Function Pulse{
 
   t += dt;
 }
+
+if (x >= (1/PPS) * 1000) {
+  x = x - (1/PPS) * 1000;
+}

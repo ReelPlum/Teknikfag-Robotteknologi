@@ -1,0 +1,3 @@
+for (i = 0; i < #data; i++) {
+  varians += (data[i] - mean) * (data[i] - mean);
+}

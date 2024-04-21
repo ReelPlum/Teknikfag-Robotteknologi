@@ -86,7 +86,7 @@ void getAngles(ICM_20948_I2C *sensor)
 
 
 void task(void *arg){
-  TickType_t xTimeIncrement = DT;
+  TickType_t xTimeIncrement = configTICK_RATE_HZ * (DT/1000.0);
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (true)
   {
@@ -97,29 +97,18 @@ void task(void *arg){
 
 void setup()
 {
-
   SERIAL_PORT.begin(115200);
   while (!SERIAL_PORT)
   {
   };
 
-
-
   WIRE_PORT.begin();
   WIRE_PORT.setClock(400000);
-
-
-  //myICM.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
-
-    
 
   bool initialized = false;
   while (!initialized)
   {
-
-
     myICM.begin(WIRE_PORT, AD0_VAL);
-
 
     SERIAL_PORT.print(F("Initialization of the sensor returned: "));
     SERIAL_PORT.println(myICM.statusString());
@@ -149,7 +138,7 @@ void setup()
 void loop()
 {
   //Print mean
-  //log_i("Mean: %f", sum/(1000/DT*T));
+  log_i("Mean: %f", sum/(1000/DT*T));
 
   double mean = sum/(1000.0/DT*T);
   double varians = 0;
@@ -158,7 +147,7 @@ void loop()
   }
 
   varians = varians / (1000/DT*T);
-  //log_i("Varians: %f", varians);
+  log_i("Varians: %f", varians);
 
   /*
     Jeg har valgt at systemet virker i de øverste 180 grader. Den har en ændringsperiode ved ændring af orentiation fra opad til nedad og omvendt.

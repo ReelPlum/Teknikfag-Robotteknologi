@@ -1,0 +1,9 @@
+Function CheckCommand(){
+  if (strncmp(recievedCommand, command, strlen(command)) == 0){
+    //Kald funktion for kommando her
+  }
+}
+
+typedef void (*callbackChange)(double *paramValue, char subtype);
+typedef double (*callbackUpdate)(char subtype);
+

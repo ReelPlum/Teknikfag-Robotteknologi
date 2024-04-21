@@ -12,3 +12,15 @@ Function Attitude(accX, accY, theta, k){
 
   newAngle = accAngle * k + gyroAngle * (1-k);
 }
+
+Function GetIMUData(){
+  IMU.getAGMT();
+
+  accX = IMU.accX;
+  accY = IMU.accY;
+  accZ = IMU.accZ;
+
+  gyroX = IMU.gyrX;
+  gyroY = IMU.gyrY;
+  gyroZ = IMU.gyrZ;
+}
