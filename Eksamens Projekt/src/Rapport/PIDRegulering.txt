@@ -1,0 +1,15 @@
+Function PID(){
+  error = targetValue - currentValue;
+
+  if (abs(error) < integrationThreshold){
+    //Integrer
+    errorSum += error;
+  }
+
+  kp = error;
+  ki = errorSum * DT;
+  kd = (previousError - error) / DT;
+
+  //Squash sætter det givne tal mellem et maksimum og minimum værdi
+  PIDCTRL = squash(kp * p + ki * i + kd * d);
+}

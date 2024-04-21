@@ -1,0 +1,7 @@
+Function Pulse{
+  i = (-cos(2.0 * x * PPS * PI) / 2.0) + 0.5;
+
+  ledcWrite(PWMChannel, PWMMax * i);
+
+  t += dt;
+}

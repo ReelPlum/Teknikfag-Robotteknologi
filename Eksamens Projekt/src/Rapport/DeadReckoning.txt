@@ -1,0 +1,14 @@
+Function DeadReckoning(x, y, angle, accelerationR, acccelerationL, velocityR, velocityL, b, DT){
+  //Udregn variablerne A, B, C & D
+  A = (accelerationR + acccelerationL) / 2;
+  B = (velocityR + velocityL) / 2;
+  C = (accelerationR - acccelerationL) / (2*b);
+  D = (velocityR - velocityL) / b;
+
+  //Udregn positionerne x & y ved hjælp af formlerne
+  x = x - ((A * DT + B) * cos(C * DT^2 + D * DT + angle));
+  y = y - ((A * DT + B) * sin(C * DT^2 + D * DT + angle));
+
+  //Udregn ny vinkel
+  newAngle = C * DT^2 + D * DT + angle;
+}

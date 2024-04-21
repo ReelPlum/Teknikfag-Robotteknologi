@@ -1,0 +1,11 @@
+//Start pin
+#ifdef OutputStabilizerLoop
+digitalWrite(TestOutputPin, HIGH);
+#endif
+
+//Kør kode her
+
+//Stop pin
+#ifdef OutputStabilizerLoop
+digitalWrite(TestOutputPin, LOW);
+#endif

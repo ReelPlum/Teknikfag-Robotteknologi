@@ -1,0 +1,12 @@
+Function Buzzer(){
+  if (enabled){
+    frequency = map(abs(angle), 0, 90, minFrequency, maxFrequency);
+
+    //Ændrer frekvensen for PWM signalet
+    ledcWriteTone(PWMChannel, frequency);
+  }
+  else{
+    //Stop Buzzer hvis den er slået fra via internettet
+    ledcWriteTone(PWMChannel, 0)
+  }
+}

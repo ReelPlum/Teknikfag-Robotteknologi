@@ -1,13 +1,6 @@
 from tkinter import *
 from math import *
 
-# import random
-# import sympy
-# from sympy.abc import X
-# import numpy
-import threading
-import asyncio
-
 
 class Grapher(Canvas):
     def __init__(self, master):
@@ -26,11 +19,6 @@ class Grapher(Canvas):
         self.Offset = [0, 0]
 
         self.LastMousePosition = None
-        self.SelectedGraph = None
-        self.Objects = []
-
-        self.Variables = []
-        self.Threads = []
 
         x, y = self.calculate(self.X, self.Y)
         self.Oval = self.create_oval(x - 5, y - 5, x + 5, y + 5, fill="black")
@@ -159,45 +147,11 @@ class Grapher(Canvas):
 
         xTextPos = 30
         yTextPos = -30
-
-        # # Create small cool lines
-        # for f in range(1, int((size[0]/zooms-x0)/num) + 2, 1):
-
-        #     for l in range(1, 10):
-        #         x1 = x0 + num * zoom * f - (l * (num*zoom)/10)
-
-        #         self.create_line(x1, 0, x1, size[0], fill='light gray')
-
-        # for i in range(1, int((size[1]/zooms-y0)/num) + 2, 1):
-
-        #     for l in range(1, 10):
-        #         y1 = y0 + num * zoom * i - (l * (num*zoom)/10)
-
-        #         self.create_line(0, y1, size[0], y1, fill='light gray')
-
-        # for i in range(0, int(y0/zooms / num) + 2, 1):
-
-        #     for l in range(1, 10):
-
-        #         y1 = y0 - num * zoom * i - (l * (num*zoom)/10)
-
-        #         self.create_line(0, y1, size[0], y1, fill='light gray')
-
-        # for f in range(0, int(x0/zooms / num) + 2, 1):
-
-        #     for l in range(1, 10):
-        #         x1 = x0 - num * zoom * f - (l * (num*zoom)/10)
-
-        #         self.create_line(x1, 0, x1, size[0], fill='light gray')
-
         # Create bigger lines
 
         for i in range(1, int((size[1] / zooms - y0) / num) + 2, 1):
 
             y1 = y0 + num * zoom * i
-
-            # if y1 > size[1] or y1 < 0:
-            #     break
 
             self.create_line(0, y1, size[0], y1, fill="gray")
 
@@ -209,9 +163,6 @@ class Grapher(Canvas):
         for f in range(1, int((size[0] / zooms - x0) / num) + 2, 1):
             x1 = x0 + num * zoom * f
 
-            # if x1 > size[0] or x1 < 0:
-            #     break
-
             self.create_line(x1, 0, x1, size[1], fill="gray")
 
             # Render text
@@ -221,8 +172,6 @@ class Grapher(Canvas):
 
         for i in range(0, int(y0 / zooms / num) + 2, 1):
             y1 = y0 - num * zoom * i
-            # if y1 > size[1] or y1 < 0:
-            #     break
 
             self.create_line(0, y1, size[0], y1, fill="gray")
 
@@ -231,8 +180,6 @@ class Grapher(Canvas):
 
         for f in range(0, int(x0 / zooms / num) + 2, 1):
             x1 = x0 - num * zoom * f
-            # if x1 > size[0] or x1 < 0:
-            #     break
 
             self.create_line(x1, 0, x1, size[1], fill="gray")
 
@@ -246,4 +193,3 @@ class Grapher(Canvas):
 
         # Render y-axis
         self.create_line(x0, 0, x0, size[1], fill="black", width=0)
-        # root.after(10, self.render, root)

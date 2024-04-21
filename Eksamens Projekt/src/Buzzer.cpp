@@ -39,7 +39,6 @@ void Buzzer::change_freq(int32_t frequency){
 };
 
 void Buzzer::toggle(){
-    log_i("TOGGLE!");
     this->enabled = !this->enabled;
 }
 

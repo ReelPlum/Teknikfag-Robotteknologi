@@ -188,10 +188,6 @@ void Stabilizer::ReadSensors()
     {
         acc = atan(this->myICM.accZ() / this->myICM.accY());
     }
-    else
-    {
-        acc = 0;
-    }
 
     this->wx = (this->myICM.gyrX());
 

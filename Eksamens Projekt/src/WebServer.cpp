@@ -3,8 +3,8 @@
  *
  * https://shawnhymel.com/1882/how-to-create-a-web-server-with-websockets-using-an-esp32-in-arduino/
  *
- * Author: J. Sanggaard
- * Date: 10. september 2020
+ * Author: J. Sanggaard & Frederik Plum
+ * Date: 10. september 2020 with edits 2024
  *
  */
 #include <WebServer.h>
@@ -23,10 +23,6 @@ const int32_t ws_port = 1337;
 const int32_t led_pin = 5;
 
 const char *cmd_forward = "forward";
-const char *cmd_rotate = "rotate";
-const char *cmd_toggle_location = "toggle_location";
-const char *cmd_locationx = "locationx";
-const char *cmd_locationy = "locationy";
 const char *cmd_setK = "setk";
 const char *cmd_setKD = "set_kd";
 const char *cmd_setKP = "set_kp";
@@ -75,50 +71,6 @@ void handle_forward(char *command, uint8_t client_num)
   else
   {
     log_e("[%u]: illegal forward state received: %s", client_num, value + 1);
-  }
-}
-
-void handle_locationx(char *command, uint8_t client_num)
-{
-  char *value = strstr(command, ":");
-
-  if (value == NULL || *value != ':')
-  {
-    log_e("[%u]: Bad command %s", client_num, command);
-    return;
-  }
-  errno = 0;
-  char *e;
-  double result = strtol(value + 1, &e, 10);
-  if (*e == '\0' && 0 == errno) // no error
-  {
-    changeCallback(&result, 'a');
-  }
-  else
-  {
-    log_e("[%u]: illegal location x state received: %s", client_num, value + 1);
-  }
-}
-
-void handle_locationy(char *command, uint8_t client_num)
-{
-  char *value = strstr(command, ":");
-
-  if (value == NULL || *value != ':')
-  {
-    log_e("[%u]: Bad command %s", client_num, command);
-    return;
-  }
-  errno = 0;
-  char *e;
-  double result = strtol(value + 1, &e, 10);
-  if (*e == '\0' && 0 == errno) // no error
-  {
-    changeCallback(&result, 'b');
-  }
-  else
-  {
-    log_e("[%u]: illegal location y state received: %s", client_num, value + 1);
   }
 }
 
@@ -232,29 +184,6 @@ void handle_set_targetangle(char *command, uint8_t client_num)
   }
 }
 
-void handle_rotate(char *command, uint8_t client_num)
-{
-  char *value = strstr(command, ":");
-
-  if (value == NULL || *value != ':')
-  {
-    log_e("[%u]: Bad command %s", client_num, command);
-    return;
-  }
-  errno = 0;
-  char *e;
-  double result = strtol(value + 1, &e, 10);
-  if (*e == '\0' && 0 == errno) // no error
-  {
-    // update rotate
-    changeCallback(&result, 'x');
-  }
-  else
-  {
-    log_e("[%u]: illegal rotate state received: %s", client_num, value + 1);
-  }
-}
-
 void handle_location_toggle(char *command, uint8_t client_num)
 {
   char *value = strstr(command, ":");
@@ -310,22 +239,6 @@ void handle_command(uint8_t client_num, uint8_t *payload, size_t length)
   if (strncmp(command, cmd_forward, strlen(cmd_forward)) == 0)
   {
     handle_forward(command, client_num);
-  }
-  else if (strncmp(command, cmd_rotate, strlen(cmd_rotate)) == 0)
-  {
-    handle_rotate(command, client_num);
-  }
-  else if (strncmp(command, cmd_locationx, strlen(cmd_locationx)) == 0)
-  {
-    handle_locationx(command, client_num);
-  }
-  else if (strncmp(command, cmd_locationy, strlen(cmd_locationy)) == 0)
-  {
-    handle_locationy(command, client_num);
-  }
-  else if (strncmp(command, cmd_toggle_location, strlen(cmd_toggle_location)) == 0)
-  {
-    handle_location_toggle(command, client_num);
   }
   else if (strncmp(command, cmd_setK, strlen(cmd_setK)) == 0)
   {

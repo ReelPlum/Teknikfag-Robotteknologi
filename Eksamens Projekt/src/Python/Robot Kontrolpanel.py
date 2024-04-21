@@ -1,11 +1,5 @@
-# -------------------------------------------------------------------------------
-# Name:        tkinter demo app
-# Purpose:
-#
-# Author:      josa
-#
-# Created:     15-01-2020
-# -------------------------------------------------------------------------------
+# With inspiration from Jørn Sanggaard
+
 from tkinter import *
 from Grapher import Grapher
 
@@ -19,7 +13,7 @@ from math import *
 class Application(Frame):  # Application is a Frame (inheritance from Frame)
     def __init__(self, master, ip):
         Frame.__init__(self, master, background="#ffffff")
-        
+
         self.IP = ip
         self.Connected = False
 
@@ -36,13 +30,16 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
         self.grid(sticky=N + S + E + W)  # put frame in toplevel window
 
         self.ws = websocket.WebSocketApp(
-            f"ws://{ip}:1337", on_message=self.onMessage, on_error = self.onError, on_close=self.onClose
+            f"ws://{ip}:1337",
+            on_message=self.onMessage,
+            on_error=self.onError,
+            on_close=self.onClose,
         )
-        
+
         self.createWidgets(master)
-        
+
         Thread(target=self.ws.run_forever).start()
-        
+
         self.ws.X = 0
         self.ws.Y = 0
         self.ws.Angle = 0
@@ -52,11 +49,11 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
     def onClose(self, app, a, closeMsg):
         self.Connected = False
         exit("Lost connection to server...")
-        
+
     def onOpen(self, app, openMsg):
         self.Connected = True
         print("Successfully connected!!!")
-        
+
     def onError(self, app, err):
         print(f"Got websocket error {err}")
 
@@ -71,20 +68,15 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
                 if m[0] == "ypos":
                     app.Y = float(m[1])
 
-
                 if m[0] == "angle":
                     app.Angle = float(m[1])
                 if m[0] == "error":
                     self.CurrentAngle.set(f"Error: {float(m[1]) / 1000}")
 
                 if m[0] == "rightencoder":
-                    # self.CurrentAngle.set(f"Error: {m[1]/1000}")
-                    # print(f"Right encoder: {m[1]}")
                     pass
 
                 if m[0] == "leftencoder":
-                    # self.CurrentAngle.set(f"Error: {m[1]/1000}")
-                    # print(f"Left encoder: {m[1]}")
                     pass
 
             else:
@@ -168,24 +160,13 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
             print("failed to send toggle button command on websocket")
 
     def createWidgets(self, root):
-        retries = 0
-        # while ((not self.Connected) or (retries < 5)):
-        #     retries += 1
-        #     time.sleep(2)
-            
-        # if (not self.Connected):
-        #     exit(f"Could not connect to websocket server with ip {self.IP}")
-        
         top = self.winfo_toplevel()
-        # top.geometry("500x500")
         top.rowconfigure(0, weight=1)  # toplevel window rows scalable
         top.columnconfigure(0, weight=1)  # toplevel window colums scalable
         self.Canvas = Grapher(self)
         self.Canvas.grid(row=4, column=1, rowspan=3, columnspan=8, sticky=N + S + E + W)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(4, weight=1)
-
-        # Graph(canvas, "a*x^3+b*x^2+c*x+d")
 
         self.KVar = StringVar()
         self.KVar.trace_add(mode="write", callback=self.updateK)
@@ -209,11 +190,6 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
         self.CurrentAngle = StringVar()
         self.CurrentAngle.set(f"Error: {str(0)}")
-
-        # formulaEntry = Entry(self, textvariable=strVar)
-        # formulaEntry.grid(row=1, column=1, sticky=N+S+E+W)
-        # self.rowconfigure(1, weight=0)
-        # self.columnconfigure(1, weight=1)
 
         SensorFusionTxt = Label(self, text="K:")
         SensorFusionTxt.grid(row=1, column=1, sticky=N + S + E + W)
@@ -324,15 +300,15 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
             if self.X != x:
                 self.X = x
-                
+
                 try:
                     self.ws.send(f"rotate:{round(x*1000)}")
-                except: 
+                except:
                     print("Failed to send websocket rotate command")
 
             if self.Y != y:
                 self.Y = y
-                
+
                 try:
                     self.ws.send(f"forward:{round(y*1000)}")
                 except:

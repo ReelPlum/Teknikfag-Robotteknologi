@@ -1,0 +1,14 @@
+Function GyroscopeAttitude(theta){
+  angle += theta * dt;
+}
+
+Function AccelerometerAttitude(accX, accY){
+  angle = atan(accX / accY);
+}
+
+Function Attitude(accX, accY, theta, k){
+  accAngle = atan(accX / accY);
+  gyroAngle = angle + theta * dt;
+
+  newAngle = accAngle * k + gyroAngle * (1-k);
+}

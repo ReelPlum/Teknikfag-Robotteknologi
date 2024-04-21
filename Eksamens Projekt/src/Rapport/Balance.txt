@@ -1,0 +1,19 @@
+Function Balance(){
+  /*
+  Opdater PId system med gyroskop som kd værdi
+  */
+  pid.Update(gyroAngle);
+
+  if (Angle > 45){
+    //Stop motorer hvis robotten falder mm.
+    rightMotor.setPWM(0);
+    leftMotor.setPWM(0);
+  }
+  else{
+    rightVelocity = degreesToMotorVel(pidCTRLAngle); //Se i bilag under DCmotor
+    leftVelocity = degreesToMotorVel(pidCTRLAngle);
+
+    rightMotor.setPWM(rightVelocity);
+    leftMotor.setPWM(leftVelocity);
+  }
+}
