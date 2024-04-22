@@ -59,8 +59,8 @@ class Application(Frame):  # Application is a Frame (inheritance from Frame)
 
     def onMessage(self, app, msg):
         try:
-
             m = msg.split(":")
+            print(m)
             if len(m) == 2:
                 if m[0] == "xpos":
                     app.X = float(m[1])

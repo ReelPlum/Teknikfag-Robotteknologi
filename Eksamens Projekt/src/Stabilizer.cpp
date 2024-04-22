@@ -19,7 +19,7 @@ void Stabilizer::setWantedAngle(double WantedAngle){
     this->wanted_angle = WantedAngle;
 }
 
-void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double k)
+void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kp, double ki, double kd, double k)
 {
     // Initialize stuff here
 
@@ -29,9 +29,9 @@ void Stabilizer::init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double
     this->sensorFusion.setup(k);
     this->anglePID.init(this->DT, 50000);
 
-    this->anglePID.set_kd(MotorKD);
-    this->anglePID.set_kp(MotorKP);
-    this->anglePID.set_ki(MotorKI);
+    this->anglePID.set_kd(kd);
+    this->anglePID.set_kp(kp);
+    this->anglePID.set_ki(ki);
 
     this->RightMotor = RightMotor;
     this->LeftMotor = LeftMotor;

@@ -2,7 +2,7 @@
 
 DCMotor::DCMotor(int32_t enc_a_pin, int32_t enc_b_pin,
                  int32_t hbridge_ina_pin, int32_t hbridge_inb_pin, int32_t hbridge_pwm_pin,
-                 int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt
+                 int32_t pwm_channel, int32_t pwm_frequency_hz, int32_t pwm_resolution_bits, double dt,
                  double min_ctrl_value, double max_ctrl_value, double impulses_per_rotation, double FullEncoderRotation)
 {
     this->enc_a_pin = enc_a_pin;
@@ -31,7 +31,7 @@ void DCMotor::init()
     this->encoder.attachFullQuad(this->enc_a_pin, this->enc_b_pin); // Attache pins for use as encoder pins
     this->encoder.clearCount();
 
-    this->hbridge.begin(this->hbridge_ina_pin, this->hbridge_inb_pin, this->pwm_frequency_hz, this->pwm_resolution_bits, this->pwm_channel, this->pid_max_ctrl_value);
+    this->hbridge.begin(this->hbridge_ina_pin, this->hbridge_inb_pin, this->pwm_frequency_hz, this->pwm_resolution_bits, this->pwm_channel, this->max_ctrl_value);
 
     // Start task
     xTaskCreatePinnedToCore(
@@ -62,7 +62,6 @@ double DCMotor::getEncoderPosition(){
 // Statiske medlemsfunktioner til brug i xTaskCreatePinnedToCore
 void DCMotor::pidTask(void *arg)
 {
-
     DCMotor *p = static_cast<DCMotor *>(arg);
 
     // Implementering af PID-task
@@ -78,10 +77,16 @@ void DCMotor::pidTask(void *arg)
             digitalWrite(TestOutputPin, HIGH);
         #endif
 
-        p->current_pos = p->encoder.getCount();
+        // log_i("DT: %f",p->dt);
+
+        p->current_pos = p->encoder.getCount() / p->FullEncoderRotation;
         p->current_vel = (p->current_pos - prev_pos) / p->dt;
 
+        //log_i("Pos: %f",p->current_pos);
+        //log_i("Vel: %f", p->current_vel);
+
         p->acceleration = (p->current_vel - last_vel) / p->dt;
+        //log_i("Acc: %f", p->acceleration);
 
         last_vel = p->current_vel;
         prev_pos = p->current_pos;
@@ -97,11 +102,13 @@ void DCMotor::pidTask(void *arg)
 double DCMotor::get_acceleration()
 {
     // Returns rotational velocity
-    return (this->acceleration / this->FullEncoderRotation) * TWO_PI;
+    //log_i("Acceleration: %f", this->acceleration);
+
+    return (this->acceleration) * TWO_PI;
 }
 
 double DCMotor::get_velocity()
 {
     // Returns rotational velocity
-    return (this->current_vel / this->FullEncoderRotation) * TWO_PI;
+    return (this->current_vel) * TWO_PI;
 }

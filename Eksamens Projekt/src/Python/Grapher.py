@@ -43,19 +43,6 @@ class Grapher(Canvas):
             self.LastMousePosition = (event.x, event.y)
 
         def mouseRelease(event):
-            if self.LastMousePosition:
-                if (
-                    self.LastMousePosition[0] == event.x
-                    and self.LastMousePosition[1] == event.y
-                ):
-                    # Check if a graph is at the current location
-                    for i in self.Objects:
-                        x, y = i.calculate(event.x)
-                        print(abs(y - event.y))
-                        if abs(y - event.y) <= 10:
-                            i.select()
-                            break
-
             self.LastMousePosition = None
 
         def changed(event):

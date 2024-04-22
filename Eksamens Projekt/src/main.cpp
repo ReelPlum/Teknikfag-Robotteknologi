@@ -8,7 +8,7 @@
 #include <Buzzer.h>
 
 // Setup classes
-DCMotor motorL(DCR_ENCB, DCR_ENCA, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DCMotorSpeed, CtrlMin, CtrlMax, ImpulsesPerRotation, DCMotorSpeed);
+DCMotor motorL(DCR_ENCB, DCR_ENCA, DCR_INA, DCR_INB, DCR_PWM, DCR_PWMCH, PWM_Freq, PWM_Res, DCMotorSpeed, CtrlMin, CtrlMax, ImpulsesPerRotation, EncoderFullRotation);
 DCMotor motorR(DCL_ENCA, DCL_ENCB, DCL_INA, DCL_INB, DCL_PWM, DCL_PWMCH, PWM_Freq, PWM_Res, DCMotorSpeed, CtrlMin, CtrlMax, ImpulsesPerRotation, EncoderFullRotation);
 
 PulsingLed led(8, 8, 19500, POSITIONMODE_LED_PIN, 0.25);
@@ -23,11 +23,11 @@ double UpdateCallback(char subtype)
 
   if (subtype == 'f')
   {
-    return data.X;
+    return data.X * 100;
   }
   else if (subtype == 'r')
   {
-    return data.Y;
+    return data.Y * 100;
   }
   else if (subtype == 'a')
   {
@@ -93,14 +93,14 @@ void setup()
   pinMode(TestOutputPin, OUTPUT);
 
   //Start DC motors (Tracking encoders etc.)
-  motorR.init(MotorKI, 0, MotorKP);
-  motorL.init(MotorKI, 0, MotorKP);
+  motorR.init();
+  motorL.init();
 
   //Start Dead Reckoning Task
   deadReckoning.init(&motorR, &motorL, WHEELRADIUS, WHEELB, DeadReckoningSpeed);
 
   //Start Stabilizer for Robot
-  stabilizer.init(&motorR, &motorL, MotorKD, MotorK);
+  stabilizer.init(&motorR, &motorL, MotorKP, MotorKI, MotorKD, MotorK);
 
   //Start the angle buzzer
   angleBuzzer.init(BUZZER_PIN, BUZZER_PWM_CH, Buzzer_Freq_Max, Buzzer_Freq_Min, &stabilizer);

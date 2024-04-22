@@ -17,7 +17,7 @@
 #define IntegrationThreshold 5.0
 #define ImpulsesPerRotation 2000.0
 #define DCEncoderGearing 4.8
-#define EncoderFullRotation 9600 //4.8 * 2000
+#define EncoderFullRotation 9600.0 //4.8 * 2000
 
 //Task Stack sizes
 #define WebsocketStack 10000
@@ -54,8 +54,8 @@
 #define StabilizerSpeed 0.005
 #define LedReloadSpeed 0.1
 #define BuzzerSpeed .25
-#define DeadReckoningSpeed .0025
-#define DCMotorSpeed = .0025
+#define DeadReckoningSpeed 0.5
+#define DCMotorSpeed .5
 
 // DC motor right
 #define DCR_ENCA 4
@@ -74,8 +74,8 @@
 #define DCL_PWMCH 3
 
 // Robot Dimensions
-#define WHEELRADIUS 7.5 // cm
-#define WHEELB 15.0          // cm
+#define WHEELRADIUS .075 // m
+#define WHEELB .15       // m
 
 //Led lys
 #define POSITIONMODE_LED_PIN 19

@@ -45,7 +45,7 @@ private:
     double impulses_per_rotation;
 
     volatile double acceleration;
-    volatile int64_t current_pos;
+    volatile double current_pos;
     volatile double current_vel;
     double EncoderGearing;
 

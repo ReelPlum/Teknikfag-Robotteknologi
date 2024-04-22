@@ -12,7 +12,7 @@ class Stabilizer {
 public:
     Stabilizer(){}; // Constructor declaration
 
-    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double kd, double k);
+    void init(DCMotor *RightMotor, DCMotor *LeftMotor, double kp, double ki, double kd, double k);
     void SetExtraEngineSpeed(double right, double left);
     void SetKD(double KD);
     void SetK(double k);
